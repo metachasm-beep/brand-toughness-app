@@ -2,7 +2,7 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: [ main ]          # Deploy on pushes to `main`
+    branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened]
     branches: [ main ]
@@ -11,43 +11,44 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: read          # needed for checkout
-      id-token: write        # needed for Cloudflare token via OIDC (optional)
+      contents: read
+      id-token: write
 
     steps:
       # 1️⃣ Checkout source
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Node (use the same version you develop with)
+      # 2️⃣ Set up Node
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'      # adjust if you use a different version
+          node-version: '20'
           cache: 'npm'
 
       # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # 4️⃣ Build the Next.js app for Cloudflare Pages
-      #    Cloudflare Pages supports Next.js via `next-on-pages` – we’ll export a static site.
+      # 4️⃣ Install next-on-pages adapter
       - name: Add next-on-pages
         run: npm i -D @cloudflare/next-on-pages
 
+      # 5️⃣ Build — inject secrets as env vars at build time
       - name: Build for Cloudflare Pages
         env:
-          # Ensure the output is a static export
-          NEXT_OUTPUT: export
-        run: |
-          npx next-on-pages
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+        run: npx next-on-pages
 
-      # 5️⃣ Deploy to Cloudflare Pages
+      # 6️⃣ Deploy to Cloudflare Pages
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v2
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}   # add this secret (your Cloudflare account ID)
-          projectName: brand-toughness-app           # the name you gave the Pages project
-          directory: .vercel/output                  # folder created by next-on-pages
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}   # default token, needed for preview URLs
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: brand-toughness-app
+          directory: .vercel/output
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
