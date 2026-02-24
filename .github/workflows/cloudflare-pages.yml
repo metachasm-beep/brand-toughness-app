@@ -1,0 +1,53 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [ main ]          # Deploy on pushes to `main`
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main ]
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read          # needed for checkout
+      id-token: write        # needed for Cloudflare token via OIDC (optional)
+
+    steps:
+      # 1️⃣ Checkout source
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Set up Node (use the same version you develop with)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'      # adjust if you use a different version
+          cache: 'npm'
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4️⃣ Build the Next.js app for Cloudflare Pages
+      #    Cloudflare Pages supports Next.js via `next-on-pages` – we’ll export a static site.
+      - name: Add next-on-pages
+        run: npm i -D @cloudflare/next-on-pages
+
+      - name: Build for Cloudflare Pages
+        env:
+          # Ensure the output is a static export
+          NEXT_OUTPUT: export
+        run: |
+          npx next-on-pages
+
+      # 5️⃣ Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v2
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}   # add this secret (your Cloudflare account ID)
+          projectName: brand-toughness-app           # the name you gave the Pages project
+          directory: .vercel/output                  # folder created by next-on-pages
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}   # default token, needed for preview URLs

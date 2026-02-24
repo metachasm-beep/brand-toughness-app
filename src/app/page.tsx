@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Globe,
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import MetricCard from '@/components/MetricCard';
+import LoadingBar from '@/components/LoadingBar';
 import { generatePDF } from '@/utils/pdf';
 
 const RadarChart = dynamic(() => import('@/components/RadarChart'), { ssr: false });
@@ -25,27 +26,55 @@ const RadarChart = dynamic(() => import('@/components/RadarChart'), { ssr: false
 export default function Home() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
+
+  // Simulate progress for the roughly 60-second process
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (generating) {
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 95) return prev;
+          // Slowly increment to 95 over ~60s
+          return prev + (95 / 60);
+        });
+      }, 1000);
+    } else {
+      setProgress(0);
+    }
+    return () => clearInterval(interval);
+  }, [generating]);
 
   const handleAudit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url) return;
+
     setLoading(true);
+    setGenerating(true);
     setError('');
+    setResult(null);
+
     try {
-      const resp = await fetch('/api/audit', {
+      const response = await fetch('/api/audit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
       });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error);
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to analyze website');
+
       setResult(data);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
+      setGenerating(false);
+      setProgress(100);
     }
   };
 
@@ -68,24 +97,40 @@ export default function Home() {
           </p>
         </div>
 
-        <form onSubmit={handleAudit} className="w-full lg:w-fit flex bg-white/[0.03] border border-white/10 rounded-[32px] p-2 hover:bg-white/[0.05] focus-within:bg-white/[0.08] focus-within:border-white/20 transition-all p-3 pl-8 shadow-2xl">
-          <input
-            type="url"
-            required
-            placeholder="brand-target.io"
-            className="bg-transparent border-none outline-none w-80 text-lg font-semibold selection:bg-white selection:text-black"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="apple-button-primary flex items-center gap-2"
-          >
-            {loading ? <Loader2 className="animate-spin" size={20} /> : <Play size={20} fill="currentColor" />}
-            <span className="text-lg">Initialize</span>
-          </button>
-        </form>
+        <div className="flex flex-col items-end gap-4 w-full lg:w-fit">
+          <form onSubmit={handleAudit} className="w-full lg:w-fit flex bg-white/[0.03] border border-white/10 rounded-[32px] p-2 hover:bg-white/[0.05] focus-within:bg-white/[0.08] focus-within:border-white/20 transition-all p-3 pl-8 shadow-2xl">
+            <input
+              type="url"
+              required
+              placeholder="brand-target.io"
+              className="bg-transparent border-none outline-none w-80 text-lg font-semibold selection:bg-white selection:text-black"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="apple-button-primary flex items-center gap-2"
+            >
+              {loading ? <Loader2 className="animate-spin" size={20} /> : <Play size={20} fill="currentColor" />}
+              <span className="text-lg">Initialize</span>
+            </button>
+          </form>
+
+          {generating && (
+            <LoadingBar progress={progress} message="Initializing Deep Scan Protocols..." />
+          )}
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-red-500 text-xs font-bold uppercase tracking-widest px-4"
+            >
+              Error: {error}
+            </motion.div>
+          )}
+        </div>
       </section>
 
       {/* Main Spatial Grid */}
