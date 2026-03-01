@@ -240,7 +240,7 @@ export class AuditEngine {
         try {
             // Query Performance, Accessibility, SEO, Best-Practices categories
             const psiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(this.url)}&category=performance&category=accessibility&category=seo&category=best-practices&key=${key}`;
-            const response = await axios.get(psiUrl, { timeout: 45000 });
+            const response: any = await axios.get(psiUrl, { timeout: 45000 });
 
             const audits = response.data?.lighthouseResult?.audits || {};
 

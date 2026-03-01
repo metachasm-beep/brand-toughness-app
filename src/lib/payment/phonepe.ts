@@ -30,7 +30,7 @@ export async function initiatePhonePePayment(amount: number, transactionId: stri
     const checksum = crypto.createHash('sha256').update(fullURL).digest('hex') + '###' + SALT_INDEX;
 
     try {
-        const response = await axios.post(
+        const response: any = await axios.post(
             `${BASE_URL}/pg/v1/pay`,
             { request: base64Payload },
             {
