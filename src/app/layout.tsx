@@ -46,6 +46,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                 <p>NEXTAUTH_SECRET: {process.env.NEXTAUTH_SECRET ? '✅ Set (Hidden)' : '❌ MISSING'}</p>
                 <p>NEXTAUTH_URL: {process.env.NEXTAUTH_URL ? `✅ ${process.env.NEXTAUTH_URL}` : '❌ MISSING'}</p>
                 <p>NODE_ENV: {process.env.NODE_ENV}</p>
+                <p className="mt-2 text-white/30 truncate">Available Keys: {Object.keys(process.env).join(', ')}</p>
               </div>
             </main>
           ) : !session ? (
