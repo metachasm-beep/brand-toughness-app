@@ -1,7 +1,7 @@
 // f:\ANTIGRAVITY\WebsiteAudit\brand-toughness-app\src\app\api\v2\audit\route.ts
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { AuditEngine } from '@/lib/audit/engine';
 import { getAiInsights } from '@/lib/audit/ai';
