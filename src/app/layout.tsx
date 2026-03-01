@@ -7,6 +7,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: 'BRAND OS | Diagnostic Intelligence',
   description: 'Brand Perception & Performance Intelligence System',
