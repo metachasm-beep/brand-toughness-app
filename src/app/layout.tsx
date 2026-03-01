@@ -33,13 +33,19 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <main className="w-full flex items-center justify-center min-h-screen text-center p-10 flex-col">
               <h1 className="text-3xl text-red-500 font-bold mb-4">Configuration Error</h1>
               <p className="text-white/70 max-w-lg mb-6">{authError}</p>
-              <div className="bg-white/5 border border-white/10 p-6 rounded-xl text-left text-sm text-white/50 max-w-lg">
+              <div className="bg-white/5 border border-white/10 p-6 rounded-xl text-left text-sm text-white/50 max-w-lg mb-6">
                 <p className="mb-2"><strong>Likely causes:</strong></p>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Missing <code className="text-white">NEXTAUTH_SECRET</code> in Cloudflare variables.</li>
                   <li>Missing <code className="text-white">NEXTAUTH_URL</code> in Cloudflare variables.</li>
                   <li>Incompatible deployment environment (e.g., missing nodejs_compat).</li>
                 </ul>
+              </div>
+              <div className="bg-black/50 p-4 rounded-lg border border-red-500/30 text-left text-xs text-red-400 font-mono w-full max-w-lg overflow-hidden">
+                <p className="font-bold text-white mb-2">LIVE ENVIRONMENT DIAGNOSTICS:</p>
+                <p>NEXTAUTH_SECRET: {process.env.NEXTAUTH_SECRET ? '✅ Set (Hidden)' : '❌ MISSING'}</p>
+                <p>NEXTAUTH_URL: {process.env.NEXTAUTH_URL ? `✅ ${process.env.NEXTAUTH_URL}` : '❌ MISSING'}</p>
+                <p>NODE_ENV: {process.env.NODE_ENV}</p>
               </div>
             </main>
           ) : !session ? (
