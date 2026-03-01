@@ -1,167 +1,100 @@
 @import "tailwindcss";
 
-/* Apple Spatial UI Theme Root - Visionary, Modern, Futuristic */
 @theme {
-  --color-apple-bg: #000000;
-  --color-apple-glass: rgba(25, 25, 25, 0.6);
-  --color-apple-border: rgba(255, 255, 255, 0.12);
-  --color-apple-accent: #0A84FF;
-  --color-apple-optimal: #30D158;
-  --color-apple-critical: #FF453A;
-  --color-apple-text: #FFFFFF;
-  --color-apple-text-dim: rgba(255, 255, 255, 0.55);
+  --color-brand-bg: #0B0F14;
+  --color-brand-panel: #121822;
+  --color-brand-accent: #00D1FF;
+  --color-brand-violet: #7B5CFF;
+  --color-brand-red: #FF3D57;
+  --color-brand-green: #00E28A;
+  
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
 }
 
 :root {
-  --bg: #000000;
-  --sidebar-w: 280px;
-  --top-header-h: 80px;
-  --glass-card: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --accent: #FFFFFF;
-  /* Apple often uses pure white for key accents in dark mode */
-  --text: #FFFFFF;
-  --text-dim: rgba(255, 255, 255, 0.5);
-  --font-apple: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --radius-xl: 24px;
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 11, 15, 20;
+  --background-end-rgb: 11, 15, 20;
 }
 
-.theme-silver {
-  --bg: #F5F5F7;
-  --glass-card: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --accent: #0071E3;
-  --text: #1d1d1f;
-  --text-dim: #86868b;
-}
-
-.theme-space {
-  --bg: #000000;
-  --glass-card: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --accent: #FFFFFF;
-  --text: #FFFFFF;
-  --text-dim: rgba(255, 255, 255, 0.4);
-}
-
-/* Base Styles */
 body {
-  background-color: var(--bg);
-  background: radial-gradient(circle at 50% -20%, #1c1c1e 0%, #000000 70%);
-  color: var(--text);
-  font-family: var(--font-apple);
-  margin: 0;
-  height: 100vh;
-  overflow: hidden;
-  -webkit-font-smoothing: antialiased;
+  color: rgb(var(--foreground-rgb));
+  background: #0B0F14;
+  font-family: var(--font-sans);
 }
 
-/* Apple Spatial Components */
-@layer utilities {
-  .apple-glass {
-    backdrop-filter: blur(40px) saturate(200%);
-    background: rgba(25, 25, 27, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  }
-
-  .apple-card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-xl);
-    backdrop-filter: blur(20px);
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.4s ease;
-  }
-
-  .apple-card:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: scale(1.02);
-  }
-
-  .apple-button {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 999px;
-    padding: 12px 24px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-  }
-
-  .apple-button:hover {
-    background: rgba(255, 255, 255, 1);
-    color: #000000;
-  }
-
-  .apple-button-primary {
-    background: #FFFFFF;
-    color: #000000;
-    border: none;
-    border-radius: 999px;
-    padding: 12px 24px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-  }
-
-  .apple-button-primary:hover {
-    background: rgba(255, 255, 255, 0.9);
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-  }
-
-  .status-tag-apple {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .text-title {
-    font-weight: 800;
-    letter-spacing: -0.05em;
-    line-height: 1;
-  }
-
-  .glow-mesh {
-    position: absolute;
-    width: 60%;
-    height: 60%;
-    background: radial-gradient(circle, rgba(10, 132, 255, 0.15) 0%, transparent 70%);
-    filter: blur(80px);
-    z-index: -1;
-    pointer-events: none;
-  }
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
 }
 
-/* Transitions */
-.page-transition {
-  animation: appleSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+/* ── UI UTILITIES ───────────────────────────────────────────────────────── */
+
+.surgical-label {
+  @apply text-[10px] font-black uppercase tracking-[0.3em] text-white/30;
 }
 
-@keyframes appleSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.apple-glass {
+  @apply bg-white/[0.03] border border-white/10 backdrop-blur-2xl;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 5px;
+.apple-card {
+  @apply bg-[#121822]/80 border border-white/5 rounded-[32px] transition-all duration-500 backdrop-blur-xl;
 }
 
-::-webkit-scrollbar-track {
+.apple-button-primary {
+  @apply bg-[#00D1FF] text-black font-extrabold px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] active:scale-[0.98] cursor-pointer;
+}
+
+.apple-button-outline {
+  @apply border border-white/10 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 hover:bg-white/5 hover:border-white/20 cursor-pointer;
+}
+
+/* ── ANIMATIONS ─────────────────────────────────────────────────────────── */
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s infinite ease-in-out;
+}
+
+.glass-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.glass-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+.glass-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
+}
+.glass-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hero-grid {
+  background-image: 
+    linear-gradient(to right, rgba(0, 209, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 209, 255, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.text-gradient-blue {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#00D1FF] to-[#7B5CFF];
+}
+
+.glow-blue {
+  box-shadow: 0 0 50px rgba(0, 209, 255, 0.15);
+}
+
+.page-transition {
+  animation: fade-in 1s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

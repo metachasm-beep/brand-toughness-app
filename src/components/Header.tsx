@@ -1,56 +1,39 @@
 'use client';
 
-import { Search, Bell, Command, Sun, Moon } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Search, Bell, Command } from 'lucide-react';
 import AuthBar from '@/components/AuthBar';
 
 export default function Header() {
-    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-
-    useEffect(() => {
-        const saved = localStorage.getItem('tt-theme') as 'light' | 'dark' | null;
-        if (saved) setTheme(saved);
-    }, []);
-
-    const toggleTheme = () => {
-        const next = theme === 'dark' ? 'light' : 'dark';
-        setTheme(next);
-        localStorage.setItem('tt-theme', next);
-    };
-
     return (
-        <header className="h-[80px] px-10 flex items-center justify-between sticky top-0 z-[100] bg-black/60 backdrop-blur-2xl border-b border-white/[0.05] shrink-0">
+        <header className="h-[80px] px-10 flex items-center justify-between sticky top-0 z-[100] bg-[#0B0F14]/80 backdrop-blur-2xl border-b border-white/[0.05] shrink-0">
             {/* Search */}
             <div className="flex items-center flex-1 max-w-md">
                 <div className="relative w-full group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={18} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#00D1FF] transition-colors" size={16} />
                     <input
                         type="text"
-                        placeholder="Search Intelligence"
-                        className="w-full bg-white/[0.03] border border-white/[0.06] rounded-2xl py-3 pl-12 pr-4 outline-none focus:bg-white/[0.06] focus:border-white/20 transition-all text-sm font-medium placeholder:text-white/20"
+                        placeholder="SEARCH INTELLIGENCE"
+                        className="w-full bg-white/[0.02] border border-white/[0.05] rounded-xl py-3 pl-12 pr-4 outline-none focus:bg-white/[0.04] focus:border-white/10 transition-all text-[10px] font-black tracking-widest uppercase placeholder:text-white/20"
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:flex items-center gap-1 opacity-20 pointer-events-none">
-                        <Command size={12} /><span className="text-xs font-bold">K</span>
+                        <Command size={10} /><span className="text-[10px] font-black">K</span>
                     </div>
                 </div>
             </div>
 
             {/* Right controls */}
-            <div className="flex items-center gap-5">
-                <div className="flex items-center gap-2 border-r border-white/[0.06] pr-5">
-                    <button
-                        onClick={toggleTheme}
-                        className="p-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl hover:bg-white/10 transition-all text-white/40 hover:text-white"
-                    >
-                        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3 border-r border-white/[0.05] pr-6">
+                    <button className="relative p-2.5 bg-white/[0.02] border border-white/[0.05] rounded-xl hover:bg-white/5 transition-all text-white/40 hover:text-white">
+                        <Bell size={16} />
+                        <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[#FF3D57] rounded-full ring-2 ring-[#0B0F14]" />
                     </button>
-                    <button className="relative p-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl hover:bg-white/10 transition-all text-white/40 hover:text-white">
-                        <Bell size={18} />
-                        <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[#FF453A] rounded-full ring-1 ring-black" />
-                    </button>
+                    <div className="hidden lg:flex flex-col items-end">
+                        <span className="surgical-label !text-[8px] !text-[#00E28A]">Encrypted Link</span>
+                        <span className="text-[10px] font-black text-white/40 tracking-widest uppercase">AES-256 Active</span>
+                    </div>
                 </div>
 
-                {/* Auth: sign in button or user info */}
                 <AuthBar />
             </div>
         </header>

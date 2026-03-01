@@ -14,9 +14,9 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
     const displayLabels = labels || defaultLabels;
 
     const getColor = (s: number) => {
-        if (s >= 80) return '#30D158';
-        if (s >= 60) return '#FF9F0A';
-        return '#FF453A';
+        if (s >= 80) return '#00E28A';
+        if (s >= 60) return '#00D1FF';
+        return '#FF3D57';
     };
 
     const orbitLines = [0.4, 0.6, 0.8, 1.0];
@@ -37,7 +37,7 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
     }, [scores, displayLabels]);
 
     return (
-        <div className="relative w-full aspect-square flex items-center justify-center p-10">
+        <div className="relative w-full aspect-square flex items-center justify-center p-10 select-none">
             {/* Background Orbits */}
             {orbitLines.map((r, i) => (
                 <div
@@ -66,11 +66,11 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
             ))}
 
             {/* Connection Polygon */}
-            <svg viewBox="-1.2 -1.2 2.4 2.4" className="absolute inset-0 w-full h-full drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+            <svg viewBox="-1.2 -1.2 2.4 2.4" className="absolute inset-0 w-full h-full drop-shadow-[0_0_30px_rgba(0,209,255,0.1)]">
                 <path
                     d={`M ${points[0].x} ${points[0].y} ${points.map(p => `L ${p.x} ${p.y}`).join(' ')} Z`}
-                    fill="rgba(10, 132, 255, 0.05)"
-                    stroke="rgba(255, 255, 255, 0.3)"
+                    fill="rgba(0, 209, 255, 0.05)"
+                    stroke="rgba(0, 209, 255, 0.4)"
                     strokeWidth="0.01"
                     className="transition-all duration-1000"
                 />
@@ -79,7 +79,8 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
                         key={i}
                         cx={p.x} cy={p.y} r="0.04"
                         fill={p.color}
-                        className="transition-all duration-1000 shadow-[0_0_10px_white]"
+                        className="transition-all duration-1000"
+                        style={{ filter: `drop-shadow(0 0 5px ${p.color})` }}
                     />
                 ))}
             </svg>
@@ -89,11 +90,11 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="text-7xl xl:text-8xl font-black tracking-tighter text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                    className="text-7xl xl:text-9xl font-black font-display tracking-tighter text-white drop-shadow-[0_0_40px_rgba(0,209,255,0.3)]"
                 >
                     {overallScore}
                 </motion.div>
-                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mt-2">Integrity Composite</div>
+                <div className="surgical-label !text-white/40 mt-2">Integrity Composite</div>
             </div>
 
             {/* Floating Labels */}
@@ -110,8 +111,8 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 + i * 0.1 }}
                 >
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">{p.label}</span>
-                    <span className="text-sm font-bold text-white">{p.score}</span>
+                    <span className="surgical-label text-[8px] !text-white/40">{p.label}</span>
+                    <span className="text-sm font-black font-display text-white">{p.score}</span>
                 </motion.div>
             ))}
         </div>
