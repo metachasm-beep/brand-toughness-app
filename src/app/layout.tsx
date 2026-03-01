@@ -12,7 +12,15 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const session = await getServerSession(authOptions);
+  let session = null;
+  let authError = null;
+
+  try {
+    session = await getServerSession(authOptions);
+  } catch (error: any) {
+    console.error("NextAuth Initialization Error:", error);
+    authError = error.message;
+  }
 
   return (
     <html lang="en" className="theme-space scroll-smooth">
@@ -21,7 +29,20 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       </head>
       <body className="min-h-screen bg-[#0B0F14] text-white selection:bg-[#00D1FF] selection:text-black antialiased font-sans">
         <Providers>
-          {!session ? (
+          {authError ? (
+            <main className="w-full flex items-center justify-center min-h-screen text-center p-10 flex-col">
+              <h1 className="text-3xl text-red-500 font-bold mb-4">Configuration Error</h1>
+              <p className="text-white/70 max-w-lg mb-6">{authError}</p>
+              <div className="bg-white/5 border border-white/10 p-6 rounded-xl text-left text-sm text-white/50 max-w-lg">
+                <p className="mb-2"><strong>Likely causes:</strong></p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Missing <code className="text-white">NEXTAUTH_SECRET</code> in Cloudflare variables.</li>
+                  <li>Missing <code className="text-white">NEXTAUTH_URL</code> in Cloudflare variables.</li>
+                  <li>Incompatible deployment environment (e.g., missing nodejs_compat).</li>
+                </ul>
+              </div>
+            </main>
+          ) : !session ? (
             <main className="w-full">
               {children}
             </main>
