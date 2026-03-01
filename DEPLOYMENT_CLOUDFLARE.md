@@ -22,9 +22,9 @@ This application is ready for deployment to Cloudflare Pages. Follow these steps
    - **Note**: Ensure you grant Cloudflare access to the `brand-toughness-app` repository in the GitHub permissions popup.
    - Once authorized, you will see a search box. Type `brand-toughness-app` to find and select it.
 5. Click **Begin setup**.
-   - **Framework preset**: `Next.js (App Router)`
-   - **Build command**: `npx prisma generate && npx next build` 
-   - **Build output directory**: `.next`
+   - **Framework preset**: `Next.js`
+   - **Build command**: `npm run build` 
+   - **Build output directory**: `.next` (or leave default)
 5. Add **Environment Variables**:
    - `DATABASE_URL`: (From Neon/Supabase)
    - `PHONEPE_MERCHANT_ID`: (Your PhonePe ID)
