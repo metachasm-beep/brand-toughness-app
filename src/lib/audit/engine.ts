@@ -38,7 +38,7 @@ export class AuditEngine {
     async run(): Promise<AuditResult> {
         const uid = uuidv4();
         try {
-            const response = await axios.get(this.url, {
+            const response: any = await axios.get(this.url, {
                 timeout: 15000,
                 headers: { 'User-Agent': 'TurtleLabsAuditBot/1.0' },
                 validateStatus: () => true,
