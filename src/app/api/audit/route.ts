@@ -1,6 +1,11 @@
 // src/app/api/audit/route.ts
 import { NextResponse } from 'next/server';
-import { ProcessWebsites, normaliseUrl } from '@/utils/googleSheet';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
+import { AuditEngine } from '@/lib/audit/engine';
+import { getAiInsights } from '@/lib/audit/ai';
+import { prisma } from '@/lib/db';
+import { normaliseUrl } from '@/utils/googleSheet';
 
 export const maxDuration = 120; // 2-minute timeout
 export const runtime = 'nodejs';
@@ -8,31 +13,74 @@ export const runtime = 'nodejs';
 export async function POST(request: Request) {
     let url = '';
     try {
+        const session = await getServerSession(authOptions);
+        const userEmail = session?.user?.email || 'guest@turtlelabs.co';
+
         const body = await request.json();
         url = body.url ?? '';
         if (!url) {
             return NextResponse.json({ error: 'URL is required' }, { status: 400 });
         }
 
-        // Normalise first so we surface bad-URL errors immediately
         const normalisedUrl = normaliseUrl(url);
 
-        const result = await ProcessWebsites(normalisedUrl);
-        return NextResponse.json(result);
+        // 1. Core Audit - Ported from Python health checks + PageSpeed API
+        const engine = new AuditEngine(normalisedUrl);
+        const auditData = await engine.run();
+
+        // 2. Generate AI Overview using Cohere
+        const aiSummary = await getAiInsights(normalisedUrl, auditData.findings);
+        auditData.meta.aiSummary = aiSummary;
+
+        // 3. Persist to DB for SaaS History
+        const savedAudit = await prisma.audit.create({
+            data: {
+                url: normalisedUrl,
+                uid: auditData.uid,
+                status: 'COMPLETED',
+                userEmail: userEmail,
+                overallScore: auditData.overallScore,
+                categories: auditData.categories as any,
+                meta: auditData.meta as any,
+                findings: {
+                    create: auditData.findings.map(f => ({
+                        code: f.code,
+                        title: f.title,
+                        category: f.category,
+                        severity: f.severity,
+                        confidence: f.confidence,
+                        recommendation: f.recommendation,
+                        effort: f.effort,
+                        impact: f.impact,
+                        evidence: f.evidence || null
+                    }))
+                }
+            },
+            include: { findings: true }
+        });
+
+        // Map back to UI format
+        const scores = {
+            marketPresence: auditData.categories['SEO']?.score || 0,
+            technicalHealth: auditData.categories['Performance']?.score || 0,
+            security: auditData.categories['Security']?.score || 0,
+            innovation: auditData.categories['UX']?.score || 0,
+            customerExperience: auditData.categories['Accessibility']?.score || 0,
+            contentQuality: 8.5 // Placeholder or aggregate content metric
+        };
+
+        return NextResponse.json({
+            scores,
+            aggregate: (auditData.overallScore / 10).toFixed(1), // UI expects 0-10 scale
+            rawData: auditData.meta,
+            findings: savedAudit.findings,
+            uid: auditData.uid,
+            aiSummary
+        });
 
     } catch (err: any) {
         console.error('[/api/audit] Error:', err);
-
-        // Surface a readable error to the UI
-        const msg: string = err.message ?? 'Unknown error';
-        const friendlyMsg =
-            msg.includes('Apps Script') ? 'Could not reach the Google Apps Script endpoint. Make sure the doPost function is deployed and the Web App URL is correct.' :
-                msg.includes('Timed out') ? 'The Google Sheet took too long to process the website. Please try again.' :
-                    msg.includes('Invalid URL') ? 'The URL you entered is invalid. Try adding https:// or check for typos.' :
-                        msg.includes('fetch') ? 'Network error reaching Google Sheets. Check your internet connection.' :
-                            msg;
-
-        return NextResponse.json({ error: friendlyMsg, raw: msg }, { status: 500 });
+        return NextResponse.json({ error: err.message ?? 'Unknown error' }, { status: 500 });
     }
 }
 

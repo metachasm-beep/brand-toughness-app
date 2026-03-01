@@ -40,4 +40,23 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+# SQLite
+*.db
+*.db-journal
+
+# Temporary / Docs
+temp*
+*.docx
+*.ipynb
+*.zip
+*.txt
+gviz*.csv
+test.csv
+temp_docx_*/
+
+# IDE
+.idea
+.vscode
+.agents
+.cursor
+.gemini

@@ -2,22 +2,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-
-const SHEET_CSV_URL =
-    'https://docs.google.com/spreadsheets/d/1Po-oXNThH03DkCoXo77IHd5ocokrTudaP1sBqDJd8Nc/export?format=csv';
-
-function parseCsvRow(row: string): string[] {
-    const result: string[] = [];
-    let inQuote = false;
-    let cur = '';
-    for (const ch of row) {
-        if (ch === '"') { inQuote = !inQuote; continue; }
-        if (ch === ',' && !inQuote) { result.push(cur.trim()); cur = ''; continue; }
-        cur += ch;
-    }
-    result.push(cur.trim());
-    return result;
-}
+import { prisma } from '@/lib/db';
 
 export async function GET() {
     const session = await getServerSession(authOptions);
@@ -28,23 +13,36 @@ export async function GET() {
 
     try {
         const email = session.user.email.toLowerCase();
-        const resp = await fetch(SHEET_CSV_URL + '&cb=' + Date.now());
-        if (!resp.ok) return NextResponse.json({ error: 'Sheet fetch failed' }, { status: 502 });
 
-        const lines = (await resp.text()).split(/\r?\n/);
-        if (lines.length < 2) return NextResponse.json({ headers: [], rows: [] });
+        // Fetch from Prisma DB
+        const audits = await prisma.audit.findMany({
+            where: {
+                userEmail: email
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                findings: true
+            }
+        });
 
-        const headers = parseCsvRow(lines[1]); // Row 2 is the header row
-        const emailIdx = headers.findIndex(h => h.toLowerCase() === 'email');
-        const dataRows = lines.slice(2).map(parseCsvRow);
+        // Structure data for the history table if needed, or return raw
+        // The current History page might expect specific headers/rows format used by Sheets
+        // Let's map it to something the UI can use, or update the UI later.
 
-        // Return all rows matching the user's email (or all rows if email col not found)
-        const userRows = emailIdx >= 0
-            ? dataRows.filter(row => (row[emailIdx] ?? '').toLowerCase() === email)
-            : [];
+        const historyData = audits.map(a => ({
+            id: a.id,
+            url: a.url,
+            score: (a.overallScore || 0) / 10,
+            date: a.createdAt.toISOString(),
+            status: a.status,
+            findingCount: a.findings.length
+        }));
 
-        return NextResponse.json({ headers, rows: userRows });
+        return NextResponse.json({ audits: historyData });
     } catch (err: any) {
+        console.error('[History API Error]:', err);
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

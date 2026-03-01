@@ -1,0 +1,51 @@
+// f:\ANTIGRAVITY\WebsiteAudit\brand-toughness-app\prisma\schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  tier          String    @default("FREE") // FREE, PRO, BUSINESS
+  audits        Audit[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Audit {
+  id            String         @id @default(cuid())
+  url           String
+  uid           String         @unique
+  status        String         @default("QUEUED") // QUEUED, PROCESSING, COMPLETED, FAILED
+  overallScore  Int?
+  categories    Json?          // Stores scores per category: { "SEO": 85, "Performance": 92, ... }
+  findings      AuditFinding[]
+  user          User?          @relation(fields: [userEmail], references: [email])
+  userEmail     String?
+  createdAt     DateTime       @default(now())
+  finishedAt    DateTime?
+  meta          Json?          // Stores extra meta like PageSpeed data, headers, etc.
+}
+
+model AuditFinding {
+  id             String   @id @default(cuid())
+  auditId        String
+  audit          Audit    @relation(fields: [auditId], references: [id])
+  code           String   // e.g., "SEO_MISSING_TITLE"
+  title          String
+  category       String   // SEO, Performance, etc.
+  severity       String   // CRITICAL, HIGH, MEDIUM, LOW
+  confidence     Float    @default(1.0)
+  recommendation String
+  effort         String   // EASY, MEDIUM, HARD
+  impact         String
+  evidence       Json?    // Snippet or data found
+}

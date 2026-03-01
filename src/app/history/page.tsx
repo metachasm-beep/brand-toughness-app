@@ -7,11 +7,12 @@ import { Shield, LogIn, ExternalLink, Clock, CheckCircle, AlertTriangle } from '
 import { motion } from 'framer-motion';
 
 interface HistoryRow {
-    uid: string;
+    id: string;
     url: string;
     status: string;
-    score?: string;
-    lastChecked: string;
+    score: number;
+    date: string;
+    findingCount: number;
 }
 
 export default function HistoryPage() {
@@ -25,20 +26,8 @@ export default function HistoryPage() {
         fetch('/api/user-history')
             .then(r => r.json())
             .then(data => {
-                if (data.rows && data.headers) {
-                    const hdr: string[] = data.headers;
-                    const uidIdx = hdr.findIndex((h: string) => h === 'UID');
-                    const urlIdx = hdr.findIndex((h: string) => h === 'Website URL');
-                    const statIdx = hdr.findIndex((h: string) => h === 'Status Code');
-                    const tsIdx = hdr.findIndex((h: string) => h === 'Last Checked');
-
-                    const formatted: HistoryRow[] = data.rows.map((r: string[]) => ({
-                        uid: r[uidIdx] ?? '—',
-                        url: r[urlIdx] ?? '—',
-                        status: r[statIdx] ?? '—',
-                        lastChecked: r[tsIdx] ?? '—',
-                    }));
-                    setRows(formatted);
+                if (data.audits) {
+                    setRows(data.audits);
                 }
             })
             .catch(() => { })
@@ -109,7 +98,7 @@ export default function HistoryPage() {
                     <div className="divide-y divide-white/5">
                         {rows.map((row, i) => (
                             <motion.div
-                                key={row.uid}
+                                key={row.id}
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: i * 0.05 }}
@@ -118,8 +107,9 @@ export default function HistoryPage() {
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-3 mb-1">
                                         <span className="text-[10px] font-black text-white/20 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-full">
-                                            {row.uid}
+                                            {row.id.substring(0, 8)}...
                                         </span>
+                                        <span className="text-xs font-bold text-blue-400">{row.findingCount} Findings</span>
                                     </div>
                                     <a
                                         href={row.url}
@@ -132,12 +122,16 @@ export default function HistoryPage() {
                                 </div>
 
                                 <div className="flex items-center gap-4 shrink-0">
-                                    <div className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${row.status === '200' ? 'bg-[#30D158]/10 text-[#30D158]' : 'bg-[#FF453A]/10 text-[#FF453A]'
-                                        }`}>
-                                        {row.status === '200' ? <CheckCircle size={12} /> : <AlertTriangle size={12} />}
-                                        HTTP {row.status}
+                                    <div className="text-right mr-4">
+                                        <div className="text-lg font-black text-white">{row.score.toFixed(1)}</div>
+                                        <div className="text-[10px] text-white/30 uppercase font-bold">Integrity</div>
                                     </div>
-                                    <span className="text-white/20 text-xs font-medium">{row.lastChecked}</span>
+                                    <div className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${row.status === 'COMPLETED' ? 'bg-[#30D158]/10 text-[#30D158]' : 'bg-[#FF453A]/10 text-[#FF453A]'
+                                        }`}>
+                                        {row.status === 'COMPLETED' ? <CheckCircle size={12} /> : <AlertTriangle size={12} />}
+                                        {row.status}
+                                    </div>
+                                    <span className="text-white/20 text-xs font-medium">{new Date(row.date).toLocaleDateString()}</span>
                                 </div>
                             </motion.div>
                         ))}
