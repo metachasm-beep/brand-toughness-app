@@ -18,7 +18,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   let cfEnvKeys: string[] = [];
 
   try {
-    const { env } = await getCloudflareContext();
+    const { env } = await getCloudflareContext({ async: true });
     cfEnvKeys = Object.keys(env);
 
     // Manually shim process.env if OpenNext failed to do so
