@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 
 export const metadata = {
   title: 'BRAND OS | Diagnostic Intelligence',
@@ -14,8 +15,21 @@ export const metadata = {
 export default async function RootLayout({ children }: { children: ReactNode }) {
   let session = null;
   let authError = null;
+  let cfEnvKeys: string[] = [];
 
   try {
+    const { env } = await getCloudflareContext();
+    cfEnvKeys = Object.keys(env);
+
+    // Manually shim process.env if OpenNext failed to do so
+    if (env && typeof env === 'object') {
+      Object.entries(env).forEach(([k, v]) => {
+        if (v && typeof v === 'string' && !process.env[k]) {
+          process.env[k] = v;
+        }
+      });
+    }
+
     session = await getServerSession(authOptions);
   } catch (error: any) {
     console.error("NextAuth Initialization Error:", error);
@@ -46,7 +60,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                 <p>NEXTAUTH_SECRET: {process.env.NEXTAUTH_SECRET ? '✅ Set (Hidden)' : '❌ MISSING'}</p>
                 <p>NEXTAUTH_URL: {process.env.NEXTAUTH_URL ? `✅ ${process.env.NEXTAUTH_URL}` : '❌ MISSING'}</p>
                 <p>NODE_ENV: {process.env.NODE_ENV}</p>
-                <p className="mt-2 text-white/30 truncate">Available Keys: {Object.keys(process.env).join(', ')}</p>
+                <p className="mt-2 text-white/30 truncate">Process Keys: {Object.keys(process.env).join(', ')}</p>
+                <p className="mt-1 text-white/30 truncate">Cloudflare Keys: {cfEnvKeys.join(', ')}</p>
               </div>
             </main>
           ) : !session ? (
