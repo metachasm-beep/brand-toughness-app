@@ -10,10 +10,11 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  "hyperdrive": [
+  "d1_databases": [
     {
-      "binding": "HYPERDRIVE",
-      "id": "YOUR_HYPERDRIVE_ID_HERE"
+      "binding": "DB",
+      "database_name": "brand-os-db",
+      "database_id": "REPLACE_WITH_YOUR_D1_ID"
     }
   ],
   "services": [

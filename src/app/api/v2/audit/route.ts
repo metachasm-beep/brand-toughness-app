@@ -2,13 +2,14 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/db';
+import { getPrisma } from '@/lib/db';
 import { AuditEngine } from '@/lib/audit/engine';
 import { getAiInsights } from '@/lib/audit/ai';
 
 export const maxDuration = 120; // Increase timeout for deep analysis
 
 export async function POST(request: Request) {
+    const prisma = await getPrisma();
     try {
         const session = await getServerSession(authOptions);
         const userEmail = session?.user?.email;
@@ -63,6 +64,7 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
+    const prisma = await getPrisma();
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

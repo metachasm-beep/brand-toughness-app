@@ -2,12 +2,12 @@
 
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["driverAdapters"] is implicit in recent Prisma versions for D1
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl = env("DATABASE_DIRECT_CONNECTION_STRING")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {

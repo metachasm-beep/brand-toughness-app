@@ -4,13 +4,14 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { AuditEngine } from '@/lib/audit/engine';
 import { getAiInsights } from '@/lib/audit/ai';
-import { prisma } from '@/lib/db';
+import { getPrisma } from '@/lib/db';
 import { normaliseUrl } from '@/utils/googleSheet';
 
 export const maxDuration = 120; // 2-minute timeout
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
+    const prisma = await getPrisma();
     let url = '';
     try {
         const session = await getServerSession(authOptions);

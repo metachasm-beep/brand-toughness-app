@@ -1,30 +1,44 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import pg from 'pg';
+import { PrismaD1 } from '@prisma/adapter-d1';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-const createPrismaClient = () => {
-    // When running on Cloudflare, we prefer Hyperdrive or Driver Adapters
+const createPrismaClient = async () => {
+    // Check if we are in the Cloudflare environment
     if (process.env.NODE_ENV === 'production') {
-        // DATABASE_URL in production should be your Hyperdrive connection string
-        const connectionString = process.env.DATABASE_URL;
+        const context = await getCloudflareContext({ async: true });
+        const env = context.env as any;
 
-        if (!connectionString) {
-            console.warn("DATABASE_URL not found in production environment.");
+        // Use the D1 binding 'DB' from wrangler.jsonc
+        if (env.DB) {
+            const adapter = new PrismaD1(env.DB);
+            return new PrismaClient({ adapter });
         }
 
-        const pool = new pg.Pool({ connectionString });
-        const adapter = new PrismaPg(pool);
-        return new PrismaClient({ adapter });
+        console.warn("D1 Binding 'DB' not found in Cloudflare environment. Falling back to standard client.");
     }
 
-    // Standard client for local development
+    // Standard client for local development (SQLite)
     return new PrismaClient({
         log: ['query'],
     });
 };
 
-export const prisma = globalForPrisma.prisma || createPrismaClient();
+// Next.js 15 / OpenNext singleton pattern for D1
+let prismaInstance: PrismaClient | null = null;
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+export const getPrisma = async () => {
+    if (prismaInstance) return prismaInstance;
+
+    // In development, use a global to prevent exhaustion of file descriptors
+    if (process.env.NODE_ENV !== 'production') {
+        if (!globalForPrisma.prisma) {
+            globalForPrisma.prisma = new PrismaClient();
+        }
+        return globalForPrisma.prisma;
+    }
+
+    prismaInstance = await createPrismaClient();
+    return prismaInstance;
+};
