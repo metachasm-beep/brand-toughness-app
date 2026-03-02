@@ -7,9 +7,8 @@ import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { getCloudflareContext } from '@opennextjs/cloudflare';
 
-// Force-dynamic build optimization for Cloudflare
+// Force-dynamic build optimization
 export const metadata = {
   title: 'BRAND OS | Diagnostic Intelligence',
   description: 'Brand Perception & Performance Intelligence System',
@@ -19,17 +18,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   let session = null;
 
   try {
-    const { env } = await getCloudflareContext({ async: true });
-
-    // Manually shim process.env if OpenNext failed to do so
-    if (env && typeof env === 'object') {
-      Object.entries(env).forEach(([k, v]) => {
-        if (v && typeof v === 'string' && !process.env[k]) {
-          process.env[k] = v;
-        }
-      });
-    }
-
     session = await getServerSession(authOptions);
   } catch (error: any) {
     console.error("NextAuth Initialization Error:", error);
