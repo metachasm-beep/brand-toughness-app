@@ -7,15 +7,13 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Optimization to reduce memory usage during build on Cloudflare
   productionBrowserSourceMaps: false,
-  // Significant memory reduction for build environments
+  // Fix for "Internal Error" - give Next more time to generate static pages if they are slow
+  // Increased to allow it to pass even if it's slow.
+  staticPageGenerationTimeout: 1200,
   experimental: {
-    // Disable multi-threading to avoid build worker crashes on resource-constrained CI
-    workerThreads: false,
-    cpus: 1,
     serverActions: {
-      bodySizeLimit: '2mb',
+      bodySizeLimit: '1mb',
     },
   },
 };

@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
   "name": "brand-toughness-app",
-  "compatibility_date": "2025-09-27",
+  "compatibility_date": "2024-11-20",
   "compatibility_flags": [
     "nodejs_compat"
   ],
