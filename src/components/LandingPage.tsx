@@ -79,7 +79,7 @@ export default function LandingPage() {
                                     <div className="flex justify-between items-end">
                                         <div className="space-y-1">
                                             <div className="surgical-label">Integrity Core</div>
-                                            <div className="text-4xl font-black font-display">84.2</div>
+                                            <div className="text-4xl font-black font-display tracking-tighter text-[#00D1FF]/40 animate-pulse">---</div>
                                         </div>
                                         <div className="w-32 h-12 flex items-end gap-1">
                                             {[40, 70, 45, 90, 65, 80, 50].map((h, i) => (
@@ -88,9 +88,9 @@ export default function LandingPage() {
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="h-20 bg-white/5 rounded-xl border border-white/5 p-4">
+                                        <div className="h-20 bg-white/5 rounded-xl border border-white/5 p-4 flex flex-col justify-between">
                                             <div className="surgical-label text-[8px]">Latency</div>
-                                            <div className="text-lg font-bold">142ms</div>
+                                            <div className="text-lg font-bold text-white/20 uppercase tracking-widest">Awaiting</div>
                                         </div>
                                         <div className="h-20 bg-white/5 rounded-xl border border-white/5 p-4 text-[#00E28A]">
                                             <div className="surgical-label text-[8px] text-[#00E28A]/40">Security</div>
@@ -114,10 +114,10 @@ export default function LandingPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
                         {[
-                            { t: 'Performance Integrity', d: 'Critical technical stability, speed, and core vitals monitoring.', i: Activity, c: '#00D1FF', s: '84' },
-                            { t: 'Trust & Authority', d: 'Perceived stability through security headers and trust signals.', i: Shield, c: '#7B5CFF', s: '92' },
-                            { t: 'Brand Clarity', d: 'The mathematical strength of your messaging and value prop.', i: Zap, c: '#FF3D57', s: '62' },
-                            { t: 'Discovery Power', d: 'Indexability and semantic weight across the digital landscape.', i: Globe, c: '#00E28A', s: '78' },
+                            { t: 'Performance Integrity', d: 'Critical technical stability, speed, and core vitals monitoring.', i: Activity, c: '#00D1FF', s: '--' },
+                            { t: 'Trust & Authority', d: 'Perceived stability through security headers and trust signals.', i: Shield, c: '#7B5CFF', s: '--' },
+                            { t: 'Brand Clarity', d: 'The mathematical strength of your messaging and value prop.', i: Zap, c: '#FF3D57', s: '--' },
+                            { t: 'Discovery Power', d: 'Indexability and semantic weight across the digital landscape.', i: Globe, c: '#00E28A', s: '--' },
                         ].map((p, i) => (
                             <motion.div
                                 key={i}
@@ -150,7 +150,7 @@ export default function LandingPage() {
                             whileInView={{ scale: 1, opacity: 1 }}
                             className="text-7xl md:text-8xl font-black font-display text-white"
                         >
-                            $18,400+
+                            $---,---
                         </motion.div>
                         <div className="text-2xl font-bold text-[#FF3D57]">Estimated Monthly Revenue Leakage</div>
                     </div>

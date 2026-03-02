@@ -155,9 +155,9 @@ export default function Dashboard() {
         result.scores.innovation,
         result.scores.customerExperience,
         result.scores.contentQuality,
-    ] : [8.8, 7.2, 9.4, 6.5, 8.1, 8.9];
+    ] : [0, 0, 0, 0, 0, 0];
 
-    const aggregateScore = result ? result.aggregate : '8.4';
+    const aggregateScore = result ? result.aggregate : '--';
     const ai = result?.aiSummary;
 
     return (
@@ -224,10 +224,10 @@ export default function Dashboard() {
                 </div>
 
                 <div className="space-y-6">
-                    <MetricCard title="Market Presence" value={result ? result.scores.marketPresence.toFixed(1) : '8.8'} trend="+4.2%" trendDirection="up" status="optimal" icon={Activity} />
-                    <MetricCard title="Technical Health" value={result ? result.scores.technicalHealth.toFixed(1) : '7.2'} trend="+1.5%" trendDirection="up" status="stable" icon={Users} />
-                    <MetricCard title="Security Profile" value={result ? result.scores.security.toFixed(1) : '9.4'} trend="+0.8%" trendDirection="up" status="optimal" icon={Shield} />
-                    <MetricCard title="Innovation Rate" value={result ? result.scores.innovation.toFixed(1) : '6.5'} trend="-2.1%" trendDirection="down" status="critical" icon={Zap} />
+                    <MetricCard title="Market Presence" value={result ? result.scores.marketPresence.toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
+                    <MetricCard title="Technical Health" value={result ? result.scores.technicalHealth.toFixed(1) : '--'} trend={result ? "+1.5%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Users} />
+                    <MetricCard title="Security Profile" value={result ? result.scores.security.toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
+                    <MetricCard title="Innovation Rate" value={result ? result.scores.innovation.toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
                 </div>
             </div>
 
