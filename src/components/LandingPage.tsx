@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 import {
     Activity, Shield, Zap, Globe, ArrowRight, CheckCircle,
     TrendingUp, BarChart3, Lock, Users, MousePointer2
@@ -9,6 +10,11 @@ import {
 
 export default function LandingPage() {
     const login = () => signIn('google');
+
+    const handleDeploy = (price: string) => {
+        // Redirect to PhonePe portal with the specified amount
+        window.location.href = `https://merchants.phonepe.com/pay/brandos?amount=${price}&currency=USD`;
+    };
 
     return (
         <div className="bg-[#0B0F14] min-h-screen selection:bg-[#00D1FF] selection:text-black">
@@ -22,12 +28,9 @@ export default function LandingPage() {
                     <div className="flex items-center gap-8">
                         <a href="#features" className="surgical-label hover:text-white transition-colors">Intelligence</a>
                         <a href="#pricing" className="surgical-label hover:text-white transition-colors">Acquisition</a>
-                        <button
-                            onClick={login}
-                            className="bg-white/5 border border-white/10 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
-                        >
-                            Command Auth
-                        </button>
+                        <Link href="/faq" className="surgical-label hover:text-white transition-colors flex items-center gap-2">
+                            FAQ <div className="w-1 h-1 rounded-full bg-[#00D1FF]" />
+                        </Link>
                     </div>
                 </div>
             </nav>
@@ -54,15 +57,15 @@ export default function LandingPage() {
                         <div className="flex flex-col sm:flex-row gap-5 pt-4">
                             <button
                                 onClick={login}
-                                className="apple-button-primary flex items-center justify-center gap-3"
+                                className="apple-button-primary flex items-center justify-center gap-3 border-[#00D1FF] bg-[#00D1FF] text-black"
                             >
                                 Scan My Brand Now <ArrowRight size={20} />
                             </button>
-                            <button className="apple-button-outline">
+                            <Link href="/preview" className="apple-button-outline inline-flex items-center justify-center">
                                 Intelligence Preview
-                            </button>
+                            </Link>
                         </div>
-                        <p className="surgical-label text-white/20">Requires Google L3 Authorization</p>
+                        <p className="surgical-label text-white/20 uppercase">Requires Google L3 Authorization</p>
                     </motion.div>
 
                     {/* Floating Dashboard Mockup */}
@@ -165,7 +168,7 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto space-y-20">
                     <div className="text-center space-y-4">
                         <h2 className="surgical-label">Monetization protocol</h2>
-                        <h3 className="text-5xl font-black font-display tracking-tight">Acquire Dominance</h3>
+                        <h3 className="text-5xl font-black font-display tracking-tight uppercase">Acquire Dominance</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -177,7 +180,7 @@ export default function LandingPage() {
                         ].map((plan, i) => (
                             <div
                                 key={i}
-                                className={`apple-card p-10 flex flex-col ${plan.highlight ? 'border-[#00D1FF]/30 glow-blue' : 'border-white/5'}`}
+                                className={`apple-card p-10 flex flex-col border-[#00D1FF]/10 hover:border-[#00D1FF]/30 transition-all ${plan.highlight ? 'glow-blue' : ''}`}
                             >
                                 <div className="surgical-label mb-2">{plan.n}</div>
                                 <div className="flex items-end gap-1 mb-6">
@@ -193,8 +196,8 @@ export default function LandingPage() {
                                     ))}
                                 </ul>
                                 <button
-                                    onClick={login}
-                                    className={`w-full py-4 rounded-xl font-bold transition-all ${plan.highlight ? 'bg-[#00D1FF] text-black' : 'bg-white/5 hover:bg-white/10 text-white'}`}
+                                    onClick={() => handleDeploy(plan.p)}
+                                    className="w-full py-4 rounded-xl font-black uppercase tracking-widest bg-[#00D1FF] text-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(0,209,255,0.2)]"
                                 >
                                     Deploy Command
                                 </button>
@@ -214,7 +217,7 @@ export default function LandingPage() {
                     <p className="surgical-label">© 2026 BRAND OS diagnostic unit. All logic systems nominal.</p>
                     <div className="flex gap-6">
                         <button className="surgical-label hover:text-white transition-colors">Terminal</button>
-                        <button className="surgical-label hover:text-white transition-colors">Documentation</button>
+                        <Link href="/faq" className="surgical-label hover:text-white transition-colors">Documentation</Link>
                         <button className="surgical-label hover:text-white transition-colors">Security</button>
                     </div>
                 </div>
