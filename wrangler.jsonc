@@ -14,7 +14,7 @@
     {
       "binding": "DB",
       "database_name": "brand-os-db",
-      "database_id": "REPLACE_WITH_YOUR_D1_ID"
+      "database_id": "de2b49f6-45e3-4dbf-b991-d08f96affb9e"
     }
   ],
   "services": [
