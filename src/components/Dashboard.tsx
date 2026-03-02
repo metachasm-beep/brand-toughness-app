@@ -5,9 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Globe, Loader2, Play, Activity, Users, Zap, Lock, Share, FileDown, EyeOff, CheckCircle, Shield
 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import MetricCard from '@/components/MetricCard';
 import LoadingBar from '@/components/LoadingBar';
-import DiagnosticOrbit from '@/components/DiagnosticOrbit';
+
+const DiagnosticOrbit = dynamic(() => import('@/components/DiagnosticOrbit'), {
+    ssr: false,
+    loading: () => <div className="h-[400px] flex items-center justify-center text-white/10 uppercase font-black tracking-widest text-xs">Initializing Core…</div>
+});
 
 // ─── Paywall modal ───────────────────────────────────────────────────────────
 function PaywallModal({ onClose }: { onClose: () => void }) {

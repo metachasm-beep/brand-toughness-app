@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "prisma generate && export NODE_OPTIONS=--max-old-space-size=4096 && opennextjs-cloudflare build",
+    "build": "export NODE_OPTIONS=--max-old-space-size=4096 && prisma generate && opennextjs-cloudflare build",
     "dev": "next dev",
     "start": "next start",
     "lint": "eslint",
@@ -17,8 +17,6 @@
     "@opennextjs/cloudflare": "^1.16.3",
     "@prisma/adapter-d1": "^6.2.1",
     "@prisma/client": "^6.2.1",
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.5.0",
     "axios": "^1.13.5",
     "canvas-confetti": "^1.9.4",
     "cheerio": "^1.2.0",
@@ -34,7 +32,6 @@
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.2",
     "tailwind-merge": "^3.5.0",
-    "three": "^0.183.1",
     "uuid": "^13.0.0",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
@@ -46,7 +43,6 @@
     "@types/axios": "^0.9.36",
     "@types/cheerio": "^0.22.35",
     "@types/node": "^20",
-    "@types/pg": "^8.18.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
