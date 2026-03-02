@@ -9,9 +9,11 @@ const nextConfig: NextConfig = {
   },
   // Optimization to reduce memory usage during build on Cloudflare
   productionBrowserSourceMaps: false,
-  // Ensure that the build doesn't fetch telemetry or extra data
+  // Significant memory reduction for build environments
   experimental: {
-    // This helps in some Next.js 15 Cloudflare edge cases
+    // Disable multi-threading to avoid build worker crashes on resource-constrained CI
+    workerThreads: false,
+    cpus: 1,
     serverActions: {
       bodySizeLimit: '2mb',
     },
