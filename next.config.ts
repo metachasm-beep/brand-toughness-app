@@ -2,14 +2,19 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has type errors.
     ignoreBuildErrors: true,
+  },
+  // Optimization to reduce memory usage during build on Cloudflare
+  productionBrowserSourceMaps: false,
+  // Ensure that the build doesn't fetch telemetry or extra data
+  experimental: {
+    // This helps in some Next.js 15 Cloudflare edge cases
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
 };
 

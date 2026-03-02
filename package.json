@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "prisma generate && opennextjs-cloudflare build",
+    "build": "prisma generate && export NODE_OPTIONS=--max-old-space-size=4096 && opennextjs-cloudflare build",
     "dev": "next dev",
     "start": "next start",
     "lint": "eslint",
