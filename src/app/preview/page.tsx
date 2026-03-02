@@ -79,6 +79,25 @@ const categories = [
             { name: "Page Depth from Root", d: "Number of clicks required to reach content from the home page." },
             { name: "Broken Link Percentage", d: "Frequency of 404 errors during a full crawl of the site." }
         ]
+    },
+    {
+        name: "Brand Clarity",
+        icon: Zap,
+        color: "#FF3D57",
+        metrics: [
+            { name: "Headline Narrative Strength", d: "AI analysis of how quickly the primary headline communicates the core value proposition." },
+            { name: "CTA Visual Saliency", d: "Heatmap simulation of how prominent call-to-action buttons are relative to other page elements." },
+            { name: "Information Density Ratio", d: "Mathematical balance between whitespace and cognitive load in the layout." },
+            { name: "Tone of Voice Consistency", d: "Linguistic analysis of brand personality alignment across different page sections." },
+            { name: "Social Proof Saturation", d: "Density and placement logic of testimonials, case studies, and partner logos." },
+            { name: "Visual Hierarchy Integrity", d: "Scanning for scanning-pattern (F-pattern or Z-pattern) compatibility." },
+            { name: "Value Prop Scannability", d: "Time-to-comprehension for key benefits during a 3-second rapid scroll." },
+            { name: "Hero-Section Friction Score", d: "Detection of competing messages or 'noise' in the primary viewport." },
+            { name: "Micro-copy Clarity", d: "Utility assessment of labels, placeholders, and error messages." },
+            { name: "Conversion Path Logic", d: "Number of cognitive steps required to complete a primary goal." },
+            { name: "Typography Legibility Index", d: "Contrast and sizing analysis for optimal reading across all vision types." },
+            { name: "Brand Asset Unity", d: "Verification of logo, color, and font usage against design system tokens." }
+        ]
     }
 ];
 
