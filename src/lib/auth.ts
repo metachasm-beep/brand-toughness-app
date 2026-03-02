@@ -9,7 +9,7 @@ const hasGoogleCreds =
     process.env.GOOGLE_CLIENT_SECRET !== 'YOUR_GOOGLE_CLIENT_SECRET';
 
 export const authOptions: NextAuthOptions = {
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || 'e43f9a72b8d0c6f1a9b2d4e7f8c0a3b5',
     session: {
         strategy: 'jwt',
     },
