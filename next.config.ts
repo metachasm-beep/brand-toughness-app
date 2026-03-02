@@ -9,9 +9,11 @@ const nextConfig: NextConfig = {
   },
   productionBrowserSourceMaps: false,
   // Fix for "Internal Error" - give Next more time to generate static pages if they are slow
-  // Increased to allow it to pass even if it's slow.
-  staticPageGenerationTimeout: 1200,
+  staticPageGenerationTimeout: 1500,
   experimental: {
+    // Aggressive memory saving for Cloudflare
+    workerThreads: false,
+    cpus: 1,
     serverActions: {
       bodySizeLimit: '1mb',
     },

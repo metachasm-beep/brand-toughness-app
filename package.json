@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "prisma generate && opennextjs-cloudflare build",
+    "build": "prisma generate && export NODE_OPTIONS=--max-old-space-size=4096 && opennextjs-cloudflare build",
     "dev": "next dev",
     "start": "next start",
     "lint": "eslint",
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@opennextjs/cloudflare": "^1.17.1",
+    "@opennextjs/cloudflare": "^1.16.3",
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^6.19.2",
     "@prisma/pg-worker": "^6.9.0",
