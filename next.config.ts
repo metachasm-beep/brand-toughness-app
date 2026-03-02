@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   productionBrowserSourceMaps: false,
+  output: 'standalone',
   // Fix for "Internal Error" - give Next more time to generate static pages if they are slow
   staticPageGenerationTimeout: 1500,
   experimental: {

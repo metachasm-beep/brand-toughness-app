@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Globe, Loader2, Play, Activity, Users, Zap, Lock, Share, FileDown, EyeOff, CheckCircle, Shield
+    Globe, Loader2, Play, Activity, Users, Zap, Lock, Share, FileDown, EyeOff, CheckCircle, Shield,
+    TrendingUp, BarChart3, AlertCircle, RefreshCcw
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import MetricCard from '@/components/MetricCard';
@@ -176,11 +178,19 @@ export default function Dashboard() {
                         BRAND OS<br />DIAGNOSTIC
                     </h1>
                     <p className="text-lg text-white/40 font-medium max-w-xl">
-                        Spatial monitoring interface for brand resilience. Initialize a deep-scan to monitor telemetry over 100+ diagnostic nodes.
+                        Strategic monitoring interface for brand resilience. Initialize a <span className="text-[#00D1FF]">Brand OS Scan™</span> to monitor telemetry across diagnostic nodes.
                     </p>
                 </div>
 
                 <div className="w-full lg:w-auto flex flex-col items-end gap-5">
+                    <div className="flex gap-4 mb-2">
+                        <button className="surgical-label hover:text-white transition-all flex items-center gap-2">
+                            <RefreshCcw size={10} /> Rescan Last Domain
+                        </button>
+                        <Link href="/history" className="surgical-label hover:text-white transition-all flex items-center gap-2">
+                            <BarChart3 size={10} /> View History
+                        </Link>
+                    </div>
                     <form
                         onSubmit={handleAudit}
                         className="flex bg-white/[0.04] border border-white/10 rounded-[32px] p-2 pl-7 hover:bg-white/[0.06] focus-within:bg-white/[0.08] focus-within:border-white/20 transition-all shadow-2xl w-full lg:w-[500px]"
@@ -220,16 +230,28 @@ export default function Dashboard() {
                     <DiagnosticOrbit scores={scoreValues} overallScore={aggregateScore} />
                     <div className="absolute bottom-10 flex gap-4">
                         <button onClick={handleDownloadPDF} disabled={!result} className="apple-button-outline flex items-center gap-2 disabled:opacity-30">
-                            {pdfUnlocked ? <><CheckCircle size={16} /><span>PDF Ready</span></> : <><Lock size={16} /><span>Acquire Analysis</span></>}
+                            {pdfUnlocked ? <><CheckCircle size={16} /><span>PDF Ready</span></> : <><Lock size={16} /><span>Unlock Executive PDF</span></>}
                         </button>
-                        <button className="apple-button-outline flex items-center gap-2">
-                            <Share size={16} /><span>Protocol Share</span>
+                        <button onClick={() => setShowPaywall(true)} className="apple-button-outline flex items-center gap-2">
+                            <Users size={16} /><span>Compare Competitors</span>
                         </button>
                     </div>
                 </div>
 
                 <div className="space-y-6">
                     <MetricCard title="Market Presence" value={result ? result.scores.marketPresence.toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
+                    <button onClick={() => setShowPaywall(true)} className="w-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all text-left flex items-center justify-between group">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-[#00D1FF]/10 flex items-center justify-center">
+                                <TrendingUp size={18} className="text-[#00D1FF]" />
+                            </div>
+                            <div>
+                                <div className="text-white font-bold text-sm">View Score Timeline</div>
+                                <div className="text-[10px] text-white/30 uppercase font-black">Retention Data</div>
+                            </div>
+                        </div>
+                        <Lock size={14} className="text-white/20 group-hover:text-[#00D1FF] transition-colors" />
+                    </button>
                     <MetricCard title="Technical Health" value={result ? result.scores.technicalHealth.toFixed(1) : '--'} trend={result ? "+1.5%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Users} />
                     <MetricCard title="Security Profile" value={result ? result.scores.security.toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
                     <MetricCard title="Innovation Rate" value={result ? result.scores.innovation.toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />

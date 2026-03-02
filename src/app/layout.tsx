@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import './globals.css';
 import { ReactNode } from 'react';
 import Providers from '@/components/Providers';
@@ -6,8 +8,6 @@ import Header from '@/components/Header';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
-
-export const dynamic = "force-dynamic";
 
 // Force-dynamic build optimization for Cloudflare
 export const metadata = {

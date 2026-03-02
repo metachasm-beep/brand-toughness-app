@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import {
     Activity, Shield, Zap, Globe, ArrowRight, CheckCircle,
-    TrendingUp, BarChart3, Lock, Users, MousePointer2, AlertCircle, RefreshCcw, Search
+    TrendingUp, BarChart3, Lock, Users, MousePointer2, AlertCircle, RefreshCcw, Search, FileDown
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -31,6 +31,9 @@ export default function LandingPage() {
                         <Link href="/faq" className="surgical-label hover:text-white transition-colors flex items-center gap-2">
                             FAQ <div className="w-1.5 h-1.5 rounded-full bg-[#00D1FF] animate-pulse" />
                         </Link>
+                        <button onClick={login} className="apple-button-outline !px-6 !py-2 text-[10px] font-black uppercase tracking-widest hover:bg-[#00D1FF] hover:text-black transition-all">
+                            Sign In
+                        </button>
                     </div>
                 </div>
             </nav>
@@ -61,9 +64,9 @@ export default function LandingPage() {
                             >
                                 Get Your Brand Score <ArrowRight size={20} />
                             </button>
-                            <Link href="/preview" className="apple-button-outline inline-flex items-center justify-center">
-                                Intelligence Preview
-                            </Link>
+                            <button onClick={login} className="apple-button-outline inline-flex items-center justify-center">
+                                View Sample Report
+                            </button>
                         </div>
                         <p className="surgical-label text-white/20 uppercase">TRUSTED BY MODERN BRAND TEAMS & FOUNDERS</p>
                     </motion.div>
@@ -179,7 +182,10 @@ export default function LandingPage() {
                                     <p.i size={24} style={{ color: p.c }} />
                                 </div>
                                 <h4 className="text-xl font-bold tracking-tight text-white mb-4">{p.t}</h4>
-                                <p className="text-white/30 text-sm font-medium leading-relaxed">{p.d}</p>
+                                <p className="text-white/30 text-sm font-medium leading-relaxed mb-6">{p.d}</p>
+                                <button className="text-[10px] font-black uppercase tracking-widest text-[#00D1FF] flex items-center gap-2 group/btn">
+                                    Read Methodology <ArrowRight size={10} className="group-hover/btn:translate-x-1 transition-transform" />
+                                </button>
                             </motion.div>
                         ))}
                     </div>
