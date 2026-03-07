@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Globe, Loader2, Play, Activity, Users, Zap, Lock, Share, FileDown, EyeOff, CheckCircle, Shield,
-    TrendingUp, BarChart3, AlertCircle, RefreshCcw, Bell, Megaphone, Flag
+    TrendingUp, BarChart3, AlertCircle, RefreshCcw, Bell, Megaphone, Flag, ArrowRight
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import MetricCard from '@/components/MetricCard';
 import LoadingBar from '@/components/LoadingBar';
+import { useGuestAudit } from '@/context/GuestAuditContext';
 
 const DiagnosticOrbit = dynamic(() => import('@/components/DiagnosticOrbit'), {
     ssr: false,
@@ -99,13 +100,22 @@ export default function Dashboard() {
     const [pdfUnlocked, setPdfUnlocked] = useState(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+    const { guestAuditResult, setGuestAuditResult } = useGuestAudit();
+
     useEffect(() => {
+        // If we have a guest audit result but no local result, load it
+        if (guestAuditResult && !result) {
+            setResult(guestAuditResult);
+            setUrl(guestAuditResult.url || '');
+            setProgress(100);
+        }
+
         const params = new URLSearchParams(window.location.search);
         if (params.get('payment') === 'success') {
             setPdfUnlocked(true);
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-    }, []);
+    }, [guestAuditResult]);
 
     useEffect(() => {
         if (generating) {

@@ -1,15 +1,59 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import {
     Activity, Shield, Zap, Globe, ArrowRight, CheckCircle,
-    TrendingUp, BarChart3, Lock, Users, MousePointer2, AlertCircle, RefreshCcw, Search, FileDown
+    TrendingUp, BarChart3, Lock, Users, MousePointer2, AlertCircle, RefreshCcw, Search, FileDown,
+    Loader2
 } from 'lucide-react';
+import { useGuestAudit } from '@/context/GuestAuditContext';
+import LoadingBar from '@/components/LoadingBar';
 
 export default function LandingPage() {
+    const { setGuestAuditResult } = useGuestAudit();
+    const [url, setUrl] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [progress, setProgress] = useState(0);
+
     const login = () => signIn('google');
+
+    const handleAudit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!url) return;
+        setLoading(true);
+        setError('');
+        setProgress(5);
+
+        const interval = setInterval(() => {
+            setProgress(prev => prev < 90 ? prev + (90 / 60) : prev);
+        }, 500);
+
+        try {
+            const response = await fetch('/api/audit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Audit failed');
+            
+            clearInterval(interval);
+            setProgress(100);
+            
+            // Artificial delay for "Intelligence Computation" feel
+            setTimeout(() => {
+                setGuestAuditResult(data);
+            }, 800);
+        } catch (err: any) {
+            clearInterval(interval);
+            setError(err.message);
+            setLoading(false);
+        }
+    };
 
     const handleDeploy = (price: string) => {
         window.location.href = `https://merchants.phonepe.com/pay/brandos?amount=${price}&currency=USD`;
@@ -57,6 +101,44 @@ export default function LandingPage() {
                         <p className="text-xl text-white/40 font-medium max-w-xl leading-relaxed">
                             BrandOS™ measures what they see. We analyze performance, security, narrative clarity, and search authority to compute your <span className="text-[#00D1FF]">Brand Toughness Score™</span>.
                         </p>
+
+                        <div className="pt-4 max-w-lg">
+                            <form onSubmit={handleAudit} className="relative group">
+                                <div className="absolute inset-x-0 -bottom-2 bg-[#00D1FF]/20 blur-xl h-10 opacity-0 group-focus-within:opacity-100 transition-all" />
+                                <div className="relative flex flex-col sm:flex-row gap-4 p-2 bg-white/5 border border-white/10 rounded-[24px] focus-within:border-[#00D1FF]/40 transition-all backdrop-blur-3xl">
+                                    <input
+                                        type="text"
+                                        placeholder="ENTER BRAND DOMAIN (E.G. NIKE.COM)"
+                                        value={url}
+                                        onChange={(e) => setUrl(e.target.value)}
+                                        className="flex-1 bg-transparent px-6 py-4 outline-none text-[10px] font-black tracking-widest uppercase placeholder:text-white/20 text-white"
+                                        disabled={loading}
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="apple-button-primary !py-4 !px-8 flex items-center justify-center gap-3"
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" size={18} /> : <Activity size={18} />}
+                                        <span className="whitespace-nowrap">START SCAN</span>
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            {loading && (
+                                <div className="mt-6 px-2">
+                                    <LoadingBar progress={progress} message="Initializing Diagnostic Orbit..." />
+                                </div>
+                            )}
+
+                            {error && (
+                                <div className="mt-4 flex items-center gap-2 text-[#FF3D57] px-4 py-2 bg-[#FF3D57]/10 border border-[#FF3D57]/20 rounded-xl">
+                                    <AlertCircle size={14} />
+                                    <span className="text-[10px] font-bold uppercase tracking-tight">{error}</span>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="flex flex-col sm:flex-row gap-5 pt-4">
                             <button
                                 onClick={login}
