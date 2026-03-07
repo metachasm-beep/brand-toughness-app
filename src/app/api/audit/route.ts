@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     let url = '';
     try {
         const session = await getServerSession(authOptions);
-        const userEmail = session?.user?.email || 'guest@turtlelabs.co';
+        const userEmail = session?.user?.email || null;
 
         const body = await request.json();
         url = body.url ?? '';
@@ -80,8 +80,15 @@ export async function POST(request: Request) {
         });
 
     } catch (err: any) {
-        console.error('[/api/audit] Error:', err);
-        return NextResponse.json({ error: err.message ?? 'Unknown error' }, { status: 500 });
+        console.error('[/api/audit] FULL ERROR TRACE:', err);
+        console.error('[/api/audit] Error Name:', err.name);
+        console.error('[/api/audit] Error Message:', err.message);
+        if (err.code) console.error('[/api/audit] Error Code:', err.code);
+        
+        return NextResponse.json({ 
+            error: err.message ?? 'Unknown diagnostic error',
+            details: err.code || null
+        }, { status: 500 });
     }
 }
 

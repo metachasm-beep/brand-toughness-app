@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const prisma = await getPrisma();
     try {
         const session = await getServerSession(authOptions);
-        const userEmail = session?.user?.email;
+        const userEmail = session?.user?.email || null;
 
         const { url } = await request.json();
         if (!url) {

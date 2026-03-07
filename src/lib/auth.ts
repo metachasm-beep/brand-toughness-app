@@ -56,6 +56,21 @@ export const authOptions: NextAuthOptions = {
             }
             return token;
         },
+        async signIn({ user }) {
+            if (!user.email) return true;
+            try {
+                const { getPrisma } = await import('@/lib/db');
+                const prisma = await getPrisma();
+                await prisma.user.upsert({
+                    where: { email: user.email },
+                    update: { name: user.name, image: user.image },
+                    create: { email: user.email, name: user.name, image: user.image, tier: 'FREE' }
+                });
+            } catch (err) {
+                console.error('Error upserting user on signin:', err);
+            }
+            return true;
+        }
     },
     pages: {
         signIn: '/auth/signin',
