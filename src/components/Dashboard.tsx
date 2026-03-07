@@ -142,12 +142,22 @@ export default function Dashboard() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url }),
             });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Audit failed');
+            
+            let data;
+            const text = await response.text();
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch (e) {
+                console.error("JSON parse error:", text);
+                throw new Error(`Technical failure (HTTP ${response.status}). The intelligence node may be overloaded.`);
+            }
+
+            if (!response.ok) throw new Error(data.error || `Intelligence fetch failed (HTTP ${response.status})`);
+            
             setResult(data);
             setProgress(100);
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || 'Diagnostic protocol failed. Check your connection or the URL.');
         } finally {
             setLoading(false);
             setGenerating(false);

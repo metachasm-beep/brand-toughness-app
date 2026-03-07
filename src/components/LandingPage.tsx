@@ -38,8 +38,20 @@ export default function LandingPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url }),
             });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Audit failed');
+
+            let data;
+            const text = await response.text();
+            
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch (e) {
+                console.error("JSON parse error:", text);
+                throw new Error(`Server returned invalid data (HTTP ${response.status})`);
+            }
+
+            if (!response.ok) {
+                throw new Error(data.error || `Diagnostic failed (HTTP ${response.status})`);
+            }
             
             clearInterval(interval);
             setProgress(100);
@@ -50,7 +62,7 @@ export default function LandingPage() {
             }, 800);
         } catch (err: any) {
             clearInterval(interval);
-            setError(err.message);
+            setError(err.message || 'The diagnostic node timed out. Please try again.');
             setLoading(false);
         }
     };

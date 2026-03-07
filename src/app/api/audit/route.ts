@@ -34,31 +34,36 @@ export async function POST(request: Request) {
         auditData.meta.aiSummary = aiSummary;
 
         // 3. Persist to DB for SaaS History
-        const savedAudit = await prisma.audit.create({
-            data: {
-                url: normalisedUrl,
-                uid: auditData.uid,
-                status: 'COMPLETED',
-                userEmail: userEmail,
-                overallScore: auditData.overallScore,
-                categories: auditData.categories as any,
-                meta: auditData.meta as any,
-                findings: {
-                    create: auditData.findings.map(f => ({
-                        code: f.code,
-                        title: f.title,
-                        category: f.category,
-                        severity: f.severity,
-                        confidence: f.confidence,
-                        recommendation: f.recommendation,
-                        effort: f.effort,
-                        impact: f.impact,
-                        evidence: f.evidence || null
-                    }))
-                }
-            },
-            include: { findings: true }
-        });
+        let savedAudit: any = null;
+        try {
+            savedAudit = await prisma.audit.create({
+                data: {
+                    url: normalisedUrl,
+                    uid: auditData.uid,
+                    status: 'COMPLETED',
+                    userEmail: userEmail,
+                    overallScore: auditData.overallScore,
+                    categories: auditData.categories as any,
+                    meta: auditData.meta as any,
+                    findings: {
+                        create: auditData.findings.map(f => ({
+                            code: f.code,
+                            title: f.title,
+                            category: f.category,
+                            severity: f.severity,
+                            confidence: f.confidence,
+                            recommendation: f.recommendation,
+                            effort: f.effort,
+                            impact: f.impact,
+                            evidence: f.evidence || null
+                        }))
+                    }
+                },
+                include: { findings: true }
+            });
+        } catch (dbErr: any) {
+            console.error('[/api/audit] DB PERSISTENCE FAILED (Continuing...):', dbErr.message);
+        }
 
         // Map back to UI format
         const scores = {
@@ -74,7 +79,7 @@ export async function POST(request: Request) {
             scores,
             aggregate: (auditData.overallScore / 10).toFixed(1), // UI expects 0-10 scale
             rawData: auditData.meta,
-            findings: savedAudit.findings,
+            findings: savedAudit?.findings || auditData.findings,
             uid: auditData.uid,
             aiSummary
         });
