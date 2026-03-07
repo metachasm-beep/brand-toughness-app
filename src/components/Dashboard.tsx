@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Globe, Loader2, Play, Activity, Users, Zap, Lock, Share, FileDown, EyeOff, CheckCircle, Shield,
-    TrendingUp, BarChart3, AlertCircle, RefreshCcw
+    TrendingUp, BarChart3, AlertCircle, RefreshCcw, Bell, Megaphone, Flag
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import MetricCard from '@/components/MetricCard';
@@ -169,6 +169,25 @@ export default function Dashboard() {
 
     return (
         <div className="space-y-16 max-w-[1400px] mx-auto pt-10 pb-24">
+            
+            {/* Top Command Center Selector */}
+            <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                <div className="flex items-center gap-4">
+                    <div className="text-sm font-bold text-white/40">Active Brand:</div>
+                    <button className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors cursor-pointer">
+                        <span className="font-display font-black tracking-tight text-white">Turtle Labs</span>
+                        <span className="text-[10px] text-[#00D1FF] ml-2">▼</span>
+                    </button>
+                    <button className="text-xs text-white/30 hover:text-white transition-colors ml-2">+ Add Brand</button>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button className="relative p-2 text-white/50 hover:text-white transition-colors">
+                        <Bell size={20} />
+                        <span className="absolute top-1 right-1 w-2 h-2 bg-[#FF3D57] rounded-full border border-[#0B0F14]"></span>
+                    </button>
+                </div>
+            </div>
+
             <section className="flex flex-col lg:flex-row justify-between items-end gap-10 page-transition">
                 <div className="flex-1 space-y-4">
                     <div className="flex items-center gap-3 text-white/40 text-sm font-bold uppercase tracking-[0.4em]">
@@ -257,6 +276,96 @@ export default function Dashboard() {
                     <MetricCard title="Innovation Rate" value={result ? result.scores.innovation.toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
                 </div>
             </div>
+
+            {/* Dash.txt integration: Reputation & Competitors */}
+            <AnimatePresence>
+                {result && (
+                    <motion.section className="grid grid-cols-1 lg:grid-cols-2 gap-10" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                        {/* Reputation Monitor */}
+                        <div className="apple-card p-10 space-y-8">
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <h4 className="text-3xl font-extrabold font-display tracking-tight text-white">Reputation Monitor</h4>
+                                    <p className="surgical-label mt-1">Sentiment & Mentions Tracker</p>
+                                </div>
+                                <Activity size={24} className="text-[#00D1FF]" />
+                            </div>
+                            
+                            <div className="flex items-center gap-6">
+                                <div className="flex-1 flex px-5 py-4 bg-[#00E28A]/10 border border-[#00E28A]/20 rounded-2xl items-center gap-3">
+                                    <CheckCircle size={18} className="text-[#00E28A]" />
+                                    <span className="text-sm font-black text-[#00E28A]">18 Positive Mentions</span>
+                                </div>
+                                <div className="flex-1 flex px-5 py-4 bg-[#FF3D57]/10 border border-[#FF3D57]/20 rounded-2xl items-center gap-3">
+                                    <AlertCircle size={18} className="text-[#FF3D57]" />
+                                    <span className="text-sm font-black text-[#FF3D57]">2 Risk Signals</span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h5 className="surgical-label text-[#FF3D57]">Critical Alerts</h5>
+                                <div className="flex items-start gap-4 p-4 bg-white/5 border border-white/5 rounded-xl">
+                                    <Megaphone size={16} className="text-[#FF3D57] mt-1 shrink-0" />
+                                    <div>
+                                        <div className="text-sm font-bold text-white">Negative Social Thread Detected</div>
+                                        <div className="text-[10px] text-white/40 uppercase mt-1">Reddit /r/Entrepreneur · 3 hours ago</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-4 p-4 bg-white/5 border border-white/5 rounded-xl">
+                                    <Flag size={16} className="text-[#00D1FF] mt-1 shrink-0" />
+                                    <div>
+                                        <div className="text-sm font-bold text-white">New Press Mention (Positive)</div>
+                                        <div className="text-[10px] text-white/40 uppercase mt-1">Industry Blog · 8 hours ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Competitor Radar & Growth Actions */}
+                        <div className="apple-card p-10 space-y-8">
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <h4 className="text-3xl font-extrabold font-display tracking-tight text-white">Competitor Radar</h4>
+                                    <p className="surgical-label mt-1">Positioning & Growth Actions</p>
+                                </div>
+                                <Users size={24} className="text-[#7B5CFF]" />
+                            </div>
+
+                            <div className="p-6 bg-white/[0.03] rounded-2xl border border-white/5 flex flex-col justify-center">
+                                <div className="flex justify-between items-center mb-4">
+                                    <span className="text-sm font-bold font-display text-white">Your Brand</span>
+                                    <span className="text-sm font-black text-[#00D1FF]">{result.aggregate.toFixed(1)}</span>
+                                </div>
+                                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mb-6">
+                                    <div className="h-full bg-[#00D1FF]" style={{ width: `${result.aggregate}%` }}></div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center opacity-60">
+                                        <span className="text-xs font-semibold text-white">Competitor A (Industry Leader)</span>
+                                        <span className="text-xs font-black text-white">83.0</span>
+                                    </div>
+                                    <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                                        <div className="h-full bg-white/40" style={{ width: '83%' }}></div>
+                                    </div>
+
+                                    <div className="flex justify-between items-center opacity-40">
+                                        <span className="text-xs font-semibold text-white">Competitor B (Rising)</span>
+                                        <span className="text-xs font-black text-white">65.2</span>
+                                    </div>
+                                    <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                                        <div className="h-full bg-white/20" style={{ width: '65.2%' }}></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onClick={() => setShowPaywall(true)} className="w-full py-4 bg-[#7B5CFF]/10 text-[#7B5CFF] font-black uppercase tracking-widest text-xs rounded-xl border border-[#7B5CFF]/30 hover:bg-[#7B5CFF]/20 transition-all flex items-center justify-center gap-2">
+                                <Lock size={14} /> Add Immediate Rivals
+                            </button>
+                        </div>
+                    </motion.section>
+                )}
+            </AnimatePresence>
 
             <AnimatePresence>
                 {ai && (
