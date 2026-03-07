@@ -480,7 +480,7 @@ export default function Dashboard() {
 
                             <div className="relative space-y-6">
                                 <h5 className="surgical-label !text-white/20">Diagnostic Shards</h5>
-                                <div className={`space-y-2 transition-all duration-700 ${!pdfUnlocked ? 'blur-md select-none pointer-events-none opacity-40' : ''}`}>
+                                <div className="space-y-2">
                                     {result.findings ? result.findings.map((f: any) => (
                                         <div key={f.code} className="flex justify-between items-center py-3 border-b border-white/[0.03] group transition-colors">
                                             <div className="flex flex-col">
@@ -503,20 +503,6 @@ export default function Dashboard() {
                                     )}
                                 </div>
 
-                                {!pdfUnlocked && (
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 z-20">
-                                        <div className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl">
-                                            <EyeOff size={24} className="text-white/40" />
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-white/80 text-sm font-black uppercase tracking-widest mb-1">Telemetry Locked</p>
-                                            <p className="text-white/30 text-xs font-medium max-w-[200px] mx-auto">Requires L3 diagnostic authorization to view shards.</p>
-                                        </div>
-                                        <button onClick={() => setShowPaywall(true)} className="apple-button-primary flex items-center gap-2 text-xs px-6 py-3 cursor-pointer">
-                                            <Lock size={12} /> Acquire L3 License
-                                        </button>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </motion.section>

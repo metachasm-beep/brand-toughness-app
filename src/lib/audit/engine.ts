@@ -235,11 +235,10 @@ export class AuditEngine {
         // PageSpeed Insights API adds ~80-100 metrics depending on the site.
         // By merging them into our findings, we easily surpass 100 total metrics.
         const key = process.env.PAGESPEED_API_KEY;
-        if (!key) return; // Skip if no key
 
         try {
             // Query Performance, Accessibility, SEO, Best-Practices categories
-            const psiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(this.url)}&category=performance&category=accessibility&category=seo&category=best-practices&key=${key}`;
+            const psiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(this.url)}&category=performance&category=accessibility&category=seo&category=best-practices${key ? `&key=${key}` : ''}`;
             const response: any = await axios.get(psiUrl, { timeout: 45000 });
 
             const audits = response.data?.lighthouseResult?.audits || {};
@@ -262,10 +261,14 @@ export class AuditEngine {
                     else if (audit.score < 0.6) severity = 'HIGH';
                     else if (audit.score < 0.9) severity = 'MEDIUM';
 
+                    const lighthouseCategory = (audit.id.includes('seo') || audit.id.includes('meta')) ? 'SEO' :
+                                             (audit.id.includes('aria') || audit.id.includes('accessibility')) ? 'Accessibility' :
+                                             (audit.id.includes('csp') || audit.id.includes('https') || audit.id.includes('security')) ? 'Security' : 'Performance';
+
                     this.addFinding({
                         code: `PSI_${audit.id.toUpperCase()}`,
                         title: audit.title,
-                        category: 'Performance', // Group under performance broadly or try mapping
+                        category: lighthouseCategory,
                         severity: severity,
                         confidence: 0.95,
                         recommendation: audit.description || 'Review the issue.',
