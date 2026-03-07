@@ -183,19 +183,22 @@ export default function LandingPage() {
                                 </div>
                             </div>
                         </div>
-
                         <div className="space-y-6">
                             {[
-                                { t: 'Trust Leakage', d: 'When your site feels amateur, 64% of high-ticket users bounce instantly.', v: '-$24k' },
-                                { t: 'Conversion Friction', d: 'Technical latency and unclear CTAs reduce lead quality by 22%.', v: '-$18k' },
-                                { t: 'Search Visibility Risk', d: 'Weak authority metrics bury you under noisier, lower-quality rivals.', v: '-$42k' },
+                                { t: 'High Bounce Risk', d: 'Poor performance integrity quietly kills conversion before you even know it.', v: '-$14k' },
+                                { t: 'Trust Leakage', d: 'Inconsistent brand signals confuse buyers and dilute your authority.', v: '-$24k' },
+                                { t: 'Conversion Friction', d: 'Technical friction and unclear CTAs reduce lead quality by 22%.', v: '-$18k' },
+                                { t: 'Search Visibility Risk', d: 'Missing discovery signals bury you under noisier, lower-quality rivals.', v: '-$42k' },
                             ].map((item, i) => (
                                 <div key={i} className="flex justify-between items-center p-6 bg-[#0B0F14] border border-white/5 rounded-2xl group hover:border-[#FF3D57]/30 transition-all">
-                                    <div>
-                                        <div className="text-sm font-bold text-white mb-1">{item.t}</div>
-                                        <div className="text-[10px] text-white/30 font-medium max-w-[250px]">{item.d}</div>
+                                    <div className="flex gap-4">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#FF3D57] mt-1.5 shrink-0" />
+                                        <div>
+                                            <div className="text-sm font-bold text-white mb-1 uppercase tracking-tight">{item.t}</div>
+                                            <div className="text-[10px] text-white/30 font-medium max-w-[250px] leading-relaxed">{item.d}</div>
+                                        </div>
                                     </div>
-                                    <div className="text-xl font-black font-display text-[#FF3D57]">{item.v}</div>
+                                    <div className="text-xl font-black font-display text-[#FF3D57] tabular-nums">{item.v}</div>
                                 </div>
                             ))}
                         </div>
@@ -213,12 +216,12 @@ export default function LandingPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
-                            { t: 'Performance Integrity', d: 'LCP, CLS, and TBT metrics monitored for technical stability.', i: Activity, c: '#00D1FF' },
-                            { t: 'Trust & Security', d: 'Security headers, SSL integrity, and trust-signal saturation.', i: Shield, c: '#7B5CFF' },
-                            { t: 'Messaging Clarity', d: 'AI-powered narrative analysis for value-prop resonance.', i: Zap, c: '#FF3D57' },
-                            { t: 'Search Authority', d: 'Semantic weight, backlink integrity, and keyword cluster strength.', i: Globe, c: '#00E28A' },
-                            { t: 'Digital Hygiene', d: 'Robots.txt, Sitemap logic, and overall crawler accessibility.', i: FileDown, c: '#00D1FF' },
-                            { t: 'Market Position', d: 'Competitive benchmark analysis across 150 diagnostic nodes.', i: BarChart3, c: '#7B5CFF' },
+                            { t: 'Performance Integrity Score', d: 'LCP, CLS, and TBT metrics monitored for technical stability.', i: Activity, c: '#00D1FF' },
+                            { t: 'Trust & Authority Index', d: 'Security headers, SSL integrity, and trust-signal saturation.', i: Shield, c: '#7B5CFF' },
+                            { t: 'Brand Clarity Score', d: 'AI-powered narrative analysis for value-prop resonance.', i: Zap, c: '#FF3D57' },
+                            { t: 'Discovery Score', d: 'Semantic weight, backlink integrity, and keyword cluster strength.', i: Globe, c: '#00E28A' },
+                            { t: 'Technical Hygiene', d: 'Robots.txt, Sitemap logic, and overall crawler accessibility.', i: FileDown, c: '#00D1FF' },
+                            { t: 'Market Position Index', d: 'Competitive benchmark analysis across 150 diagnostic nodes.', i: BarChart3, c: '#7B5CFF' },
                         ].map((p, i) => (
                             <motion.div
                                 key={i}
