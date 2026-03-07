@@ -258,7 +258,8 @@ export default function Dashboard() {
                 </div>
 
                 <div className="space-y-6">
-                    <MetricCard title="Market Presence" value={result ? result.scores.marketPresence.toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
+                <div className="space-y-6">
+                    <MetricCard title="Performance Integrity" value={result ? result.scores.technicalHealth.toFixed(1) : '--'} trend={result ? "+1.5%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Users} />
                     <button onClick={() => setShowPaywall(true)} className="w-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all text-left flex items-center justify-between group">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-[#00D1FF]/10 flex items-center justify-center">
@@ -271,9 +272,10 @@ export default function Dashboard() {
                         </div>
                         <Lock size={14} className="text-white/20 group-hover:text-[#00D1FF] transition-colors" />
                     </button>
-                    <MetricCard title="Technical Health" value={result ? result.scores.technicalHealth.toFixed(1) : '--'} trend={result ? "+1.5%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Users} />
-                    <MetricCard title="Security Profile" value={result ? result.scores.security.toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
-                    <MetricCard title="Innovation Rate" value={result ? result.scores.innovation.toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
+                    <MetricCard title="Search Authority" value={result ? result.scores.marketPresence.toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
+                    <MetricCard title="Trust Architecture" value={result ? result.scores.security.toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
+                    <MetricCard title="Brand Clarity" value={result ? result.scores.innovation.toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
+                </div>
                 </div>
             </div>
 
@@ -455,12 +457,12 @@ export default function Dashboard() {
                                 <h5 className="surgical-label !text-white/20">Integrity Nodes</h5>
                                 <div className="grid grid-cols-2 gap-4">
                                     {[
-                                        { l: 'SEO Node', v: result.scores.marketPresence },
-                                        { l: 'Network Latency', v: result.scores.technicalHealth },
-                                        { l: 'Security Perimeter', v: result.scores.security },
-                                        { l: 'UX Interaction', v: result.scores.innovation },
-                                        { l: 'Accessibility Vector', v: result.scores.customerExperience },
-                                        { l: 'Semantic Weight', v: result.scores.contentQuality },
+                                        { l: 'Search Authority', v: result.scores.marketPresence },
+                                        { l: 'Performance Integrity', v: result.scores.technicalHealth },
+                                        { l: 'Trust Architecture', v: result.scores.security },
+                                        { l: 'Brand Clarity', v: result.scores.innovation },
+                                        { l: 'Customer Experience', v: result.scores.customerExperience },
+                                        { l: 'Narrative Weight', v: result.scores.contentQuality },
                                     ].map((n: { l: string, v: number }, i: number) => (
                                         <div key={i} className="bg-white/[0.03] border border-white/5 p-5 rounded-2xl">
                                             <div className="surgical-label text-[8px] mb-1">{n.l}</div>

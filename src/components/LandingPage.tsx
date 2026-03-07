@@ -52,10 +52,10 @@ export default function LandingPage() {
                             <span className="surgical-label !text-[#00D1FF]">Brand Intelligence Operating System</span>
                         </div>
                         <h1 className="text-7xl xl:text-8xl font-black font-display tracking-tighter leading-[0.85] text-white">
-                            KNOW IF YOUR BRAND <span className="text-gradient-blue">INSPIRES CONFIDENCE</span> OR LOSES TRUST.
+                            YOUR BRAND IS BEING <span className="text-gradient-blue">JUDGED IN 3 SECONDS.</span>
                         </h1>
                         <p className="text-xl text-white/40 font-medium max-w-xl leading-relaxed">
-                            BrandOS™ analyzes performance, security, messaging clarity, SEO, and trust signals — and converts them into a single <span className="text-[#00D1FF]">Brand Toughness Score™</span>.
+                            BrandOS™ measures what they see. We analyze performance, security, narrative clarity, and search authority to compute your <span className="text-[#00D1FF]">Brand Toughness Score™</span>.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-5 pt-4">
                             <button
@@ -156,6 +156,53 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* ── Revenue Leakage Section ────────────────────────────────────────── */}
+            <section className="py-20 px-10 relative overflow-hidden bg-[#FF3D57]/[0.02]">
+                <div className="max-w-7xl mx-auto border border-[#FF3D57]/10 rounded-[40px] p-12 lg:p-20 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FF3D57]/5 blur-[120px] -z-10" />
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        <div className="space-y-8">
+                            <div className="surgical-label !text-[#FF3D57]">Economic Impact Analysis</div>
+                            <h2 className="text-5xl font-black font-display tracking-tight leading-none uppercase">
+                                Revenue Leakage<br />Detection.
+                            </h2>
+                            <p className="text-lg text-white/40 font-medium leading-relaxed">
+                                Weak brands don't just lose trust; they lose money. Our simulator estimates the annual revenue lost to invisible conversion friction and trust gaps.
+                            </p>
+                            <div className="flex gap-4">
+                                <div className="p-6 bg-white/5 border border-white/5 rounded-2xl flex-1">
+                                    <div className="text-[10px] font-black uppercase text-[#FF3D57] mb-2">Estimated Leakage</div>
+                                    <div className="text-3xl font-black font-display text-white">$12k — $85k</div>
+                                    <div className="text-[8px] text-white/20 mt-2 font-bold uppercase">Per $1M Revenue</div>
+                                </div>
+                                <div className="p-6 bg-white/5 border border-white/5 rounded-2xl flex-1">
+                                    <div className="text-[10px] font-black uppercase text-[#00D1FF] mb-2">Recovery Potential</div>
+                                    <div className="text-3xl font-black font-display text-white">18.4%</div>
+                                    <div className="text-[8px] text-white/20 mt-2 font-bold uppercase">Optimized Growth</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            {[
+                                { t: 'Trust Leakage', d: 'When your site feels amateur, 64% of high-ticket users bounce instantly.', v: '-$24k' },
+                                { t: 'Conversion Friction', d: 'Technical latency and unclear CTAs reduce lead quality by 22%.', v: '-$18k' },
+                                { t: 'Search Visibility Risk', d: 'Weak authority metrics bury you under noisier, lower-quality rivals.', v: '-$42k' },
+                            ].map((item, i) => (
+                                <div key={i} className="flex justify-between items-center p-6 bg-[#0B0F14] border border-white/5 rounded-2xl group hover:border-[#FF3D57]/30 transition-all">
+                                    <div>
+                                        <div className="text-sm font-bold text-white mb-1">{item.t}</div>
+                                        <div className="text-[10px] text-white/30 font-medium max-w-[250px]">{item.d}</div>
+                                    </div>
+                                    <div className="text-xl font-black font-display text-[#FF3D57]">{item.v}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* ── Signals Section ─────────────────────────────────────────────── */}
             <section id="signals" className="py-32 px-10 relative bg-white/[0.01]">
                 <div className="max-w-7xl mx-auto space-y-20">
@@ -252,8 +299,8 @@ export default function LandingPage() {
                             <thead>
                                 <tr className="border-b border-white/10 bg-white/5">
                                     <th className="p-8 surgical-label">Dimension</th>
-                                    <th className="p-8 surgical-label text-white/30">SEO Tools</th>
-                                    <th className="p-8 surgical-label !text-[#00D1FF]">BrandOS</th>
+                                    <th className="p-8 surgical-label text-white/30">Lighthouse / SEO Tools</th>
+                                    <th className="p-8 surgical-label !text-[#00D1FF]">BrandOS Intelligence</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
