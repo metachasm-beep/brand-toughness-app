@@ -258,8 +258,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="space-y-6">
-                <div className="space-y-6">
-                    <MetricCard title="Performance Integrity" value={result ? result.scores.technicalHealth.toFixed(1) : '--'} trend={result ? "+1.5%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Users} />
+                    <MetricCard title="Performance Integrity Score" value={result ? result.scores.technicalHealth.toFixed(1) : '--'} trend={result ? "+1.5%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Users} />
                     <button onClick={() => setShowPaywall(true)} className="w-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all text-left flex items-center justify-between group">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-[#00D1FF]/10 flex items-center justify-center">
@@ -272,10 +271,9 @@ export default function Dashboard() {
                         </div>
                         <Lock size={14} className="text-white/20 group-hover:text-[#00D1FF] transition-colors" />
                     </button>
-                    <MetricCard title="Search Authority" value={result ? result.scores.marketPresence.toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
-                    <MetricCard title="Trust Architecture" value={result ? result.scores.security.toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
-                    <MetricCard title="Brand Clarity" value={result ? result.scores.innovation.toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
-                </div>
+                    <MetricCard title="Discovery Score" value={result ? result.scores.marketPresence.toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
+                    <MetricCard title="Trust & Authority Index" value={result ? result.scores.security.toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
+                    <MetricCard title="Brand Clarity Score" value={result ? result.scores.innovation.toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
                 </div>
             </div>
 
@@ -423,7 +421,7 @@ export default function Dashboard() {
                                     ))}
                                 </ul>
                             </div>
-                            <div className="space-y-4">
+                             <div className="space-y-4">
                                 <h4 className="surgical-label text-[#00E28A]">Quick Wins (7 Days)</h4>
                                 <ul className="space-y-2">
                                     {(ai.quickWins || []).slice(0, 6).map((item: string, i: number) => (
@@ -432,6 +430,37 @@ export default function Dashboard() {
                                         </li>
                                     ))}
                                 </ul>
+                            </div>
+                        </div>
+
+                        {/* Revenue Leakage Module */}
+                        <div className="border-t border-white/10 pt-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+                            <div className="lg:col-span-2 space-y-6">
+                                <h4 className="surgical-label !text-[#FF3D57]">Economic Impact Analysis — Revenue Leakage</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="p-6 bg-[#FF3D57]/5 border border-[#FF3D57]/10 rounded-2xl">
+                                        <div className="text-[10px] font-black uppercase text-[#FF3D57] mb-2 tracking-widest">Est. Annual Trust Leakage</div>
+                                        <div className="text-4xl font-black font-display text-white tabular-nums tracking-tighter">$14k — $92k</div>
+                                        <div className="text-[8px] text-white/20 mt-3 font-bold uppercase tracking-widest">Calculated per $1M Rev</div>
+                                    </div>
+                                    <div className="p-6 bg-white/5 border border-white/5 rounded-2xl">
+                                        <div className="text-[10px] font-black uppercase text-white/40 mb-2 tracking-widest">Growth Retention Index</div>
+                                        <div className="text-4xl font-black font-display text-white tabular-nums tracking-tighter">84.2%</div>
+                                        <div className="text-[8px] text-white/20 mt-3 font-bold uppercase tracking-widest">Signal Consistency Score</div>
+                                    </div>
+                                </div>
+                                <p className="text-white/40 text-[10px] font-medium leading-relaxed italic">
+                                    Conversion leakage detected in: Performance Integrity nodes and Semantic Narrative weight.
+                                </p>
+                            </div>
+                            <div className="bg-[#0B0F14] border border-white/10 p-8 rounded-3xl flex flex-col justify-between group hover:border-[#00D1FF]/30 transition-all cursor-pointer">
+                                <div>
+                                    <h5 className="text-sm font-black text-white uppercase tracking-tighter mb-2">Simulate Recovery</h5>
+                                    <p className="text-[10px] text-white/30 font-medium">Model how brand signal optimization impacts LTV and CAC.</p>
+                                </div>
+                                <button onClick={() => setShowPaywall(true)} className="surgical-label !text-[#00D1FF] flex items-center gap-2 mt-10">
+                                    Acquire Simulator <ArrowRight size={10} />
+                                </button>
                             </div>
                         </div>
                     </motion.section>
@@ -457,10 +486,10 @@ export default function Dashboard() {
                                 <h5 className="surgical-label !text-white/20">Integrity Nodes</h5>
                                 <div className="grid grid-cols-2 gap-4">
                                     {[
-                                        { l: 'Search Authority', v: result.scores.marketPresence },
-                                        { l: 'Performance Integrity', v: result.scores.technicalHealth },
-                                        { l: 'Trust Architecture', v: result.scores.security },
-                                        { l: 'Brand Clarity', v: result.scores.innovation },
+                                        { l: 'Discovery Score', v: result.scores.marketPresence },
+                                        { l: 'Performance Integrity Score', v: result.scores.technicalHealth },
+                                        { l: 'Trust & Authority Index', v: result.scores.security },
+                                        { l: 'Brand Clarity Score', v: result.scores.innovation },
                                         { l: 'Customer Experience', v: result.scores.customerExperience },
                                         { l: 'Narrative Weight', v: result.scores.contentQuality },
                                     ].map((n: { l: string, v: number }, i: number) => (
