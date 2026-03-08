@@ -57,15 +57,17 @@ export const authOptions: NextAuthOptions = {
             return token;
         },
         async signIn({ user, account, profile }) {
-            console.log('[DEBUG] SIGN-IN ATTEMPT:', user.email);
-            // Skipping DB upsert for now to isolate loop issues
+            console.log('[DEBUG] SIGN-IN ATTEMPT:', user?.email);
             return true;
         },
         async redirect({ url, baseUrl }) {
-            console.log('[DEBUG] REDIRECT CALLBACK:', { url, baseUrl });
-            if (url.startsWith("/")) return `${baseUrl}${url}`
-            else if (new URL(url).origin === baseUrl) return url
-            return baseUrl
+            // Simplified and safer redirect logic
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            try {
+                const checkUrl = new URL(url);
+                if (checkUrl.origin === baseUrl) return url;
+            } catch (e) {}
+            return baseUrl;
         },
     },
     pages: {
@@ -73,9 +75,19 @@ export const authOptions: NextAuthOptions = {
         error: '/auth/error',
     },
     debug: true,
+    cookies: {
+        sessionToken: {
+            name: `next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: true,
+            },
+        },
+    },
     events: {
         async signIn(message) { console.log("[DEBUG] Auth Event: signIn", message.user.email); },
-        async createUser(message) { console.log("[DEBUG] Auth Event: createUser", message.user.email); },
         async session(message) { console.log("[DEBUG] Auth Event: session active"); },
     }
 };
