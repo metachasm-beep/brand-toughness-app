@@ -56,24 +56,27 @@ export const authOptions: NextAuthOptions = {
             return token;
         },
         async signIn({ user, account, profile }) {
-            console.log('[DEBUG] AUTH_ENV_CHECK:', {
+            // Log env state to Render console for final verification
+            console.log('[DEBUG] AUTH_ENV:', {
                 NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-                GOOGLE_ID_EXISTS: !!process.env.GOOGLE_CLIENT_ID,
-                NODE_ENV: process.env.NODE_ENV
+                TRUST_HOST: process.env.AUTH_TRUST_HOST // Needs to be 'true' on Render
             });
             
-            if (!user.email) return true; 
+            if (!user?.email) return true; 
 
             try {
                 const { getPrisma } = await import('@/lib/db');
                 const prisma = await getPrisma();
+                // Simple upsert to link Google Profile to Account
                 await prisma.user.upsert({
                     where: { email: user.email },
                     update: { name: user.name, image: user.image },
                     create: { email: user.email, name: user.name, image: user.image, tier: 'FREE' }
                 });
+                console.log('[DEBUG] DB Sync Success for:', user.email);
             } catch (err) {
-                console.error('[DEBUG] DB UPSERT FAILED:', err);
+                console.error('[DEBUG] DB Sync Delayed... Allow Login anyway:', err);
+                // We return true even if DB fails so user isn't locked out of the UI
             }
             return true;
         },
@@ -103,9 +106,35 @@ export const authOptions: NextAuthOptions = {
         error: '/auth/error',
     },
     debug: true,
-    useSecureCookies: true, // Force secure on the custom domain
+    useSecureCookies: true,
+    cookies: {
+        sessionToken: {
+            name: 'brandos.session-token',
+            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
+        },
+        callbackUrl: {
+            name: 'brandos.callback-url',
+            options: { sameSite: 'lax', path: '/', secure: true }
+        },
+        csrfToken: {
+            name: 'brandos.csrf-token',
+            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
+        },
+        pkceCodeVerifier: {
+            name: 'brandos.pkce.code_verifier',
+            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
+        },
+        state: {
+            name: 'brandos.state',
+            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
+        },
+        nonce: {
+            name: 'brandos.nonce',
+            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
+        }
+    },
     events: {
-        async signIn(message: any) { console.log("[DEBUG] Auth Event: signIn", message.user.email); },
+        async signIn(message: any) { console.log("[DEBUG] Auth Event: signIn", message); },
         async session(message: any) { console.log("[DEBUG] Auth Event: session active"); },
     },
     logger: {
