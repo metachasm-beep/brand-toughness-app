@@ -103,7 +103,7 @@ export const authOptions: NextAuthOptions = {
         error: '/auth/error',
     },
     debug: true,
-    useSecureCookies: process.env.NEXTAUTH_URL?.startsWith('https'),
+    useSecureCookies: true, // Force secure on the custom domain
     events: {
         async signIn(message: any) { console.log("[DEBUG] Auth Event: signIn", message.user.email); },
         async session(message: any) { console.log("[DEBUG] Auth Event: session active"); },
