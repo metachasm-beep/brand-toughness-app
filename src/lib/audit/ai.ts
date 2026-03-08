@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export async function getAiInsights(url: string, findings: any[]) {
-    const apiKey = process.env.COHERE_API_KEY || 'CcneO0AaCV5HLWp6PbldlZS8LaWzLmnxD8pZGS4m'; 
+    const apiKey = process.env.COHERE_API_KEY || 'occgoxFaNQvZZVufa3sWhMAGsoux3wCI401690Rg'; 
     const apiUrl = 'https://api.cohere.ai/v1/chat';
 
     try {
@@ -28,7 +28,7 @@ Format:
         const response: any = await axios.post(
             apiUrl,
             {
-                model: 'command-r', // Using standard command-r for maximum compatibility
+                model: 'command-a-03-2025', 
                 message: message,
                 temperature: 0.3,
             },
