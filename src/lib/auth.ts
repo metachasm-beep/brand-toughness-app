@@ -57,25 +57,13 @@ export const authOptions: NextAuthOptions = {
             return token;
         },
         async signIn({ user, account, profile }) {
-            console.log('[DEBUG] NEXTAUTH SIGN-IN ATTEMPT:', { email: user.email, provider: account?.provider });
-            if (!user.email) return true; 
-            try {
-                const { getPrisma } = await import('@/lib/db');
-                const prisma = await getPrisma();
-                await prisma.user.upsert({
-                    where: { email: user.email },
-                    update: { name: user.name, image: user.image },
-                    create: { email: user.email, name: user.name, image: user.image, tier: 'FREE' }
-                });
-            } catch (err) {
-                console.error('Error upserting user on signin:', err);
-            }
+            console.log('[DEBUG] SIGN-IN ATTEMPT:', user.email);
+            // Skipping DB upsert for now to isolate loop issues
             return true;
         },
         async redirect({ url, baseUrl }) {
-            // Allows relative callback URLs
+            console.log('[DEBUG] REDIRECT CALLBACK:', { url, baseUrl });
             if (url.startsWith("/")) return `${baseUrl}${url}`
-            // Allows callback URLs on the same origin (custom domain)
             else if (new URL(url).origin === baseUrl) return url
             return baseUrl
         },

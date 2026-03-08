@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import LandingPage from '@/components/LandingPage';
 import Dashboard from '@/components/Dashboard';
 import { useGuestAudit } from '@/context/GuestAuditContext';
+import DashboardShell from '@/components/DashboardShell';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -20,7 +21,11 @@ export default function Home() {
 
   // If user is logged in OR has a guest audit result, show dashboard
   if (session || guestAuditResult) {
-    return <Dashboard />;
+    return (
+      <DashboardShell>
+        <Dashboard />
+      </DashboardShell>
+    );
   }
 
   return <LandingPage />;

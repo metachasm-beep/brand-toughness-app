@@ -122,6 +122,21 @@ export default function SignInPage() {
                         </p>
                     </form>
                 )}
+
+                {/* Debug Telemetry */}
+                <div className="pt-10 border-t border-white/5">
+                    <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-2">
+                        <div className="flex justify-between items-center">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">System Status</span>
+                            <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${status === 'authenticated' ? 'bg-[#00E28A] text-black' : 'bg-white/10 text-white/40'}`}>
+                                {status}
+                            </span>
+                        </div>
+                        <div className="text-[8px] text-white/20 font-mono break-all">
+                            Host: {typeof window !== 'undefined' ? window.location.host : 'Detecting...'}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
