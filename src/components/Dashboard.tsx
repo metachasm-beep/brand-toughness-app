@@ -176,15 +176,15 @@ export default function Dashboard() {
     };
 
     const scoreValues = result ? [
-        result.scores.marketPresence,
-        result.scores.technicalHealth,
-        result.scores.security,
-        result.scores.innovation,
-        result.scores.customerExperience,
-        result.scores.contentQuality,
+        result.scores?.marketPresence || 0,
+        result.scores?.technicalHealth || 0,
+        result.scores?.security || 0,
+        result.scores?.innovation || 0,
+        result.scores?.customerExperience || 0,
+        result.scores?.contentQuality || 0,
     ] : [0, 0, 0, 0, 0, 0];
 
-    const aggregateScore = result ? result.aggregate : '--';
+    const aggregateScore = result?.aggregate || '--';
     const ai = result?.aiSummary;
 
     return (
@@ -278,7 +278,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="space-y-6">
-                    <MetricCard title="Performance Integrity Score" value={result ? result.scores.technicalHealth.toFixed(1) : '--'} trend={result ? "+1.5%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Users} />
+                    <MetricCard title="Performance Integrity Score" value={result ? (result.scores?.technicalHealth || 0).toFixed(1) : '--'} trend={result ? "+1.5%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Users} />
                     <button onClick={() => setShowPaywall(true)} className="w-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all text-left flex items-center justify-between group">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-[#00D1FF]/10 flex items-center justify-center">
@@ -291,9 +291,9 @@ export default function Dashboard() {
                         </div>
                         <Lock size={14} className="text-white/20 group-hover:text-[#00D1FF] transition-colors" />
                     </button>
-                    <MetricCard title="Discovery Score" value={result ? result.scores.marketPresence.toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
-                    <MetricCard title="Trust & Authority Index" value={result ? result.scores.security.toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
-                    <MetricCard title="Brand Clarity Score" value={result ? result.scores.innovation.toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
+                    <MetricCard title="Discovery Score" value={result ? (result.scores?.marketPresence || 0).toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
+                    <MetricCard title="Trust & Authority Index" value={result ? (result.scores?.security || 0).toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
+                    <MetricCard title="Brand Clarity Score" value={result ? (result.scores?.innovation || 0).toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
                 </div>
             </div>
 
@@ -506,16 +506,16 @@ export default function Dashboard() {
                                 <h5 className="surgical-label !text-white/20">Integrity Nodes</h5>
                                 <div className="grid grid-cols-2 gap-4">
                                     {[
-                                        { l: 'Discovery Score', v: result.scores.marketPresence },
-                                        { l: 'Performance Integrity Score', v: result.scores.technicalHealth },
-                                        { l: 'Trust & Authority Index', v: result.scores.security },
-                                        { l: 'Brand Clarity Score', v: result.scores.innovation },
-                                        { l: 'Customer Experience', v: result.scores.customerExperience },
-                                        { l: 'Narrative Weight', v: result.scores.contentQuality },
+                                        { l: 'Discovery Score', v: result.scores?.marketPresence || 0 },
+                                        { l: 'Performance Integrity Score', v: result.scores?.technicalHealth || 0 },
+                                        { l: 'Trust & Authority Index', v: result.scores?.security || 0 },
+                                        { l: 'Brand Clarity Score', v: result.scores?.innovation || 0 },
+                                        { l: 'Customer Experience', v: result.scores?.customerExperience || 0 },
+                                        { l: 'Narrative Weight', v: result.scores?.contentQuality || 0 },
                                     ].map((n: { l: string, v: number }, i: number) => (
                                         <div key={i} className="bg-white/[0.03] border border-white/5 p-5 rounded-2xl">
                                             <div className="surgical-label text-[8px] mb-1">{n.l}</div>
-                                            <div className="text-2xl font-black font-display text-white">{n.v.toFixed(1)}</div>
+                                            <div className="text-2xl font-black font-display text-white">{(n.v || 0).toFixed(1)}</div>
                                             <div className="w-full h-1 bg-white/5 rounded-full mt-3 overflow-hidden">
                                                 <motion.div
                                                     className="h-full bg-[#00D1FF]"

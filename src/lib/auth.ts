@@ -56,8 +56,12 @@ export const authOptions: NextAuthOptions = {
             }
             return token;
         },
-        async signIn({ user }) {
-            if (!user.email) return true;
+        async signIn({ user, account, profile }) {
+            console.log('[DEBUG] NEXTAUTH SIGN-IN ATTEMPT:', { email: user.email, provider: account?.provider });
+            if (!user.email) {
+                console.error('[DEBUG] SIGN-IN FAILED: NO EMAIL FOUND');
+                return true; 
+            }
             try {
                 const { getPrisma } = await import('@/lib/db');
                 const prisma = await getPrisma();
