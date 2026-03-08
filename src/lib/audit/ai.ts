@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export async function getAiInsights(url: string, findings: any[]) {
-    const apiKey = process.env.COHERE_API_KEY || 'L47ePrt3wY6lJ0kKntEqH0K3s3fXF9A7sTbbS0aL'; // Replace with a valid test key if available
+    const apiKey = process.env.COHERE_API_KEY || 'CcneO0AaCV5HLWp6PbldlZS8LaWzLmnxD8pZGS4m'; 
     const apiUrl = 'https://api.cohere.ai/v1/generate';
 
     try {
