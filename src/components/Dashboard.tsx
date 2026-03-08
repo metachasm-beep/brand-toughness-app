@@ -168,7 +168,7 @@ export default function Dashboard() {
         if (!pdfUnlocked) { setShowPaywall(true); return; }
         const { generatePDF } = await import('@/utils/pdf');
         try {
-            const pdf = await generatePDF(result.scores, url, result.rawData, result.aggregate);
+            const pdf = await generatePDF(result?.scores || {}, url, result?.rawData || {}, result?.aggregate || 0);
             pdf.save(`BrandIntelligence_${new URL(url).hostname}.pdf`);
         } catch {
             alert('PDF generation failed. Please try again.');
@@ -291,9 +291,9 @@ export default function Dashboard() {
                         </div>
                         <Lock size={14} className="text-white/20 group-hover:text-[#00D1FF] transition-colors" />
                     </button>
-                    <MetricCard title="Discovery Score" value={result ? (result.scores?.marketPresence || 0).toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
-                    <MetricCard title="Trust & Authority Index" value={result ? (result.scores?.security || 0).toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
-                    <MetricCard title="Brand Clarity Score" value={result ? (result.scores?.innovation || 0).toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
+                    <MetricCard title="Discovery Score" value={result ? (result?.scores?.marketPresence || 0).toFixed(1) : '--'} trend={result ? "+4.2%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Activity} />
+                    <MetricCard title="Trust & Authority Index" value={result ? (result?.scores?.security || 0).toFixed(1) : '--'} trend={result ? "+0.8%" : ""} trendDirection="up" status={result ? "optimal" : "stable"} icon={Shield} />
+                    <MetricCard title="Brand Clarity Score" value={result ? (result?.scores?.innovation || 0).toFixed(1) : '--'} trend={result ? "-2.1%" : ""} trendDirection="down" status={result ? "optimal" : "stable"} icon={Zap} />
                 </div>
             </div>
 
@@ -506,12 +506,12 @@ export default function Dashboard() {
                                 <h5 className="surgical-label !text-white/20">Integrity Nodes</h5>
                                 <div className="grid grid-cols-2 gap-4">
                                     {[
-                                        { l: 'Discovery Score', v: result.scores?.marketPresence || 0 },
-                                        { l: 'Performance Integrity Score', v: result.scores?.technicalHealth || 0 },
-                                        { l: 'Trust & Authority Index', v: result.scores?.security || 0 },
-                                        { l: 'Brand Clarity Score', v: result.scores?.innovation || 0 },
-                                        { l: 'Customer Experience', v: result.scores?.customerExperience || 0 },
-                                        { l: 'Narrative Weight', v: result.scores?.contentQuality || 0 },
+                                        { l: 'Discovery Score', v: result?.scores?.marketPresence || 0 },
+                                        { l: 'Performance Integrity Score', v: result?.scores?.technicalHealth || 0 },
+                                        { l: 'Trust & Authority Index', v: result?.scores?.security || 0 },
+                                        { l: 'Brand Clarity Score', v: result?.scores?.innovation || 0 },
+                                        { l: 'Customer Experience', v: result?.scores?.customerExperience || 0 },
+                                        { l: 'Narrative Weight', v: result?.scores?.contentQuality || 0 },
                                     ].map((n: { l: string, v: number }, i: number) => (
                                         <div key={i} className="bg-white/[0.03] border border-white/5 p-5 rounded-2xl">
                                             <div className="surgical-label text-[8px] mb-1">{n.l}</div>
@@ -532,7 +532,7 @@ export default function Dashboard() {
                             <div className="relative space-y-6">
                                 <h5 className="surgical-label !text-white/20">Diagnostic Shards</h5>
                                 <div className="space-y-2">
-                                    {result.findings ? result.findings.map((f: any) => (
+                                    {result?.findings ? result.findings.map((f: any) => (
                                         <div key={f.code} className="flex justify-between items-center py-3 border-b border-white/[0.03] group transition-colors">
                                             <div className="flex flex-col">
                                                 <span className="text-white/80 font-bold text-sm tracking-tight">{f.title}</span>

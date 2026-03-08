@@ -19,7 +19,7 @@ export default function LandingPage() {
     const [error, setError] = useState('');
     const [progress, setProgress] = useState(0);
 
-    const login = () => signIn('google');
+    const login = () => signIn('google', { callbackUrl: '/' });
 
     const handleAudit = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -80,4 +80,16 @@ export const authOptions: NextAuthOptions = {
         signIn: '/auth/signin',
         error: '/auth/error',
     },
+    debug: true,
+    cookies: {
+        sessionToken: {
+            name: `next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: true,
+            },
+        },
+    },
 };
