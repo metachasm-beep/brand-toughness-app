@@ -1,7 +1,8 @@
 'use client';
 // src/app/auth/signin/page.tsx
-import { signIn, getProviders } from 'next-auth/react';
+import { signIn, getProviders, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { LogIn, Mail, Lock, Shield } from 'lucide-react';
 
 export default function SignInPage() {
@@ -10,6 +11,15 @@ export default function SignInPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const { status } = useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (status === 'authenticated') {
+            router.push('/');
+        }
+    }, [status, router]);
 
     useEffect(() => {
         getProviders().then(setProviders);
