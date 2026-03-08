@@ -21,26 +21,25 @@ export const authOptions: NextAuthOptions = {
                     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
                 }),
             ]
-            : [
-                CredentialsProvider({
-                    name: 'Demo Login',
-                    credentials: {
-                        email: { label: 'Email', type: 'email', placeholder: 'demo@turtlelabs.co' },
-                        password: { label: 'Password', type: 'password' },
-                    },
-                    async authorize(credentials) {
-                        if (credentials?.email) {
-                            return {
-                                id: 'demo',
-                                name: 'Demo User',
-                                email: credentials.email,
-                                tier: 'FREE'
-                            };
-                        }
-                        return null;
-                    },
-                }),
-            ]),
+            : []),
+        CredentialsProvider({
+            name: 'Demo Login',
+            credentials: {
+                email: { label: 'Email', type: 'email', placeholder: 'demo@turtlelabs.co' },
+                password: { label: 'Password', type: 'password' },
+            },
+            async authorize(credentials) {
+                if (credentials?.email) {
+                    return {
+                        id: 'demo-' + Date.now(),
+                        name: 'Demo User',
+                        email: credentials.email,
+                        tier: 'FREE'
+                    };
+                }
+                return null;
+            },
+        }),
     ],
     callbacks: {
         async session({ session, token }) {
