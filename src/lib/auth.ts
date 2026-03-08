@@ -58,10 +58,7 @@ export const authOptions: NextAuthOptions = {
         },
         async signIn({ user, account, profile }) {
             console.log('[DEBUG] NEXTAUTH SIGN-IN ATTEMPT:', { email: user.email, provider: account?.provider });
-            if (!user.email) {
-                console.error('[DEBUG] SIGN-IN FAILED: NO EMAIL FOUND');
-                return true; 
-            }
+            if (!user.email) return true; 
             try {
                 const { getPrisma } = await import('@/lib/db');
                 const prisma = await getPrisma();
@@ -74,22 +71,23 @@ export const authOptions: NextAuthOptions = {
                 console.error('Error upserting user on signin:', err);
             }
             return true;
-        }
+        },
+        async redirect({ url, baseUrl }) {
+            // Allows relative callback URLs
+            if (url.startsWith("/")) return `${baseUrl}${url}`
+            // Allows callback URLs on the same origin (custom domain)
+            else if (new URL(url).origin === baseUrl) return url
+            return baseUrl
+        },
     },
     pages: {
         signIn: '/auth/signin',
         error: '/auth/error',
     },
     debug: true,
-    cookies: {
-        sessionToken: {
-            name: `next-auth.session-token`,
-            options: {
-                httpOnly: true,
-                sameSite: 'lax',
-                path: '/',
-                secure: true,
-            },
-        },
-    },
+    events: {
+        async signIn(message) { console.log("[DEBUG] Auth Event: signIn", message.user.email); },
+        async createUser(message) { console.log("[DEBUG] Auth Event: createUser", message.user.email); },
+        async session(message) { console.log("[DEBUG] Auth Event: session active"); },
+    }
 };

@@ -22,6 +22,16 @@ export default function SignInPage() {
     }, [status, router]);
 
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const errorParam = params.get('error');
+        if (errorParam) {
+            console.error('[SIGNIN ERROR]', errorParam);
+            let msg = 'Authentication failed.';
+            if (errorParam === 'OAuthCallback') msg = 'Error matching the redirect URI. Check Google Console.';
+            if (errorParam === 'OAuthSignin') msg = 'Could not start the OAuth flow. Check Google Credentials.';
+            if (errorParam === 'Callback') msg = 'The authentication was canceled or timed out.';
+            setError(msg);
+        }
         getProviders().then(setProviders);
     }, []);
 
