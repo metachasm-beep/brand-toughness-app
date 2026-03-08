@@ -282,7 +282,11 @@ export class AuditEngine {
                 }
             }
         } catch (err: any) {
-            console.warn('PageSpeed check failed:', err.message);
+            if (err.response?.status === 429) {
+                console.warn('PageSpeed API rate limit reached (429). Using backup heuristics.');
+            } else {
+                console.warn('PageSpeed check failed:', err.message);
+            }
         }
     }
 

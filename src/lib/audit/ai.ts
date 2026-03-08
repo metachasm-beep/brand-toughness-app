@@ -28,7 +28,7 @@ Format:
         const response: any = await axios.post(
             apiUrl,
             {
-                model: 'command-r-plus',
+                model: 'command-r', // Using standard command-r for maximum compatibility
                 message: message,
                 temperature: 0.3,
             },
