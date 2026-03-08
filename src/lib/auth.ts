@@ -56,13 +56,12 @@ export const authOptions: NextAuthOptions = {
             return token;
         },
         async signIn({ user, account, profile }) {
-            console.log('[DEBUG] GOOGLE SIGN-IN CALLBACK:', { 
-                email: user?.email, 
-                provider: account?.provider,
-                hasAccessToken: !!account?.access_token,
-                hasIdToken: !!account?.id_token
+            console.log('[DEBUG] AUTH_ENV_CHECK:', {
+                NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+                GOOGLE_ID_EXISTS: !!process.env.GOOGLE_CLIENT_ID,
+                NODE_ENV: process.env.NODE_ENV
             });
-
+            
             if (!user.email) return true; 
 
             try {
@@ -73,20 +72,30 @@ export const authOptions: NextAuthOptions = {
                     update: { name: user.name, image: user.image },
                     create: { email: user.email, name: user.name, image: user.image, tier: 'FREE' }
                 });
-                console.log('[DEBUG] DB UPSERT SUCCESSFUL for:', user.email);
             } catch (err) {
                 console.error('[DEBUG] DB UPSERT FAILED:', err);
             }
             return true;
         },
         async redirect({ url, baseUrl }) {
-            console.log('[DEBUG] REDIRECT CALLBACK:', { url, baseUrl });
-            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            // Priority 1: Use the explicit NEXTAUTH_URL if available
+            const effectiveBaseUrl = process.env.NEXTAUTH_URL || baseUrl;
+            
+            console.log('[DEBUG] REDIRECT CALCULATION:', { 
+                requestedUrl: url, 
+                baseUrlIn: baseUrl, 
+                effectiveBase: effectiveBaseUrl 
+            });
+
+            if (url.startsWith("/")) return `${effectiveBaseUrl}${url}`;
+            
             try {
                 const checkUrl = new URL(url);
-                if (checkUrl.origin === baseUrl) return url;
+                // If the URL is already absolute and matches our effective base, allow it
+                if (checkUrl.origin === new URL(effectiveBaseUrl).origin) return url;
             } catch (e) {}
-            return baseUrl;
+
+            return effectiveBaseUrl;
         },
     },
     pages: {
@@ -96,9 +105,8 @@ export const authOptions: NextAuthOptions = {
     debug: true,
     useSecureCookies: process.env.NEXTAUTH_URL?.startsWith('https'),
     events: {
-        async signIn(message) { console.log("[DEBUG] Auth Event: signIn", message.user.email); },
-        async session(message) { console.log("[DEBUG] Auth Event: session active"); },
-        async error(message) { console.error("[DEBUG] Auth Event: ERROR", message); }
+        async signIn(message: any) { console.log("[DEBUG] Auth Event: signIn", message.user.email); },
+        async session(message: any) { console.log("[DEBUG] Auth Event: session active"); },
     },
     logger: {
         error(code, metadata) { console.error("[AUTH ERROR]", code, metadata); },
