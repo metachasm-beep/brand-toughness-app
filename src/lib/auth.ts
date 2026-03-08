@@ -94,20 +94,15 @@ export const authOptions: NextAuthOptions = {
         error: '/auth/error',
     },
     debug: true,
-    cookies: {
-        sessionToken: {
-            name: `next-auth.session-token`,
-            options: {
-                httpOnly: true,
-                sameSite: 'lax',
-                path: '/',
-                secure: true,
-            },
-        },
-    },
+    useSecureCookies: process.env.NEXTAUTH_URL?.startsWith('https'),
     events: {
         async signIn(message) { console.log("[DEBUG] Auth Event: signIn", message.user.email); },
         async session(message) { console.log("[DEBUG] Auth Event: session active"); },
         async error(message) { console.error("[DEBUG] Auth Event: ERROR", message); }
+    },
+    logger: {
+        error(code, metadata) { console.error("[AUTH ERROR]", code, metadata); },
+        warn(code) { console.warn("[AUTH WARN]", code); },
+        debug(code, metadata) { console.log("[AUTH DEBUG]", code, metadata); },
     }
 };
