@@ -19,6 +19,15 @@ export const authOptions: NextAuthOptions = {
                 GoogleProvider({
                     clientId: process.env.GOOGLE_CLIENT_ID!,
                     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+                    version: "2.0",
+                    checks: ["none"], // Force-disable State/PKCE to survive proxy stripping
+                    authorization: {
+                        params: {
+                            prompt: "select_account",
+                            access_type: "offline",
+                            response_type: "code"
+                        }
+                    }
                 }),
             ]
             : []),
