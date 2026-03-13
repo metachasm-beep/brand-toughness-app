@@ -7,98 +7,138 @@ import { getAiInsights } from '@/lib/audit/ai';
 import { getPrisma } from '@/lib/db';
 import { normaliseUrl } from '@/utils/googleSheet';
 
-export const maxDuration = 120;
 export const runtime = 'nodejs';
+export const maxDuration = 120;
 
 export async function POST(request: Request) {
-    const prisma = await getPrisma();
+    let body: any = null;
+    let inputUrl = '';
+    let normalisedUrl = '';
+    let userEmail: string | null = null;
 
     try {
-        const session = await getServerSession(authOptions);
-        const userEmail = session?.user?.email || null;
-
-        const body = await request.json();
-        const inputUrl = String(body?.url || '').trim();
+        body = await request.json().catch(() => ({}));
+        inputUrl = String(body?.url || '').trim();
 
         if (!inputUrl) {
             return NextResponse.json({ error: 'URL is required' }, { status: 400 });
         }
 
-        const normalisedUrl = normaliseUrl(inputUrl);
+        normalisedUrl = normaliseUrl(inputUrl);
+    } catch (err: any) {
+        console.error('[/api/audit] REQUEST_PARSE_FAILED:', err);
+        return NextResponse.json(
+            {
+                error: 'Invalid request payload',
+                stage: 'request-parse',
+                details: err?.message || 'Unknown parse error'
+            },
+            { status: 400 }
+        );
+    }
 
-        const engine = new AuditEngine(normalisedUrl);
-        const auditData = await engine.run();
+    try {
+        try {
+            const session = await getServerSession(authOptions);
+            userEmail = session?.user?.email || null;
+        } catch (authErr: any) {
+            console.error('[/api/audit] AUTH_FAILED (continuing as guest):', authErr?.message);
+            userEmail = null;
+        }
+
+        let auditData: any;
+        try {
+            const engine = new AuditEngine(normalisedUrl);
+            auditData = await engine.run();
+        } catch (auditErr: any) {
+            console.error('[/api/audit] ENGINE_FAILED:', auditErr);
+            return NextResponse.json(
+                {
+                    error: auditErr?.message || 'Audit engine failed',
+                    stage: 'audit-engine',
+                    url: normalisedUrl
+                },
+                { status: 502 }
+            );
+        }
 
         let aiSummary: any = null;
         try {
-            aiSummary = await getAiInsights(normalisedUrl, auditData.findings);
-            auditData.meta.aiSummary = aiSummary;
+            aiSummary = await getAiInsights(normalisedUrl, auditData.findings || []);
+            if (auditData?.meta) {
+                auditData.meta.aiSummary = aiSummary;
+            }
         } catch (aiErr: any) {
-            console.error('[/api/audit] AI SUMMARY FAILED (Continuing...):', aiErr?.message);
+            console.error('[/api/audit] AI_FAILED (continuing without AI):', aiErr);
             aiSummary = null;
         }
 
-        let savedAudit: any = null;
+        let findings = auditData.findings || [];
+
         try {
-            savedAudit = await prisma.audit.create({
+            const prisma = await getPrisma();
+
+            const savedAudit = await prisma.audit.create({
                 data: {
                     url: normalisedUrl,
                     uid: auditData.uid,
                     status: 'COMPLETED',
                     userEmail,
-                    overallScore: auditData.overallScore,
-                    categories: auditData.categories as any,
-                    meta: auditData.meta as any,
+                    overallScore: Number(auditData.overallScore || 0),
+                    categories: (auditData.categories || {}) as any,
+                    meta: (auditData.meta || {}) as any,
                     findings: {
-                        create: auditData.findings.map((f) => ({
-                            code: f.code,
-                            title: f.title,
-                            category: f.category,
-                            severity: f.severity,
-                            confidence: f.confidence,
-                            recommendation: f.recommendation,
-                            effort: f.effort,
-                            impact: f.impact,
+                        create: findings.map((f: any) => ({
+                            code: String(f.code || ''),
+                            title: String(f.title || ''),
+                            category: String(f.category || 'General'),
+                            severity: String(f.severity || 'LOW'),
+                            confidence: Number(f.confidence || 0),
+                            recommendation: String(f.recommendation || ''),
+                            effort: String(f.effort || 'MEDIUM'),
+                            impact: String(f.impact || ''),
                             evidence: f.evidence || null
                         }))
                     }
                 },
                 include: { findings: true }
             });
+
+            findings = savedAudit?.findings || findings;
         } catch (dbErr: any) {
-            console.error('[/api/audit] DB PERSISTENCE FAILED (Continuing...):', dbErr?.message);
+            console.error('[/api/audit] DB_FAILED (continuing without persistence):', dbErr);
         }
 
         const scores = {
-            marketPresence: Number(auditData.categories?.SEO?.score || 0),
-            technicalHealth: Number(auditData.categories?.Performance?.score || 0),
-            security: Number(auditData.categories?.Security?.score || 0),
-            innovation: Number(auditData.categories?.UX?.score || 0),
-            customerExperience: Number(auditData.categories?.Accessibility?.score || 0),
+            marketPresence: Number(auditData?.categories?.SEO?.score || 0),
+            technicalHealth: Number(auditData?.categories?.Performance?.score || 0),
+            security: Number(auditData?.categories?.Security?.score || 0),
+            innovation: Number(auditData?.categories?.UX?.score || 0),
+            customerExperience: Number(auditData?.categories?.Accessibility?.score || 0),
             contentQuality: 8.5
         };
 
-        const aggregate = Number((auditData.overallScore / 10).toFixed(1));
+        const aggregate = Number((Number(auditData?.overallScore || 0) / 10).toFixed(1));
 
         return NextResponse.json({
             url: normalisedUrl,
             scores,
             aggregate,
-            rawData: auditData.meta || {},
-            findings: savedAudit?.findings || auditData.findings || [],
-            uid: auditData.uid,
-            aiSummary
+            rawData: auditData?.meta || {},
+            findings,
+            uid: auditData?.uid || null,
+            aiSummary,
+            debug: {
+                aiIncluded: !!aiSummary,
+                persistedToDb: false
+            }
         });
     } catch (err: any) {
-        console.error('[/api/audit] FULL ERROR TRACE:', err);
-        console.error('[/api/audit] Error Name:', err?.name);
-        console.error('[/api/audit] Error Message:', err?.message);
-        if (err?.code) console.error('[/api/audit] Error Code:', err.code);
-
+        console.error('[/api/audit] UNHANDLED_FATAL:', err);
         return NextResponse.json(
             {
-                error: err?.message || 'Unknown diagnostic error',
-                details: err?.code || null
+                error: err?.message || 'Unhandled audit failure',
+                stage: 'unhandled'
             },
             { status: 500 }
         );
@@ -106,37 +146,9 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-    const endpoint =
-        'https://script.google.com/macros/s/AKfycbyHi5VX-xavsqZhS4JFc6UCi5rEGpM6XVBHFBz2KcAhajf6NhUgAkhjLhBMMujk5ObL/exec';
-    const sheetUrl =
-        'https://docs.google.com/spreadsheets/d/1Po-oXNThH03DkCoXo77IHd5ocokrTudaP1sBqDJd8Nc/export?format=csv';
-
-    let sheetOk = false;
-    let scriptOk = false;
-    let sheetError = '';
-    let scriptError = '';
-
-    try {
-        const r = await fetch(sheetUrl);
-        sheetOk = r.ok;
-        if (!r.ok) sheetError = `HTTP ${r.status}`;
-    } catch (e: any) {
-        sheetError = e?.message || 'Unknown error';
-    }
-
-    try {
-        const r = await fetch(endpoint, { method: 'GET' });
-        scriptOk = r.status < 500;
-        if (!scriptOk) scriptError = `HTTP ${r.status}`;
-    } catch (e: any) {
-        scriptError = e?.message || 'Unknown error';
-    }
-
     return NextResponse.json({
-        status: 'ok',
-        checks: {
-            googleSheet: { ok: sheetOk, error: sheetError || null },
-            appsScript: { ok: scriptOk, error: scriptError || null }
-        }
+        ok: true,
+        route: '/api/audit',
+        runtime: 'nodejs'
     });
 }
