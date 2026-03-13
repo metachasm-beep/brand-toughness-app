@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { runRenderedAudit } from '@/lib/audit/renderedAudit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 180;
@@ -12,6 +11,8 @@ export async function POST(request: Request) {
     if (!url) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
+
+    const { runRenderedAudit } = await import('@/lib/audit/renderedAudit');
 
     const rendered = await runRenderedAudit(url);
 
