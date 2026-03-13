@@ -39,7 +39,7 @@ export class AuditEngine {
         const uid = uuidv4();
         try {
             const response: any = await axios.get(this.url, {
-                timeout: 20000,
+                timeout: 200000,
                 headers: { 
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -243,7 +243,7 @@ export class AuditEngine {
         try {
             // Query Performance, Accessibility, SEO, Best-Practices categories
             const psiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(this.url)}&category=performance&category=accessibility&category=seo&category=best-practices${key ? `&key=${key}` : ''}`;
-            const response: any = await axios.get(psiUrl, { timeout: 20000 });
+            const response: any = await axios.get(psiUrl, { timeout: 200000 });
 
             const audits = response.data?.lighthouseResult?.audits || {};
 
