@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  brandos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: brandos
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+
+      # App env
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: change-me-to-a-long-random-secret
+
+      # Database
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/brandos
+
+      # Optional audit env
+      DISABLE_PSI: "false"
+      PAGESPEED_API_KEY: ""
+
+      # Optional AI env
+      COHERE_API_KEY: ""
+
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    container_name: brandos-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: brandos
+    ports:
+      - "5432:5432"
+    volumes:
+      - brandos_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  brandos_postgres_data:
