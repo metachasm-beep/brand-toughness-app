@@ -127,7 +127,10 @@ export class AuditEngine {
 
     this.html = rawData;
 
-    if (!contentType.includes('text/html') && !contentType.includes('application/xhtml+xml')) {
+    if (
+      !contentType.includes('text/html') &&
+      !contentType.includes('application/xhtml+xml')
+    ) {
       this.addFinding({
         code: 'FETCH_UNEXPECTED_CONTENT_TYPE',
         title: 'Unexpected Content Type',
@@ -148,7 +151,8 @@ export class AuditEngine {
         category: 'UX',
         severity: this.status >= 500 ? 'CRITICAL' : 'HIGH',
         confidence: 1,
-        recommendation: 'Fix the page response status and ensure the URL is publicly accessible.',
+        recommendation:
+          'Fix the page response status and ensure the URL is publicly accessible.',
         effort: 'MEDIUM',
         impact: 'Critical',
         evidence: { status: this.status },
@@ -170,7 +174,11 @@ export class AuditEngine {
   }
 
   private normalizeHeaders(
-    headers: AxiosResponseHeaders | RawAxiosResponseHeaders | Record<string, any> | undefined
+    headers:
+      | AxiosResponseHeaders
+      | RawAxiosResponseHeaders
+      | Record<string, any>
+      | undefined
   ): HeaderMap {
     const out: HeaderMap = {};
     if (!headers || typeof headers !== 'object') return out;
@@ -236,7 +244,8 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation: 'Add a meta description of roughly 150–160 characters.',
+        recommendation:
+          'Add a meta description of roughly 150–160 characters.',
         effort: 'EASY',
         impact: 'High',
       });
@@ -264,7 +273,8 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation: 'Ensure the page contains exactly one meaningful <h1>.',
+        recommendation:
+          'Ensure the page contains exactly one meaningful <h1>.',
         effort: 'EASY',
         impact: 'High',
       });
@@ -289,7 +299,8 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'LOW',
         confidence: 0.9,
-        recommendation: 'Add OpenGraph tags such as og:title, og:description, and og:image.',
+        recommendation:
+          'Add OpenGraph tags such as og:title, og:description, and og:image.',
         effort: 'EASY',
         impact: 'Low',
       });
@@ -315,7 +326,8 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'CRITICAL',
         confidence: 1.0,
-        recommendation: 'Add a viewport meta tag for mobile responsiveness.',
+        recommendation:
+          'Add a viewport meta tag for mobile responsiveness.',
         effort: 'EASY',
         impact: 'Critical',
       });
@@ -341,7 +353,8 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'LOW',
         confidence: 1.0,
-        recommendation: 'Add a favicon for better brand presence and browser UX.',
+        recommendation:
+          'Add a favicon for better brand presence and browser UX.',
         effort: 'EASY',
         impact: 'Low',
       });
@@ -368,7 +381,8 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation: 'Remove noindex if this page should appear in search results.',
+        recommendation:
+          'Remove noindex if this page should appear in search results.',
         effort: 'EASY',
         impact: 'High',
         evidence: { robots },
@@ -410,11 +424,36 @@ export class AuditEngine {
       }
     };
 
-    checkHeader('strict-transport-security', 'SEC_HSTS', 'HSTS Header', 'HIGH');
-    checkHeader('content-security-policy', 'SEC_CSP', 'CSP Header', 'HIGH');
-    checkHeader('x-frame-options', 'SEC_XFO', 'X-Frame-Options Header', 'MEDIUM');
-    checkHeader('x-content-type-options', 'SEC_NOSNIFF', 'X-Content-Type-Options Header', 'MEDIUM');
-    checkHeader('referrer-policy', 'SEC_REFERRER', 'Referrer-Policy Header', 'LOW');
+    checkHeader(
+      'strict-transport-security',
+      'SEC_HSTS',
+      'HSTS Header',
+      'HIGH'
+    );
+    checkHeader(
+      'content-security-policy',
+      'SEC_CSP',
+      'CSP Header',
+      'HIGH'
+    );
+    checkHeader(
+      'x-frame-options',
+      'SEC_XFO',
+      'X-Frame-Options Header',
+      'MEDIUM'
+    );
+    checkHeader(
+      'x-content-type-options',
+      'SEC_NOSNIFF',
+      'X-Content-Type-Options Header',
+      'MEDIUM'
+    );
+    checkHeader(
+      'referrer-policy',
+      'SEC_REFERRER',
+      'Referrer-Policy Header',
+      'LOW'
+    );
 
     if (this.getHeader('server') || this.getHeader('x-powered-by')) {
       this.addFinding({
@@ -449,7 +488,8 @@ export class AuditEngine {
         category: 'Accessibility',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation: 'Add meaningful alt text to all informative images.',
+        recommendation:
+          'Add meaningful alt text to all informative images.',
         effort: 'MEDIUM',
         impact: 'High',
         evidence: { missingAlt },
@@ -471,7 +511,8 @@ export class AuditEngine {
         category: 'Accessibility',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation: 'Ensure interactive elements have visible text or accessible labels.',
+        recommendation:
+          'Ensure interactive elements have visible text or accessible labels.',
         effort: 'MEDIUM',
         impact: 'High',
         evidence: { emptyButtons },
@@ -501,7 +542,8 @@ export class AuditEngine {
         category: 'Accessibility',
         severity: 'MEDIUM',
         confidence: 0.9,
-        recommendation: 'Associate all form fields with labels or ARIA labeling.',
+        recommendation:
+          'Associate all form fields with labels or ARIA labeling.',
         effort: 'MEDIUM',
         impact: 'Medium',
         evidence: { missingLabels },
@@ -549,7 +591,8 @@ export class AuditEngine {
         category: 'Performance',
         severity: 'LOW',
         confidence: 0.9,
-        recommendation: 'Move repeated inline styles into CSS classes or stylesheets.',
+        recommendation:
+          'Move repeated inline styles into CSS classes or stylesheets.',
         effort: 'MEDIUM',
         impact: 'Low',
         evidence: { inlineStyleCount },
@@ -583,7 +626,8 @@ export class AuditEngine {
         category: 'UX',
         severity: 'LOW',
         confidence: 0.6,
-        recommendation: 'Simplify navigation and reduce interaction clutter.',
+        recommendation:
+          'Simplify navigation and reduce interaction clutter.',
         effort: 'HARD',
         impact: 'Low',
         evidence: { interactiveCount },
@@ -638,12 +682,12 @@ export class AuditEngine {
         key: string;
         label: string;
         score: number;
-      }> = Object.entries(categories)
-        .map(([key, value]: any) => ({
-          key,
-          label: value?.title || key,
-          score: typeof value?.score === 'number' ? Math.round(value.score * 100) : 0,
-        }));
+      }> = Object.entries(categories).map(([key, value]: any) => ({
+        key,
+        label: value?.title || key,
+        score:
+          typeof value?.score === 'number' ? Math.round(value.score * 100) : 0,
+      }));
 
       for (const cat of categoryScores) {
         if (cat.score < 90) {
@@ -679,7 +723,11 @@ export class AuditEngine {
         const audit = audits[auditId];
         if (!audit) continue;
 
-        if (audit.score !== null && typeof audit.score === 'number' && audit.score < 0.9) {
+        if (
+          audit.score !== null &&
+          typeof audit.score === 'number' &&
+          audit.score < 0.9
+        ) {
           let severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' = 'LOW';
           if (audit.score < 0.3) severity = 'CRITICAL';
           else if (audit.score < 0.6) severity = 'HIGH';
@@ -687,7 +735,9 @@ export class AuditEngine {
 
           const id = String(audit.id || auditId).toLowerCase();
           const mappedCategory =
-            id.includes('seo') || id.includes('meta') || id.includes('canonical')
+            id.includes('seo') ||
+            id.includes('meta') ||
+            id.includes('canonical')
               ? 'SEO'
               : id.includes('aria') ||
                 id.includes('alt') ||
@@ -702,12 +752,15 @@ export class AuditEngine {
               : 'Performance';
 
           this.addFinding({
-            code: `PSI_${String(audit.id || auditId).toUpperCase().replace(/[^A-Z0-9_]/g, '_')}`,
+            code: `PSI_${String(audit.id || auditId)
+              .toUpperCase()
+              .replace(/[^A-Z0-9_]/g, '_')}`,
             title: audit.title || auditId,
             category: mappedCategory,
             severity,
             confidence: 0.95,
-            recommendation: audit.description || 'Review and fix this Lighthouse issue.',
+            recommendation:
+              audit.description || 'Review and fix this Lighthouse issue.',
             effort: 'MEDIUM',
             impact: 'Determined by Lighthouse',
             evidence: {
@@ -737,7 +790,10 @@ export class AuditEngine {
     }
   }
 
-  private calculateCategoryScores(): Record<string, { score: number; confidence: number }> {
+  private calculateCategoryScores(): Record<
+    string,
+    { score: number; confidence: number }
+  > {
     const categories = ['SEO', 'Security', 'Accessibility', 'Performance', 'UX'];
     const results: Record<string, { score: number; confidence: number }> = {};
 
