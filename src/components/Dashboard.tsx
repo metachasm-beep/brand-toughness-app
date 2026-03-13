@@ -175,7 +175,8 @@ export default function Dashboard() {
             }
 
             if (!response.ok) {
-                throw new Error(data.error || `Intelligence fetch failed (HTTP ${response.status})`);
+                const stage = data?.stage ? ` [${data.stage}]` : '';
+                throw new Error(`${data?.error || 'Intelligence fetch failed'}${stage} (HTTP ${response.status})`);
             }
 
             setResult(data);
@@ -230,6 +231,12 @@ export default function Dashboard() {
 
     const aggregatePercent = Math.max(0, Math.min(100, aggregateScore * 10));
     const ai = result?.aiSummary;
+
+    const baselineMetricsCount = 25;
+    const dynamicMetricsCount = Array.isArray(result?.findings) ? result.findings.length : 0;
+    const totalMetricsAnalyzed = result ? baselineMetricsCount + dynamicMetricsCount : 0;
+    const totalMetricsDisplay =
+        totalMetricsAnalyzed >= 100 ? '100+' : String(totalMetricsAnalyzed);
 
     return (
         <div className="space-y-16 max-w-[1400px] mx-auto pt-10 pb-24">
@@ -332,13 +339,44 @@ export default function Dashboard() {
             </section>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
-                <div className="xl:col-span-2 apple-card overflow-hidden !bg-white/[0.01] relative flex flex-col items-center justify-center min-h-[600px]">
-                    <DiagnosticOrbit scores={scoreValues} overallScore={aggregateScore} />
-                    <div className="absolute bottom-10 flex gap-4">
+                <div className="xl:col-span-2 apple-card overflow-hidden !bg-white/[0.01] relative flex flex-col items-center justify-center min-h-[620px] p-5 md:p-8">
+                    {result && (
+                        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-20">
+                            <div className="px-6 py-3 rounded-[20px] border border-[#00D1FF]/20 bg-[#00D1FF]/[0.06] backdrop-blur-xl text-center shadow-[0_10px_40px_rgba(0,0,0,0.25)]">
+                                <div className="text-[10px] font-black uppercase tracking-[0.28em] text-[#00D1FF]/70">
+                                    Metrics Analyzed
+                                </div>
+                                <div className="text-2xl md:text-3xl font-black font-display tracking-tight text-white mt-1">
+                                    {totalMetricsDisplay}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {result && (
+                        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10">
+                            <div className="px-4 py-2 rounded-2xl border border-white/10 bg-white/[0.035] backdrop-blur-xl text-center">
+                                <div className="text-[9px] font-black uppercase tracking-[0.24em] text-white/30">
+                                    Composite Signal
+                                </div>
+                                <div className="text-sm md:text-base font-bold text-white/75 mt-1">
+                                    Live multi-layer diagnostic mapping
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="w-full flex items-center justify-center pt-24 md:pt-28 pb-24 md:pb-28">
+                        <div className="w-full max-w-[760px]">
+                            <DiagnosticOrbit scores={scoreValues} overallScore={aggregateScore} />
+                        </div>
+                    </div>
+
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] md:w-auto flex flex-col md:flex-row gap-3 md:gap-4 items-center justify-center z-20">
                         <button
                             onClick={handleDownloadPDF}
                             disabled={!result}
-                            className="apple-button-outline flex items-center gap-2 disabled:opacity-30"
+                            className="apple-button-outline flex items-center justify-center gap-2 disabled:opacity-30 w-full md:w-auto"
                         >
                             {pdfUnlocked ? (
                                 <>
@@ -352,9 +390,10 @@ export default function Dashboard() {
                                 </>
                             )}
                         </button>
+
                         <button
                             onClick={() => setShowPaywall(true)}
-                            className="apple-button-outline flex items-center gap-2"
+                            className="apple-button-outline flex items-center justify-center gap-2 w-full md:w-auto"
                         >
                             <Users size={16} />
                             <span>Compare Competitors</span>
