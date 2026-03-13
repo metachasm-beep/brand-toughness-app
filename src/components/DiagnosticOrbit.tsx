@@ -4,14 +4,49 @@ import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 
 interface DiagnosticOrbitProps {
-    scores: number[];
+    scores?: number[];
     labels?: string[];
-    overallScore: number | string;
+    overallScore?: number | string;
 }
 
-export default function DiagnosticOrbit({ scores, labels, overallScore }: DiagnosticOrbitProps) {
+export default function DiagnosticOrbit({
+    scores = [],
+    labels,
+    overallScore = 0
+}: DiagnosticOrbitProps) {
     const defaultLabels = ['Market', 'Technical', 'Security', 'Innovation', 'Customer', 'Content'];
-    const displayLabels = labels || defaultLabels;
+
+    const safeScores = useMemo(() => {
+        const normalized = Array.isArray(scores) ? scores : [];
+        const sliced = normalized.slice(0, 6).map((value) => {
+            const n = Number(value);
+            if (!Number.isFinite(n)) return 0;
+            return Math.max(0, Math.min(100, n));
+        });
+
+        while (sliced.length < 6) {
+            sliced.push(0);
+        }
+
+        return sliced;
+    }, [scores]);
+
+    const displayLabels = useMemo(() => {
+        const source = Array.isArray(labels) && labels.length ? labels : defaultLabels;
+        const sliced = source.slice(0, 6);
+
+        while (sliced.length < 6) {
+            sliced.push(defaultLabels[sliced.length] || `Metric ${sliced.length + 1}`);
+        }
+
+        return sliced;
+    }, [labels]);
+
+    const safeOverallScore = useMemo(() => {
+        const n = Number(overallScore);
+        if (!Number.isFinite(n)) return '0.0';
+        return n.toFixed(1);
+    }, [overallScore]);
 
     const getColor = (s: number) => {
         if (s >= 80) return '#00E28A';
@@ -22,23 +57,32 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
     const orbitLines = [0.4, 0.6, 0.8, 1.0];
 
     const points = useMemo(() => {
-        const n = scores.length;
-        return scores.map((s, i) => {
+        const n = safeScores.length || 6;
+
+        return safeScores.map((s, i) => {
             const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
-            const radius = 0.4 + (s / 100) * 0.6; // Scale from 40% to 100% of container
+            const radius = 0.4 + (s / 100) * 0.6;
+
             return {
                 x: Math.cos(angle) * radius,
                 y: Math.sin(angle) * radius,
-                label: displayLabels[i],
+                label: displayLabels[i] || `Metric ${i + 1}`,
                 score: s,
                 color: getColor(s)
             };
         });
-    }, [scores, displayLabels]);
+    }, [safeScores, displayLabels]);
+
+    const polygonPath = useMemo(() => {
+        if (!points.length) return '';
+
+        const first = points[0];
+        const rest = points.slice(1).map((p) => `L ${p.x} ${p.y}`).join(' ');
+        return `M ${first.x} ${first.y} ${rest} Z`;
+    }, [points]);
 
     return (
         <div className="relative w-full aspect-square flex items-center justify-center p-10 select-none">
-            {/* Background Orbits */}
             {orbitLines.map((r, i) => (
                 <div
                     key={i}
@@ -51,8 +95,7 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
                 />
             ))}
 
-            {/* Axis Lines */}
-            {points.map((p, i) => (
+            {points.map((_, i) => (
                 <div
                     key={`axis-${i}`}
                     className="absolute h-px bg-white/5 origin-left pointer-events-none"
@@ -65,19 +108,26 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
                 />
             ))}
 
-            {/* Connection Polygon */}
-            <svg viewBox="-1.2 -1.2 2.4 2.4" className="absolute inset-0 w-full h-full drop-shadow-[0_0_30px_rgba(0,209,255,0.1)]">
-                <path
-                    d={`M ${points[0].x} ${points[0].y} ${points.map(p => `L ${p.x} ${p.y}`).join(' ')} Z`}
-                    fill="rgba(0, 209, 255, 0.05)"
-                    stroke="rgba(0, 209, 255, 0.4)"
-                    strokeWidth="0.01"
-                    className="transition-all duration-1000"
-                />
+            <svg
+                viewBox="-1.2 -1.2 2.4 2.4"
+                className="absolute inset-0 w-full h-full drop-shadow-[0_0_30px_rgba(0,209,255,0.1)]"
+            >
+                {polygonPath && (
+                    <path
+                        d={polygonPath}
+                        fill="rgba(0, 209, 255, 0.05)"
+                        stroke="rgba(0, 209, 255, 0.4)"
+                        strokeWidth="0.01"
+                        className="transition-all duration-1000"
+                    />
+                )}
+
                 {points.map((p, i) => (
                     <circle
                         key={i}
-                        cx={p.x} cy={p.y} r="0.04"
+                        cx={p.x}
+                        cy={p.y}
+                        r="0.04"
                         fill={p.color}
                         className="transition-all duration-1000"
                         style={{ filter: `drop-shadow(0 0 5px ${p.color})` }}
@@ -85,19 +135,17 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
                 ))}
             </svg>
 
-            {/* Overall Score Center */}
             <div className="relative z-10 flex flex-col items-center justify-center">
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     className="text-7xl xl:text-9xl font-black font-display tracking-tighter text-white drop-shadow-[0_0_40px_rgba(0,209,255,0.3)]"
                 >
-                    {overallScore}
+                    {safeOverallScore}
                 </motion.div>
                 <div className="surgical-label !text-white/40 mt-2">Integrity Composite</div>
             </div>
 
-            {/* Floating Labels */}
             {points.map((p, i) => (
                 <motion.div
                     key={`label-${i}`}
@@ -112,7 +160,9 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
                     transition={{ delay: 0.5 + i * 0.1 }}
                 >
                     <span className="surgical-label text-[8px] !text-white/40">{p.label}</span>
-                    <span className="text-sm font-black font-display text-white">{p.score}</span>
+                    <span className="text-sm font-black font-display text-white">
+                        {p.score.toFixed(1)}
+                    </span>
                 </motion.div>
             ))}
         </div>
