@@ -287,13 +287,13 @@ export class AuditEngine {
         effort: 'EASY',
         impact: 'Critical',
       });
-    } else if (title.length < 30 || title.length > 70) {
+    } else if (title.length < 20 || title.length > 75) {
       this.addFinding({
         code: 'SEO_TITLE_LENGTH',
         title: 'Title Length Suboptimal',
         category: 'SEO',
-        severity: 'MEDIUM',
-        confidence: 0.9,
+        severity: 'LOW',
+        confidence: 0.8,
         recommendation: 'Aim for a title length of about 50–60 characters.',
         effort: 'EASY',
         impact: 'Suboptimal',
@@ -307,11 +307,11 @@ export class AuditEngine {
         code: 'SEO_MISSING_META_DESC',
         title: 'Missing Meta Description',
         category: 'SEO',
-        severity: 'HIGH',
-        confidence: 1.0,
+        severity: 'MEDIUM',
+        confidence: 0.85,
         recommendation: 'Add a meta description of roughly 150–160 characters.',
         effort: 'EASY',
-        impact: 'High',
+        impact: 'Medium',
       });
     }
 
@@ -322,7 +322,7 @@ export class AuditEngine {
         title: 'Missing Canonical Tag',
         category: 'SEO',
         severity: 'MEDIUM',
-        confidence: 0.95,
+        confidence: 0.9,
         recommendation: 'Add <link rel="canonical" href="...">.',
         effort: 'EASY',
         impact: 'Medium',
@@ -335,11 +335,11 @@ export class AuditEngine {
         code: 'SEO_MISSING_H1',
         title: 'No H1 Heading Found',
         category: 'SEO',
-        severity: 'HIGH',
-        confidence: 1.0,
-        recommendation: 'Ensure the page contains exactly one meaningful <h1>.',
+        severity: 'MEDIUM',
+        confidence: 0.8,
+        recommendation: 'Ensure the page contains one meaningful <h1>.',
         effort: 'EASY',
-        impact: 'High',
+        impact: 'Medium',
       });
     } else if (h1Count > 1) {
       this.addFinding({
@@ -347,7 +347,7 @@ export class AuditEngine {
         title: 'Multiple H1 Headings',
         category: 'SEO',
         severity: 'LOW',
-        confidence: 0.9,
+        confidence: 0.7,
         recommendation: 'Prefer one primary <h1> per page.',
         effort: 'EASY',
         impact: 'Low',
@@ -361,7 +361,7 @@ export class AuditEngine {
         title: 'Missing OpenGraph Tags',
         category: 'SEO',
         severity: 'LOW',
-        confidence: 0.9,
+        confidence: 0.75,
         recommendation:
           'Add OpenGraph tags such as og:title, og:description, and og:image.',
         effort: 'EASY',
@@ -375,7 +375,7 @@ export class AuditEngine {
         title: 'Missing Twitter Card Tags',
         category: 'SEO',
         severity: 'LOW',
-        confidence: 0.9,
+        confidence: 0.75,
         recommendation: 'Add Twitter Card metadata.',
         effort: 'EASY',
         impact: 'Low',
@@ -400,11 +400,11 @@ export class AuditEngine {
         code: 'SEO_MISSING_SCHEMA',
         title: 'Missing Structured Data',
         category: 'SEO',
-        severity: 'MEDIUM',
-        confidence: 0.9,
+        severity: 'LOW',
+        confidence: 0.8,
         recommendation: 'Add relevant Schema.org JSON-LD structured data.',
         effort: 'MEDIUM',
-        impact: 'Medium',
+        impact: 'Low',
       });
     }
 
@@ -414,7 +414,7 @@ export class AuditEngine {
         title: 'Missing Favicon',
         category: 'SEO',
         severity: 'LOW',
-        confidence: 1.0,
+        confidence: 0.8,
         recommendation: 'Add a favicon.',
         effort: 'EASY',
         impact: 'Low',
@@ -426,11 +426,11 @@ export class AuditEngine {
         code: 'SEO_MISSING_LANG',
         title: 'Missing HTML lang Attribute',
         category: 'SEO',
-        severity: 'MEDIUM',
-        confidence: 1.0,
+        severity: 'LOW',
+        confidence: 0.8,
         recommendation: 'Add a lang attribute to the <html> element.',
         effort: 'EASY',
-        impact: 'Medium',
+        impact: 'Low',
       });
     }
   }
@@ -461,7 +461,7 @@ export class AuditEngine {
           title: `Missing ${title}`,
           category: 'Security',
           severity,
-          confidence: 0.95,
+          confidence: 0.92,
           recommendation: `Add the ${title} header.`,
           effort: 'EASY',
           impact: severity,
@@ -481,7 +481,7 @@ export class AuditEngine {
         title: 'Server Information Exposed',
         category: 'Security',
         severity: 'LOW',
-        confidence: 1.0,
+        confidence: 0.8,
         recommendation: 'Hide or minimize Server and X-Powered-By headers.',
         effort: 'EASY',
         impact: 'Low',
@@ -495,15 +495,16 @@ export class AuditEngine {
 
     let missingAlt = 0;
     $('img').each((_, el) => {
-      if (!$(el).attr('alt')) missingAlt++;
+      const alt = $(el).attr('alt');
+      if (alt === undefined) missingAlt++;
     });
     if (missingAlt > 0) {
       this.addFinding({
         code: 'A11Y_MISSING_ALT',
         title: `${missingAlt} Images Missing Alt Text`,
         category: 'Accessibility',
-        severity: 'HIGH',
-        confidence: 1.0,
+        severity: missingAlt > 8 ? 'HIGH' : 'MEDIUM',
+        confidence: 0.9,
         recommendation: 'Add meaningful alt text to informative images.',
         effort: 'MEDIUM',
         impact: 'High',
@@ -515,19 +516,20 @@ export class AuditEngine {
       const text = $(el).text().trim();
       const aria = $(el).attr('aria-label');
       const title = $(el).attr('title');
-      if (!text && !aria && !title) emptyButtons++;
+      const hasSvg = $(el).find('svg').length > 0;
+      if (!text && !aria && !title && !hasSvg) emptyButtons++;
     });
     if (emptyButtons > 0) {
       this.addFinding({
         code: 'A11Y_EMPTY_BUTTONS',
         title: `${emptyButtons} Empty Buttons/Links`,
         category: 'Accessibility',
-        severity: 'HIGH',
-        confidence: 1.0,
+        severity: 'MEDIUM',
+        confidence: 0.8,
         recommendation:
           'Ensure interactive elements have visible text or accessible labels.',
         effort: 'MEDIUM',
-        impact: 'High',
+        impact: 'Medium',
       });
     }
 
@@ -550,7 +552,7 @@ export class AuditEngine {
         title: `${missingLabels} Form Fields Missing Labels`,
         category: 'Accessibility',
         severity: 'MEDIUM',
-        confidence: 0.9,
+        confidence: 0.8,
         recommendation: 'Associate all form fields with labels or ARIA labeling.',
         effort: 'MEDIUM',
         impact: 'Medium',
@@ -562,11 +564,11 @@ export class AuditEngine {
         code: 'A11Y_MISSING_MAIN',
         title: 'Missing Main Landmark',
         category: 'Accessibility',
-        severity: 'MEDIUM',
-        confidence: 0.9,
+        severity: 'LOW',
+        confidence: 0.85,
         recommendation: 'Wrap the main content in a <main> landmark.',
         effort: 'EASY',
-        impact: 'Medium',
+        impact: 'Low',
       });
     }
   }
@@ -577,28 +579,28 @@ export class AuditEngine {
     const bodyText = $('body').text().replace(/\s+/g, ' ').trim();
     const wordCount = bodyText ? bodyText.split(' ').filter(Boolean).length : 0;
 
-    if (wordCount < 300) {
+    if (wordCount < 120) {
       this.addFinding({
         code: 'CONTENT_THIN',
         title: 'Thin Content',
         category: 'SEO',
-        severity: 'MEDIUM',
-        confidence: 0.8,
+        severity: 'LOW',
+        confidence: 0.7,
         recommendation: 'Add more descriptive, relevant page content.',
         effort: 'HARD',
-        impact: 'Medium',
+        impact: 'Low',
         evidence: { wordCount },
       });
     }
 
     const inlineStyleCount = $('[style]').length;
-    if (inlineStyleCount > 20) {
+    if (inlineStyleCount > 40) {
       this.addFinding({
         code: 'CONTENT_INLINE_STYLES',
         title: 'Excessive Inline Styles',
         category: 'Performance',
         severity: 'LOW',
-        confidence: 0.9,
+        confidence: 0.75,
         recommendation: 'Move repeated inline styles into CSS classes or stylesheets.',
         effort: 'MEDIUM',
         impact: 'Low',
@@ -612,13 +614,13 @@ export class AuditEngine {
     const $ = this.loadCheerio();
 
     const modalCount = $('.modal, .popup, [role="dialog"]').length;
-    if (modalCount > 3) {
+    if (modalCount > 5) {
       this.addFinding({
         code: 'UX_TOO_MANY_MODALS',
         title: 'Excessive Modals Found',
         category: 'UX',
         severity: 'LOW',
-        confidence: 0.7,
+        confidence: 0.65,
         recommendation: 'Reduce overlapping modal and popup usage.',
         effort: 'MEDIUM',
         impact: 'Low',
@@ -626,7 +628,7 @@ export class AuditEngine {
     }
 
     const interactiveCount = $('a, button').length;
-    if (interactiveCount > 100) {
+    if (interactiveCount > 180) {
       this.addFinding({
         code: 'UX_CLUTTER',
         title: 'High Link or Button Clutter',
@@ -706,7 +708,7 @@ export class AuditEngine {
             title: `${value?.title || key} Score Below Target`,
             category: mappedCategory,
             severity,
-            confidence: 0.95,
+            confidence: 0.98,
             recommendation: `Improve ${String(value?.title || key).toLowerCase()} score toward 90+.`,
             effort: 'MEDIUM',
             impact: 'Determined by Lighthouse',
@@ -742,7 +744,7 @@ export class AuditEngine {
           title: audit.title || auditId,
           category: mappedCategory,
           severity,
-          confidence: 0.95,
+          confidence: 0.92,
           recommendation: audit.description || 'Review and fix this Lighthouse issue.',
           effort: 'MEDIUM',
           impact: 'Determined by Lighthouse',
@@ -769,29 +771,151 @@ export class AuditEngine {
     }
   }
 
+  private getFindingWeight(f: AuditFinding): number {
+    const base =
+      f.severity === 'CRITICAL'
+        ? 1.0
+        : f.severity === 'HIGH'
+        ? 0.7
+        : f.severity === 'MEDIUM'
+        ? 0.4
+        : 0.18;
+
+    const code = String(f.code || '').toUpperCase();
+    const title = String(f.title || '').toLowerCase();
+    const category = String(f.category || '');
+
+    let modifier = 1;
+
+    const advisoryPatterns = [
+      'SEO_MISSING_TWITTER_CARD',
+      'SEO_MISSING_OG',
+      'SEO_MISSING_FAVICON',
+      'SEO_MULTIPLE_H1',
+      'CONTENT_INLINE_STYLES',
+      'UX_TOO_MANY_MODALS',
+      'UX_CLUTTER',
+      'SEC_EXPOSED_SERVER',
+      'SEC_REFERRER',
+    ];
+
+    if (advisoryPatterns.includes(code)) modifier *= 0.45;
+    if (code === 'SEO_MISSING_META_DESC') modifier *= 0.6;
+    if (code === 'SEO_MISSING_SCHEMA') modifier *= 0.55;
+
+    if (
+      code === 'SEO_MISSING_LANG' ||
+      code === 'SEO_MISSING_FAVICON' ||
+      code === 'SEO_MISSING_OG' ||
+      code === 'SEO_MISSING_TWITTER_CARD'
+    ) {
+      modifier *= 0.5;
+    }
+
+    if (code === 'CONTENT_THIN') modifier *= 0.55;
+    if (code === 'A11Y_EMPTY_BUTTONS' || code === 'A11Y_MISSING_LABELS') modifier *= 0.75;
+    if (code === 'SEO_MISSING_H1') modifier *= 0.7;
+
+    if (
+      code === 'SEO_MISSING_VIEWPORT' ||
+      code === 'SEC_NO_HTTPS' ||
+      code === 'SEC_HSTS' ||
+      code === 'SEC_CSP'
+    ) {
+      modifier *= 1.15;
+    }
+
+    if (code.startsWith('PSI_CATEGORY_')) modifier *= 1.25;
+    if (code.startsWith('PSI_') && !code.startsWith('PSI_CATEGORY_')) modifier *= 0.8;
+
+    if (category === 'Performance' && !code.startsWith('PSI_CATEGORY_')) modifier *= 0.9;
+    if (category === 'UX') modifier *= 0.65;
+    if (title.includes('missing') && f.severity === 'LOW') modifier *= 0.75;
+
+    return base * modifier * (typeof f.confidence === 'number' ? f.confidence : 1);
+  }
+
+  private getCategoryPenaltyCap(category: string): number {
+    switch (category) {
+      case 'SEO':
+        return 42;
+      case 'Security':
+        return 45;
+      case 'Accessibility':
+        return 40;
+      case 'Performance':
+        return 42;
+      case 'UX':
+        return 26;
+      default:
+        return 35;
+    }
+  }
+
+  private getCategoryBaseline(category: string): number {
+    switch (category) {
+      case 'SEO':
+        return 92;
+      case 'Security':
+        return 93;
+      case 'Accessibility':
+        return 90;
+      case 'Performance':
+        return 90;
+      case 'UX':
+        return 91;
+      default:
+        return 90;
+    }
+  }
+
   private calculateCategoryScores(): Record<string, { score: number; confidence: number }> {
     const categories = ['SEO', 'Security', 'Accessibility', 'Performance', 'UX'];
     const results: Record<string, { score: number; confidence: number }> = {};
 
     for (const cat of categories) {
       const catFindings = this.findings.filter((f) => f.category === cat);
-      let score = 100;
 
-      for (const f of catFindings) {
-        const penalty =
-          f.severity === 'CRITICAL'
-            ? 30
-            : f.severity === 'HIGH'
-            ? 15
-            : f.severity === 'MEDIUM'
-            ? 7
-            : 3;
-        score -= penalty * (typeof f.confidence === 'number' ? f.confidence : 1);
+      let totalPenalty = 0;
+      for (const finding of catFindings) {
+        totalPenalty += this.getFindingWeight(finding) * 12;
+      }
+
+      totalPenalty = Math.min(totalPenalty, this.getCategoryPenaltyCap(cat));
+
+      let score = this.getCategoryBaseline(cat) - totalPenalty;
+
+      const psiCategoryFinding = catFindings.find((f) =>
+        String(f.code || '').startsWith('PSI_CATEGORY_')
+      );
+
+      const psiScore =
+        typeof psiCategoryFinding?.evidence?.score === 'number'
+          ? Number(psiCategoryFinding.evidence.score)
+          : null;
+
+      if (psiScore !== null) {
+        score = score * 0.55 + psiScore * 0.45;
+      }
+
+      const hasCritical = catFindings.some((f) => f.severity === 'CRITICAL');
+      const hasHigh = catFindings.some((f) => f.severity === 'HIGH');
+
+      if (!hasCritical && !hasHigh) {
+        score += 4;
+      } else if (!hasCritical && hasHigh) {
+        score += 1.5;
+      }
+
+      score = Math.max(35, Math.min(99, score));
+
+      if (catFindings.length === 0) {
+        score = 96;
       }
 
       results[cat] = {
-        score: Math.max(0, Math.min(100, Math.round(score))),
-        confidence: 0.9,
+        score: Math.round(score),
+        confidence: catFindings.length > 0 ? 0.9 : 0.82,
       };
     }
 
@@ -801,8 +925,13 @@ export class AuditEngine {
   private calculateOverallScore(
     categories: Record<string, { score: number; confidence: number }>
   ): number {
-    const values = Object.values(categories).map((c) => c.score);
-    if (!values.length) return 0;
-    return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+    const weighted =
+      categories.SEO.score * 0.24 +
+      categories.Performance.score * 0.24 +
+      categories.Security.score * 0.2 +
+      categories.Accessibility.score * 0.17 +
+      categories.UX.score * 0.15;
+
+    return Math.round(Math.max(35, Math.min(99, weighted)));
   }
 }
