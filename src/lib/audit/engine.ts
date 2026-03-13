@@ -1,4 +1,3 @@
-// f:\ANTIGRAVITY\WebsiteAudit\brand-toughness-app\src\lib\audit\engine.ts
 import 'server-only';
 
 import axios, { AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios';
@@ -28,6 +27,11 @@ export interface AuditResult {
 
 type HeaderMap = Record<string, string>;
 
+const MAX_HTML_BYTES = 750_000;
+const MAX_REMOTE_BYTES = 2 * 1024 * 1024;
+const MAX_FINDINGS = 80;
+const ENABLE_PSI = process.env.DISABLE_PSI !== 'true';
+
 export class AuditEngine {
   private url: string;
   private html = '';
@@ -50,7 +54,14 @@ export class AuditEngine {
       this.runAccessibilityChecks();
       this.runContentChecks();
       this.runUXChecks();
-      await this.runAsyncChecks();
+
+      if (ENABLE_PSI) {
+        await this.runAsyncChecks();
+      }
+
+      if (this.findings.length > MAX_FINDINGS) {
+        this.findings = this.findings.slice(0, MAX_FINDINGS);
+      }
 
       const categories = this.calculateCategoryScores();
       const overallScore = this.calculateOverallScore(categories);
@@ -65,37 +76,36 @@ export class AuditEngine {
           statusCode: this.status,
           contentType: this.getHeader('content-type'),
           server: this.getHeader('server'),
+          htmlBytes: this.html.length,
         },
       };
     } catch (error: any) {
       throw new Error(`Audit failed: ${error?.message || 'Unknown error'}`);
+    } finally {
+      // release large string as early as possible
+      this.html = '';
     }
   }
 
   private normalizeUrl(input: string): string {
     const trimmed = String(input || '').trim();
-    if (!trimmed) {
-      throw new Error('URL is required.');
-    }
-
-    if (/^https?:\/\//i.test(trimmed)) {
-      return trimmed;
-    }
-
+    if (!trimmed) throw new Error('URL is required.');
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
     return `https://${trimmed}`;
   }
 
   private async fetchPage(): Promise<void> {
     const response = await axios.get(this.url, {
-      timeout: 45000,
+      timeout: 25000,
       maxRedirects: 5,
       responseType: 'text',
       transformResponse: [(data) => data],
+      maxContentLength: MAX_REMOTE_BYTES,
+      maxBodyLength: MAX_REMOTE_BYTES,
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        Accept:
-          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.9',
         'Cache-Control': 'no-cache',
         Pragma: 'no-cache',
@@ -125,7 +135,7 @@ export class AuditEngine {
       return;
     }
 
-    this.html = rawData;
+    this.html = rawData.slice(0, MAX_HTML_BYTES);
 
     if (
       !contentType.includes('text/html') &&
@@ -185,11 +195,8 @@ export class AuditEngine {
 
     Object.entries(headers).forEach(([key, value]) => {
       const normalizedKey = String(key).toLowerCase();
-      if (Array.isArray(value)) {
-        out[normalizedKey] = value.join(', ');
-      } else if (value !== undefined && value !== null) {
-        out[normalizedKey] = String(value);
-      }
+      if (Array.isArray(value)) out[normalizedKey] = value.join(', ');
+      else if (value !== undefined && value !== null) out[normalizedKey] = String(value);
     });
 
     return out;
@@ -199,8 +206,25 @@ export class AuditEngine {
     return this.headers[name.toLowerCase()] || '';
   }
 
+  private sanitizeEvidence(evidence: any) {
+    if (!evidence) return undefined;
+    try {
+      const text =
+        typeof evidence === 'string'
+          ? evidence
+          : JSON.stringify(evidence);
+      return { summary: text.slice(0, 300) };
+    } catch {
+      return undefined;
+    }
+  }
+
   private addFinding(finding: AuditFinding) {
-    this.findings.push(finding);
+    if (this.findings.length >= MAX_FINDINGS) return;
+    this.findings.push({
+      ...finding,
+      evidence: this.sanitizeEvidence(finding.evidence),
+    });
   }
 
   private loadCheerio() {
@@ -244,8 +268,7 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation:
-          'Add a meta description of roughly 150–160 characters.',
+        recommendation: 'Add a meta description of roughly 150–160 characters.',
         effort: 'EASY',
         impact: 'High',
       });
@@ -273,8 +296,7 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation:
-          'Ensure the page contains exactly one meaningful <h1>.',
+        recommendation: 'Ensure the page contains exactly one meaningful <h1>.',
         effort: 'EASY',
         impact: 'High',
       });
@@ -299,8 +321,7 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'LOW',
         confidence: 0.9,
-        recommendation:
-          'Add OpenGraph tags such as og:title, og:description, and og:image.',
+        recommendation: 'Add OpenGraph tags such as og:title, og:description, and og:image.',
         effort: 'EASY',
         impact: 'Low',
       });
@@ -326,8 +347,7 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'CRITICAL',
         confidence: 1.0,
-        recommendation:
-          'Add a viewport meta tag for mobile responsiveness.',
+        recommendation: 'Add a viewport meta tag for mobile responsiveness.',
         effort: 'EASY',
         impact: 'Critical',
       });
@@ -353,8 +373,7 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'LOW',
         confidence: 1.0,
-        recommendation:
-          'Add a favicon for better brand presence and browser UX.',
+        recommendation: 'Add a favicon.',
         effort: 'EASY',
         impact: 'Low',
       });
@@ -370,22 +389,6 @@ export class AuditEngine {
         recommendation: 'Add a lang attribute to the <html> element.',
         effort: 'EASY',
         impact: 'Medium',
-      });
-    }
-
-    const robots = $('meta[name="robots"]').attr('content')?.toLowerCase() || '';
-    if (robots.includes('noindex')) {
-      this.addFinding({
-        code: 'SEO_NOINDEX',
-        title: 'Page Marked Noindex',
-        category: 'SEO',
-        severity: 'HIGH',
-        confidence: 1.0,
-        recommendation:
-          'Remove noindex if this page should appear in search results.',
-        effort: 'EASY',
-        impact: 'High',
-        evidence: { robots },
       });
     }
   }
@@ -424,36 +427,11 @@ export class AuditEngine {
       }
     };
 
-    checkHeader(
-      'strict-transport-security',
-      'SEC_HSTS',
-      'HSTS Header',
-      'HIGH'
-    );
-    checkHeader(
-      'content-security-policy',
-      'SEC_CSP',
-      'CSP Header',
-      'HIGH'
-    );
-    checkHeader(
-      'x-frame-options',
-      'SEC_XFO',
-      'X-Frame-Options Header',
-      'MEDIUM'
-    );
-    checkHeader(
-      'x-content-type-options',
-      'SEC_NOSNIFF',
-      'X-Content-Type-Options Header',
-      'MEDIUM'
-    );
-    checkHeader(
-      'referrer-policy',
-      'SEC_REFERRER',
-      'Referrer-Policy Header',
-      'LOW'
-    );
+    checkHeader('strict-transport-security', 'SEC_HSTS', 'HSTS Header', 'HIGH');
+    checkHeader('content-security-policy', 'SEC_CSP', 'CSP Header', 'HIGH');
+    checkHeader('x-frame-options', 'SEC_XFO', 'X-Frame-Options Header', 'MEDIUM');
+    checkHeader('x-content-type-options', 'SEC_NOSNIFF', 'X-Content-Type-Options Header', 'MEDIUM');
+    checkHeader('referrer-policy', 'SEC_REFERRER', 'Referrer-Policy Header', 'LOW');
 
     if (this.getHeader('server') || this.getHeader('x-powered-by')) {
       this.addFinding({
@@ -465,10 +443,6 @@ export class AuditEngine {
         recommendation: 'Hide or minimize Server and X-Powered-By headers.',
         effort: 'EASY',
         impact: 'Low',
-        evidence: {
-          server: this.getHeader('server'),
-          poweredBy: this.getHeader('x-powered-by'),
-        },
       });
     }
   }
@@ -480,7 +454,6 @@ export class AuditEngine {
     $('img').each((_, el) => {
       if (!$(el).attr('alt')) missingAlt++;
     });
-
     if (missingAlt > 0) {
       this.addFinding({
         code: 'A11Y_MISSING_ALT',
@@ -488,11 +461,9 @@ export class AuditEngine {
         category: 'Accessibility',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation:
-          'Add meaningful alt text to all informative images.',
+        recommendation: 'Add meaningful alt text to informative images.',
         effort: 'MEDIUM',
         impact: 'High',
-        evidence: { missingAlt },
       });
     }
 
@@ -503,7 +474,6 @@ export class AuditEngine {
       const title = $(el).attr('title');
       if (!text && !aria && !title) emptyButtons++;
     });
-
     if (emptyButtons > 0) {
       this.addFinding({
         code: 'A11Y_EMPTY_BUTTONS',
@@ -511,11 +481,9 @@ export class AuditEngine {
         category: 'Accessibility',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation:
-          'Ensure interactive elements have visible text or accessible labels.',
+        recommendation: 'Ensure interactive elements have visible text or accessible labels.',
         effort: 'MEDIUM',
         impact: 'High',
-        evidence: { emptyButtons },
       });
     }
 
@@ -525,16 +493,13 @@ export class AuditEngine {
         const id = $(el).attr('id');
         const ariaLabel = $(el).attr('aria-label');
         const ariaLabelledBy = $(el).attr('aria-labelledby');
-
         const hasLabel =
           !!ariaLabel ||
           !!ariaLabelledBy ||
           (!!id && $(`label[for="${id}"]`).length > 0);
-
         if (!hasLabel) missingLabels++;
       }
     );
-
     if (missingLabels > 0) {
       this.addFinding({
         code: 'A11Y_MISSING_LABELS',
@@ -542,11 +507,9 @@ export class AuditEngine {
         category: 'Accessibility',
         severity: 'MEDIUM',
         confidence: 0.9,
-        recommendation:
-          'Associate all form fields with labels or ARIA labeling.',
+        recommendation: 'Associate all form fields with labels or ARIA labeling.',
         effort: 'MEDIUM',
         impact: 'Medium',
-        evidence: { missingLabels },
       });
     }
 
@@ -591,8 +554,7 @@ export class AuditEngine {
         category: 'Performance',
         severity: 'LOW',
         confidence: 0.9,
-        recommendation:
-          'Move repeated inline styles into CSS classes or stylesheets.',
+        recommendation: 'Move repeated inline styles into CSS classes or stylesheets.',
         effort: 'MEDIUM',
         impact: 'Low',
         evidence: { inlineStyleCount },
@@ -614,7 +576,6 @@ export class AuditEngine {
         recommendation: 'Reduce overlapping modal and popup usage.',
         effort: 'MEDIUM',
         impact: 'Low',
-        evidence: { modalCount },
       });
     }
 
@@ -626,11 +587,9 @@ export class AuditEngine {
         category: 'UX',
         severity: 'LOW',
         confidence: 0.6,
-        recommendation:
-          'Simplify navigation and reduce interaction clutter.',
+        recommendation: 'Simplify navigation and reduce interaction clutter.',
         effort: 'HARD',
         impact: 'Low',
-        evidence: { interactiveCount },
       });
     }
   }
@@ -650,8 +609,10 @@ export class AuditEngine {
         (key ? `&key=${encodeURIComponent(key)}` : '');
 
       const response = await axios.get(psiUrl, {
-        timeout: 45000,
+        timeout: 30000,
         validateStatus: () => true,
+        maxContentLength: MAX_REMOTE_BYTES,
+        maxBodyLength: MAX_REMOTE_BYTES,
       });
 
       if (response.status >= 400) {
@@ -669,7 +630,6 @@ export class AuditEngine {
               : 'Check the PageSpeed request, URL validity, and server configuration.',
           effort: 'MEDIUM',
           impact: 'Medium',
-          evidence: { status: response.status, data: response.data },
         });
         return;
       }
@@ -678,98 +638,75 @@ export class AuditEngine {
       const audits = lighthouse?.audits || {};
       const categories = lighthouse?.categories || {};
 
-      const categoryScores: Array<{
-        key: string;
-        label: string;
-        score: number;
-      }> = Object.entries(categories).map(([key, value]: any) => ({
-        key,
-        label: value?.title || key,
-        score:
-          typeof value?.score === 'number' ? Math.round(value.score * 100) : 0,
-      }));
-
-      for (const cat of categoryScores) {
-        if (cat.score < 90) {
+      for (const [key, value] of Object.entries(categories) as any[]) {
+        const score = typeof value?.score === 'number' ? Math.round(value.score * 100) : 0;
+        if (score < 90) {
           let severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' = 'LOW';
-          if (cat.score < 30) severity = 'CRITICAL';
-          else if (cat.score < 60) severity = 'HIGH';
-          else if (cat.score < 90) severity = 'MEDIUM';
+          if (score < 30) severity = 'CRITICAL';
+          else if (score < 60) severity = 'HIGH';
+          else severity = 'MEDIUM';
 
           const mappedCategory =
-            cat.key === 'accessibility'
+            key === 'accessibility'
               ? 'Accessibility'
-              : cat.key === 'seo'
+              : key === 'seo'
               ? 'SEO'
-              : cat.key === 'best-practices'
+              : key === 'best-practices'
               ? 'Security'
               : 'Performance';
 
           this.addFinding({
-            code: `PSI_CATEGORY_${cat.key.toUpperCase()}`,
-            title: `${cat.label} Score Below Target`,
+            code: `PSI_CATEGORY_${String(key).toUpperCase()}`,
+            title: `${value?.title || key} Score Below Target`,
             category: mappedCategory,
             severity,
             confidence: 0.95,
-            recommendation: `Improve ${cat.label.toLowerCase()} score toward 90+.`,
+            recommendation: `Improve ${String(value?.title || key).toLowerCase()} score toward 90+.`,
             effort: 'MEDIUM',
             impact: 'Determined by Lighthouse',
-            evidence: { score: cat.score },
+            evidence: { score },
           });
         }
       }
 
+      let added = 0;
       for (const auditId of Object.keys(audits)) {
+        if (added >= 20) break;
         const audit = audits[auditId];
         if (!audit) continue;
+        if (audit.score === null || typeof audit.score !== 'number' || audit.score >= 0.9) continue;
 
-        if (
-          audit.score !== null &&
-          typeof audit.score === 'number' &&
-          audit.score < 0.9
-        ) {
-          let severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' = 'LOW';
-          if (audit.score < 0.3) severity = 'CRITICAL';
-          else if (audit.score < 0.6) severity = 'HIGH';
-          else severity = 'MEDIUM';
+        let severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' = 'LOW';
+        if (audit.score < 0.3) severity = 'CRITICAL';
+        else if (audit.score < 0.6) severity = 'HIGH';
+        else severity = 'MEDIUM';
 
-          const id = String(audit.id || auditId).toLowerCase();
-          const mappedCategory =
-            id.includes('seo') ||
-            id.includes('meta') ||
-            id.includes('canonical')
-              ? 'SEO'
-              : id.includes('aria') ||
-                id.includes('alt') ||
-                id.includes('label') ||
-                id.includes('heading')
-              ? 'Accessibility'
-              : id.includes('csp') ||
-                id.includes('https') ||
-                id.includes('mixed-content') ||
-                id.includes('unsafe')
-              ? 'Security'
-              : 'Performance';
+        const id = String(audit.id || auditId).toLowerCase();
+        const mappedCategory =
+          id.includes('seo') || id.includes('meta') || id.includes('canonical')
+            ? 'SEO'
+            : id.includes('aria') || id.includes('alt') || id.includes('label') || id.includes('heading')
+            ? 'Accessibility'
+            : id.includes('csp') || id.includes('https') || id.includes('mixed-content') || id.includes('unsafe')
+            ? 'Security'
+            : 'Performance';
 
-          this.addFinding({
-            code: `PSI_${String(audit.id || auditId)
-              .toUpperCase()
-              .replace(/[^A-Z0-9_]/g, '_')}`,
-            title: audit.title || auditId,
-            category: mappedCategory,
-            severity,
-            confidence: 0.95,
-            recommendation:
-              audit.description || 'Review and fix this Lighthouse issue.',
-            effort: 'MEDIUM',
-            impact: 'Determined by Lighthouse',
-            evidence: {
-              score: audit.score,
-              numericValue: audit.numericValue,
-              displayValue: audit.displayValue,
-            },
-          });
-        }
+        this.addFinding({
+          code: `PSI_${String(audit.id || auditId).toUpperCase().replace(/[^A-Z0-9_]/g, '_')}`,
+          title: audit.title || auditId,
+          category: mappedCategory,
+          severity,
+          confidence: 0.95,
+          recommendation: audit.description || 'Review and fix this Lighthouse issue.',
+          effort: 'MEDIUM',
+          impact: 'Determined by Lighthouse',
+          evidence: {
+            score: audit.score,
+            displayValue: audit.displayValue,
+          },
+        });
+
+        added++;
       }
     } catch (err: any) {
       this.addFinding({
@@ -778,22 +715,15 @@ export class AuditEngine {
         category: 'Performance',
         severity: 'LOW',
         confidence: 0.9,
-        recommendation:
-          'PageSpeed Insights could not be fetched. Check API key, quota, network access, or retry later.',
+        recommendation: 'PageSpeed Insights could not be fetched. Check API key, quota, or retry later.',
         effort: 'EASY',
         impact: 'Low',
-        evidence: {
-          message: err?.message || 'Unknown error',
-          status: err?.response?.status || null,
-        },
+        evidence: { message: err?.message || 'Unknown error' },
       });
     }
   }
 
-  private calculateCategoryScores(): Record<
-    string,
-    { score: number; confidence: number }
-  > {
+  private calculateCategoryScores(): Record<string, { score: number; confidence: number }> {
     const categories = ['SEO', 'Security', 'Accessibility', 'Performance', 'UX'];
     const results: Record<string, { score: number; confidence: number }> = {};
 
@@ -810,7 +740,6 @@ export class AuditEngine {
             : f.severity === 'MEDIUM'
             ? 7
             : 3;
-
         score -= penalty * (typeof f.confidence === 'number' ? f.confidence : 1);
       }
 
