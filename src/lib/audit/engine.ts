@@ -28,7 +28,7 @@ export interface AuditResult {
 type HeaderMap = Record<string, string>;
 
 const MAX_HTML_BYTES = 750_000;
-const MAX_REMOTE_BYTES = 2 * 1024 * 1024;
+const MAX_REMOTE_BYTES = 6 * 1024 * 1024;
 const MAX_FINDINGS = 80;
 const ENABLE_PSI = process.env.DISABLE_PSI !== 'true';
 
@@ -82,7 +82,6 @@ export class AuditEngine {
     } catch (error: any) {
       throw new Error(`Audit failed: ${error?.message || 'Unknown error'}`);
     } finally {
-      // release large string as early as possible
       this.html = '';
     }
   }
@@ -95,91 +94,135 @@ export class AuditEngine {
   }
 
   private async fetchPage(): Promise<void> {
-    const response = await axios.get(this.url, {
-      timeout: 25000,
-      maxRedirects: 5,
-      responseType: 'text',
-      transformResponse: [(data) => data],
-      maxContentLength: MAX_REMOTE_BYTES,
-      maxBodyLength: MAX_REMOTE_BYTES,
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-      },
-      validateStatus: () => true,
-    });
-
-    this.status = response.status;
-    this.headers = this.normalizeHeaders(response.headers);
-
-    const contentType = this.getHeader('content-type');
-    const rawData = response.data;
-
-    if (typeof rawData !== 'string') {
-      this.html = '';
-      this.addFinding({
-        code: 'FETCH_NON_HTML_RESPONSE',
-        title: 'Non-HTML Response',
-        category: 'SEO',
-        severity: 'HIGH',
-        confidence: 1,
-        recommendation: 'Ensure the URL returns a valid HTML document.',
-        effort: 'MEDIUM',
-        impact: 'High',
-        evidence: { contentType, status: this.status },
+    try {
+      const response = await axios.get(this.url, {
+        timeout: 25000,
+        maxRedirects: 5,
+        responseType: 'text',
+        transformResponse: [(data) => data],
+        maxContentLength: MAX_REMOTE_BYTES,
+        maxBodyLength: MAX_REMOTE_BYTES,
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+        validateStatus: () => true,
       });
-      return;
-    }
 
-    this.html = rawData.slice(0, MAX_HTML_BYTES);
+      this.status = response.status;
+      this.headers = this.normalizeHeaders(response.headers);
 
-    if (
-      !contentType.includes('text/html') &&
-      !contentType.includes('application/xhtml+xml')
-    ) {
-      this.addFinding({
-        code: 'FETCH_UNEXPECTED_CONTENT_TYPE',
-        title: 'Unexpected Content Type',
-        category: 'SEO',
-        severity: 'MEDIUM',
-        confidence: 0.95,
-        recommendation: 'Ensure the audited URL serves HTML content.',
-        effort: 'EASY',
-        impact: 'Medium',
-        evidence: { contentType, status: this.status },
-      });
-    }
+      const contentType = this.getHeader('content-type');
+      const rawData = response.data;
 
-    if (this.status >= 400) {
-      this.addFinding({
-        code: 'FETCH_HTTP_ERROR',
-        title: `HTTP Error ${this.status}`,
-        category: 'UX',
-        severity: this.status >= 500 ? 'CRITICAL' : 'HIGH',
-        confidence: 1,
-        recommendation:
-          'Fix the page response status and ensure the URL is publicly accessible.',
-        effort: 'MEDIUM',
-        impact: 'Critical',
-        evidence: { status: this.status },
-      });
-    }
+      if (typeof rawData !== 'string') {
+        this.html = '';
+        this.addFinding({
+          code: 'FETCH_NON_HTML_RESPONSE',
+          title: 'Non-HTML Response',
+          category: 'SEO',
+          severity: 'HIGH',
+          confidence: 1,
+          recommendation: 'Ensure the URL returns a valid HTML document.',
+          effort: 'MEDIUM',
+          impact: 'High',
+          evidence: { contentType, status: this.status },
+        });
+        return;
+      }
 
-    if (!this.html.trim()) {
-      this.addFinding({
-        code: 'FETCH_EMPTY_HTML',
-        title: 'Empty HTML Response',
-        category: 'SEO',
-        severity: 'CRITICAL',
-        confidence: 1,
-        recommendation: 'Ensure the page returns a rendered HTML document.',
-        effort: 'MEDIUM',
-        impact: 'Critical',
-      });
+      this.html = rawData.slice(0, MAX_HTML_BYTES);
+
+      if (
+        !contentType.includes('text/html') &&
+        !contentType.includes('application/xhtml+xml')
+      ) {
+        this.addFinding({
+          code: 'FETCH_UNEXPECTED_CONTENT_TYPE',
+          title: 'Unexpected Content Type',
+          category: 'SEO',
+          severity: 'MEDIUM',
+          confidence: 0.95,
+          recommendation: 'Ensure the audited URL serves HTML content.',
+          effort: 'EASY',
+          impact: 'Medium',
+          evidence: { contentType, status: this.status },
+        });
+      }
+
+      if (rawData.length > MAX_HTML_BYTES) {
+        this.addFinding({
+          code: 'FETCH_HTML_TRUNCATED',
+          title: 'Large Page HTML Truncated for Safe Analysis',
+          category: 'Performance',
+          severity: 'LOW',
+          confidence: 0.95,
+          recommendation:
+            'This page is very large. Audit was performed on a safe truncated snapshot of the HTML.',
+          effort: 'EASY',
+          impact: 'Low',
+          evidence: {
+            originalBytes: rawData.length,
+            analyzedBytes: MAX_HTML_BYTES,
+          },
+        });
+      }
+
+      if (this.status >= 400) {
+        this.addFinding({
+          code: 'FETCH_HTTP_ERROR',
+          title: `HTTP Error ${this.status}`,
+          category: 'UX',
+          severity: this.status >= 500 ? 'CRITICAL' : 'HIGH',
+          confidence: 1,
+          recommendation:
+            'Fix the page response status and ensure the URL is publicly accessible.',
+          effort: 'MEDIUM',
+          impact: 'Critical',
+          evidence: { status: this.status },
+        });
+      }
+
+      if (!this.html.trim()) {
+        this.addFinding({
+          code: 'FETCH_EMPTY_HTML',
+          title: 'Empty HTML Response',
+          category: 'SEO',
+          severity: 'CRITICAL',
+          confidence: 1,
+          recommendation: 'Ensure the page returns a rendered HTML document.',
+          effort: 'MEDIUM',
+          impact: 'Critical',
+        });
+      }
+    } catch (err: any) {
+      const msg = String(err?.message || '');
+
+      if (msg.includes('maxContentLength size')) {
+        this.status = 200;
+        this.html = '';
+        this.addFinding({
+          code: 'FETCH_PAGE_TOO_LARGE',
+          title: 'Page Too Large for Full Safe Fetch',
+          category: 'Performance',
+          severity: 'MEDIUM',
+          confidence: 1,
+          recommendation:
+            'The target page is unusually large. Safe audit limits prevented full HTML fetch. Reduce page payload or use lighter markup.',
+          effort: 'MEDIUM',
+          impact: 'Medium',
+          evidence: {
+            limitBytes: MAX_REMOTE_BYTES,
+          },
+        });
+        return;
+      }
+
+      throw err;
     }
   }
 
@@ -209,10 +252,7 @@ export class AuditEngine {
   private sanitizeEvidence(evidence: any) {
     if (!evidence) return undefined;
     try {
-      const text =
-        typeof evidence === 'string'
-          ? evidence
-          : JSON.stringify(evidence);
+      const text = typeof evidence === 'string' ? evidence : JSON.stringify(evidence);
       return { summary: text.slice(0, 300) };
     } catch {
       return undefined;
@@ -232,6 +272,7 @@ export class AuditEngine {
   }
 
   private runSeoChecks() {
+    if (!this.html) return;
     const $ = this.loadCheerio();
 
     const title = $('title').first().text().trim();
@@ -321,7 +362,8 @@ export class AuditEngine {
         category: 'SEO',
         severity: 'LOW',
         confidence: 0.9,
-        recommendation: 'Add OpenGraph tags such as og:title, og:description, and og:image.',
+        recommendation:
+          'Add OpenGraph tags such as og:title, og:description, and og:image.',
         effort: 'EASY',
         impact: 'Low',
       });
@@ -448,6 +490,7 @@ export class AuditEngine {
   }
 
   private runAccessibilityChecks() {
+    if (!this.html) return;
     const $ = this.loadCheerio();
 
     let missingAlt = 0;
@@ -481,7 +524,8 @@ export class AuditEngine {
         category: 'Accessibility',
         severity: 'HIGH',
         confidence: 1.0,
-        recommendation: 'Ensure interactive elements have visible text or accessible labels.',
+        recommendation:
+          'Ensure interactive elements have visible text or accessible labels.',
         effort: 'MEDIUM',
         impact: 'High',
       });
@@ -528,6 +572,7 @@ export class AuditEngine {
   }
 
   private runContentChecks() {
+    if (!this.html) return;
     const $ = this.loadCheerio();
     const bodyText = $('body').text().replace(/\s+/g, ' ').trim();
     const wordCount = bodyText ? bodyText.split(' ').filter(Boolean).length : 0;
@@ -563,6 +608,7 @@ export class AuditEngine {
   }
 
   private runUXChecks() {
+    if (!this.html) return;
     const $ = this.loadCheerio();
 
     const modalCount = $('.modal, .popup, [role="dialog"]').length;
