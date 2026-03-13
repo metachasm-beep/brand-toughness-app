@@ -1,4 +1,3 @@
-# Base image with Playwright + Chromium dependencies preinstalled
 FROM mcr.microsoft.com/playwright:v1.54.2-jammy
 
 WORKDIR /app
@@ -9,15 +8,15 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# Install dependencies first for better layer caching
 COPY package.json package-lock.json* ./
 
-RUN npm ci
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# Copy app source
 COPY . .
 
-# Build the Next.js app
+# Prisma client generation if Prisma exists
+RUN if [ -f prisma/schema.prisma ]; then npx prisma generate; fi
+
 RUN npm run build
 
 EXPOSE 3000
