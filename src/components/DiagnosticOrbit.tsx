@@ -54,14 +54,16 @@ export default function DiagnosticOrbit({
         return '#FF3D57';
     };
 
-    const orbitLines = [0.4, 0.6, 0.8, 1.0];
+    const orbitLines = [0.28, 0.46, 0.64, 0.82];
 
     const points = useMemo(() => {
         const n = safeScores.length || 6;
 
         return safeScores.map((s, i) => {
             const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
-            const radius = 0.4 + (s / 100) * 0.6;
+
+            // Reduced max radius so chart stays comfortably inside card
+            const radius = 0.22 + (s / 100) * 0.50;
 
             return {
                 x: Math.cos(angle) * radius,
@@ -75,14 +77,13 @@ export default function DiagnosticOrbit({
 
     const polygonPath = useMemo(() => {
         if (!points.length) return '';
-
         const first = points[0];
         const rest = points.slice(1).map((p) => `L ${p.x} ${p.y}`).join(' ');
         return `M ${first.x} ${first.y} ${rest} Z`;
     }, [points]);
 
     return (
-        <div className="relative w-full aspect-square flex items-center justify-center p-10 select-none">
+        <div className="relative w-full aspect-square flex items-center justify-center p-16 md:p-20 overflow-hidden select-none">
             {orbitLines.map((r, i) => (
                 <div
                     key={i}
@@ -100,7 +101,7 @@ export default function DiagnosticOrbit({
                     key={`axis-${i}`}
                     className="absolute h-px bg-white/5 origin-left pointer-events-none"
                     style={{
-                        width: '50%',
+                        width: '41%',
                         left: '50%',
                         top: '50%',
                         transform: `rotate(${(i / points.length) * 360 - 90}deg)`
@@ -109,14 +110,14 @@ export default function DiagnosticOrbit({
             ))}
 
             <svg
-                viewBox="-1.2 -1.2 2.4 2.4"
-                className="absolute inset-0 w-full h-full drop-shadow-[0_0_30px_rgba(0,209,255,0.1)]"
+                viewBox="-1.05 -1.05 2.1 2.1"
+                className="absolute inset-0 w-full h-full drop-shadow-[0_0_30px_rgba(0,209,255,0.08)]"
             >
                 {polygonPath && (
                     <path
                         d={polygonPath}
                         fill="rgba(0, 209, 255, 0.05)"
-                        stroke="rgba(0, 209, 255, 0.4)"
+                        stroke="rgba(0, 209, 255, 0.45)"
                         strokeWidth="0.01"
                         className="transition-all duration-1000"
                     />
@@ -127,7 +128,7 @@ export default function DiagnosticOrbit({
                         key={i}
                         cx={p.x}
                         cy={p.y}
-                        r="0.04"
+                        r="0.032"
                         fill={p.color}
                         className="transition-all duration-1000"
                         style={{ filter: `drop-shadow(0 0 5px ${p.color})` }}
@@ -135,32 +136,37 @@ export default function DiagnosticOrbit({
                 ))}
             </svg>
 
-            <div className="relative z-10 flex flex-col items-center justify-center">
+            <div className="relative z-10 flex flex-col items-center justify-center pointer-events-none">
                 <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
+                    initial={{ scale: 0.85, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="text-7xl xl:text-9xl font-black font-display tracking-tighter text-white drop-shadow-[0_0_40px_rgba(0,209,255,0.3)]"
+                    className="text-6xl md:text-7xl xl:text-8xl font-black font-display tracking-tighter text-white drop-shadow-[0_0_40px_rgba(0,209,255,0.25)]"
                 >
                     {safeOverallScore}
                 </motion.div>
-                <div className="surgical-label !text-white/40 mt-2">Integrity Composite</div>
+                <div className="surgical-label !text-white/40 mt-2 text-center">
+                    Integrity Composite
+                </div>
             </div>
 
             {points.map((p, i) => (
                 <motion.div
                     key={`label-${i}`}
-                    className="absolute flex flex-col items-center pointer-events-none"
+                    className="absolute flex flex-col items-center text-center pointer-events-none max-w-[92px] md:max-w-[110px]"
                     style={{
-                        left: `${50 + p.x * 55}%`,
-                        top: `${50 + p.y * 55}%`,
+                        // Pulled inward so labels stay inside the card
+                        left: `${50 + p.x * 40}%`,
+                        top: `${50 + p.y * 40}%`,
                         transform: 'translate(-50%, -50%)'
                     }}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 + i * 0.1 }}
+                    transition={{ delay: 0.45 + i * 0.08 }}
                 >
-                    <span className="surgical-label text-[8px] !text-white/40">{p.label}</span>
-                    <span className="text-sm font-black font-display text-white">
+                    <span className="surgical-label text-[8px] md:text-[9px] !text-white/45 leading-tight whitespace-normal break-words">
+                        {p.label}
+                    </span>
+                    <span className="text-xs md:text-sm font-black font-display text-white leading-none mt-1">
                         {p.score.toFixed(1)}
                     </span>
                 </motion.div>
