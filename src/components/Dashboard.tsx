@@ -113,7 +113,9 @@ export default function Dashboard() {
     const [error, setError] = useState('');
     const [showPaywall, setShowPaywall] = useState(false);
     const [pdfUnlocked, setPdfUnlocked] = useState(false);
+
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const telemetrySectionRef = useRef<HTMLElement | null>(null);
 
     const { guestAuditResult } = useGuestAudit();
 
@@ -211,6 +213,15 @@ export default function Dashboard() {
         } catch {
             alert('PDF generation failed. Please try again.');
         }
+    };
+
+    const handleScrollToTelemetry = () => {
+        if (!result) return;
+
+        telemetrySectionRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
     };
 
     const scoreValues = result
@@ -410,7 +421,12 @@ export default function Dashboard() {
                         status={result ? 'optimal' : 'stable'}
                         icon={Users}
                     />
-                    <button className="w-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all text-left flex items-center justify-between group">
+
+                    <button
+                        onClick={handleScrollToTelemetry}
+                        disabled={!result}
+                        className="w-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all text-left flex items-center justify-between group disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-[#00D1FF]/10 flex items-center justify-center">
                                 <TrendingUp size={18} className="text-[#00D1FF]" />
@@ -422,8 +438,9 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         </div>
-                        <Lock size={14} className="text-white/20 group-hover:text-[#00D1FF] transition-colors" />
+                        <ArrowRight size={14} className="text-white/20 group-hover:text-[#00D1FF] transition-colors" />
                     </button>
+
                     <MetricCard
                         title="Discovery Score"
                         value={result ? Number(result?.scores?.marketPresence || 0).toFixed(1) : '--'}
@@ -709,7 +726,9 @@ export default function Dashboard() {
             <AnimatePresence>
                 {result && (
                     <motion.section
-                        className="apple-card p-12 space-y-10"
+                        ref={telemetrySectionRef}
+                        id="diagnostic-telemetry"
+                        className="apple-card p-12 space-y-10 scroll-mt-24"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                     >
