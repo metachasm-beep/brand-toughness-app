@@ -31,7 +31,6 @@ export default function Dashboard() {
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState('');
     const [pdfUnlocked, setPdfUnlocked] = useState(false);
-    const [isHoveringCategory, setIsHoveringCategory] = useState(false);
     const router = useRouter();
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -157,10 +156,6 @@ export default function Dashboard() {
         : [0, 0, 0, 0, 0, 0];
 
     const aggregateScore = Number(result?.aggregate || 0);
-
-    const handleHoverChange = (isHovering: boolean) => {
-        setIsHoveringCategory(isHovering);
-    };
 
     const aggregatePercent = Math.max(0, Math.min(100, aggregateScore));
     const ai = result?.aiSummary;
@@ -296,7 +291,6 @@ export default function Dashboard() {
                             <DiagnosticOrbit 
                                 scores={scoreValues} 
                                 overallScore={aggregateScore} 
-                                onHoverChange={handleHoverChange}
                             />
                         </div>
                     </div>
@@ -709,17 +703,7 @@ export default function Dashboard() {
                 )}
             </AnimatePresence>
 
-            {/* Hover Fade to White Backdrop */}
-            <AnimatePresence>
-                {isHoveringCategory && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[150] bg-white/95 backdrop-blur-md"
-                    />
-                )}
-            </AnimatePresence>
+
         </div>
     );
 }

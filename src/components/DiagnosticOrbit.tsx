@@ -14,7 +14,6 @@ import {
 type DiagnosticOrbitProps = {
   scores?: number[];
   overallScore?: number;
-  onHoverChange?: (isHovering: boolean) => void;
 };
 
 type OrbitNode = {

@@ -19,15 +19,6 @@ export const authOptions: NextAuthOptions = {
                 GoogleProvider({
                     clientId: process.env.GOOGLE_CLIENT_ID!,
                     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-                    version: "2.0",
-                    checks: ["none"], // Force-disable State/PKCE to survive proxy stripping
-                    authorization: {
-                        params: {
-                            prompt: "select_account",
-                            access_type: "offline",
-                            response_type: "code"
-                        }
-                    }
                 }),
             ]
             : []),
@@ -115,33 +106,7 @@ export const authOptions: NextAuthOptions = {
         error: '/auth/error',
     },
     debug: true,
-    useSecureCookies: true,
-    cookies: {
-        sessionToken: {
-            name: 'brandos.session-token',
-            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
-        },
-        callbackUrl: {
-            name: 'brandos.callback-url',
-            options: { sameSite: 'lax', path: '/', secure: true }
-        },
-        csrfToken: {
-            name: 'brandos.csrf-token',
-            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
-        },
-        pkceCodeVerifier: {
-            name: 'brandos.pkce.code_verifier',
-            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
-        },
-        state: {
-            name: 'brandos.state',
-            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
-        },
-        nonce: {
-            name: 'brandos.nonce',
-            options: { httpOnly: true, sameSite: 'lax', path: '/', secure: true }
-        }
-    },
+    // Removed forced secure cookies to allow standard HTTP local development
     events: {
         async signIn(message: any) { console.log("[DEBUG] Auth Event: signIn", message); },
         async session(message: any) { console.log("[DEBUG] Auth Event: session active"); },
