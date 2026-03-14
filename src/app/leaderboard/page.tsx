@@ -62,13 +62,13 @@ const COUNTRY_OPTIONS = [
   { code: 'CA', name: 'Canada' },
 ];
 
-function scoreFromRank(rank: number, scope: LeaderboardScope) {
+function scoreFromRank(rank: number, scope: LeaderboardScope): number {
   const base = scope === 'global' ? 98.6 : 97.4;
   const decay = scope === 'global' ? 0.0039 : 0.12;
   return Math.max(55, Math.min(99.5, Math.round((base - rank * decay) * 10) / 10));
 }
 
-function trafficTierFromRank(rank: number, scope: LeaderboardScope) {
+function trafficTierFromRank(rank: number, scope: LeaderboardScope): string {
   if (scope === 'global') {
     if (rank <= 25) return 'Ultra';
     if (rank <= 100) return 'Very High';
@@ -84,39 +84,84 @@ function trafficTierFromRank(rank: number, scope: LeaderboardScope) {
   return 'Growing';
 }
 
-function trendFromRank(rank: number) {
+function trendFromRank(rank: number): number {
   const val = Math.sin(rank * 1.137) * 4.2;
   return Math.round(val * 10) / 10;
 }
 
-function scoreTone(score: number) {
+function scoreTone(score: number): string {
   if (score >= 90) return 'text-[#00E28A]';
   if (score >= 75) return 'text-[#00D1FF]';
   if (score >= 60) return 'text-yellow-300';
   return 'text-[#FF3D57]';
 }
 
-function scoreBar(score: number) {
+function scoreBar(score: number): string {
   if (score >= 90) return 'bg-[#00E28A]';
   if (score >= 75) return 'bg-[#00D1FF]';
   if (score >= 60) return 'bg-yellow-300';
   return 'bg-[#FF3D57]';
 }
 
-function trendTone(trend: number) {
+function trendTone(trend: number): string {
   if (trend > 0) return 'text-[#00E28A]';
   if (trend < 0) return 'text-[#FF3D57]';
   return 'text-white/45';
 }
 
-function faviconUrl(domain: string) {
+function faviconUrl(domain: string): string {
   return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`;
 }
 
-function formatLastUpdated(dateStr?: string) {
+function formatLastUpdated(dateStr?: string): string {
   if (!dateStr) return '—';
   const date = new Date(dateStr);
   return date.toLocaleString();
+}
+
+async function safeJsonFetch<T>(url: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, {
+    ...init,
+    cache: 'no-store',
+    headers: {
+      Accept: 'application/json',
+      ...(init?.headers || {}),
+    },
+  });
+
+  const contentType = response.headers.get('content-type') || '';
+  const raw = await response.text();
+
+  if (!raw.trim()) {
+    throw new Error(`Empty response from ${url}`);
+  }
+
+  if (!contentType.includes('application/json')) {
+    throw new Error(
+      `Expected JSON from ${url}, but received ${contentType || 'unknown content type'}.\n` +
+        `Preview: ${raw.slice(0, 120)}`
+    );
+  }
+
+  let data: T;
+  try {
+    data = JSON.parse(raw) as T;
+  } catch {
+    throw new Error(`Invalid JSON returned from ${url}`);
+  }
+
+  if (!response.ok) {
+    const maybeError =
+      typeof data === 'object' &&
+      data !== null &&
+      'error' in (data as Record<string, unknown>)
+        ? String((data as Record<string, unknown>).error || '')
+        : '';
+
+    throw new Error(maybeError || `Request failed: HTTP ${response.status}`);
+  }
+
+  return data;
 }
 
 export default function LeaderboardPage() {
@@ -135,18 +180,12 @@ export default function LeaderboardPage() {
     setError('');
 
     try {
-      const res = await fetch(
+      const endpoint =
         mode === 'global'
           ? '/api/leaderboard/global'
-          : `/api/leaderboard/country?code=${encodeURIComponent(code || 'IN')}`
-      );
+          : `/api/leaderboard/country?code=${encodeURIComponent(code || 'IN')}`;
 
-      const text = await res.text();
-      const data = text ? JSON.parse(text) : {};
-
-      if (!res.ok) {
-        throw new Error(data?.error || `Leaderboard fetch failed (HTTP ${res.status})`);
-      }
+      const data = await safeJsonFetch<LeaderboardResponse>(endpoint);
 
       if (mode === 'global') setGlobalData(data);
       else setCountryData(data);
@@ -167,7 +206,8 @@ export default function LeaderboardPage() {
     }
   }, [scope, countryCode]);
 
-  const activeData = scope === 'global' ? globalData : countryData;
+  const activeData: LeaderboardResponse | null =
+    scope === 'global' ? globalData : countryData;
 
   const enrichedRows = useMemo<EnrichedRow[]>(() => {
     const rows = activeData?.rows || [];
@@ -211,9 +251,8 @@ export default function LeaderboardPage() {
       total > 0
         ? Math.round((filteredRows.reduce((sum, row) => sum + row.score, 0) / total) * 10) / 10
         : 0;
-    const elite = filteredRows.filter((row) => row.score >= 90).length;
     const rising = filteredRows.filter((row) => row.trend > 0).length;
-    return { total, avg, elite, rising };
+    return { total, avg, rising };
   }, [filteredRows]);
 
   const changeScope = (next: LeaderboardScope) => {
@@ -317,12 +356,9 @@ export default function LeaderboardPage() {
         </section>
 
         <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {topThree.map((site, idx) => (
-            <motion.div
+          {topThree.map((site) => (
+            <div
               key={`${scope}-${site.domain}`}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.06 }}
               className="apple-card p-7 space-y-5 overflow-hidden relative"
             >
               <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_40%)]" />
@@ -384,7 +420,7 @@ export default function LeaderboardPage() {
                   <ExternalLink size={14} />
                 </a>
               </div>
-            </motion.div>
+            </div>
           ))}
         </section>
 
@@ -480,12 +516,9 @@ export default function LeaderboardPage() {
                 {loading ? 'Loading leaderboard...' : 'No websites matched your search.'}
               </div>
             ) : (
-              visibleRows.map((row, idx) => (
-                <motion.div
+              visibleRows.map((row) => (
+                <div
                   key={`${scope}-${row.rank}-${row.domain}`}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.002 }}
                   className="grid grid-cols-1 xl:grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_0.5fr] items-center rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-all overflow-hidden"
                 >
                   <div className="px-6 py-5 flex items-center gap-4 border-b xl:border-b-0 xl:border-r border-white/10 min-w-0">
@@ -563,7 +596,7 @@ export default function LeaderboardPage() {
                       <ExternalLink size={14} />
                     </a>
                   </div>
-                </motion.div>
+                </div>
               ))
             )}
           </div>
