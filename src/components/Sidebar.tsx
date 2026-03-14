@@ -293,54 +293,6 @@ export default function Sidebar() {
           )}
         </div>
 
-        <div className="px-4 py-4 border-b border-white/10">
-          <div
-            className={`rounded-2xl border border-white/10 bg-white/[0.03] ${
-              compact ? 'p-3' : 'p-4'
-            }`}
-            title={compact ? 'Real-time scan indicator' : undefined}
-          >
-            <div className={`flex items-start ${compact ? 'justify-center' : 'justify-between'} gap-3`}>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div
-                    className={`w-10 h-10 rounded-2xl flex items-center justify-center border ${
-                      scanLive
-                        ? 'bg-[#00E28A]/10 border-[#00E28A]/20'
-                        : 'bg-white/[0.03] border-white/10'
-                    }`}
-                  >
-                    {scanLive ? (
-                      <Wifi size={18} className="text-[#00E28A]" />
-                    ) : (
-                      <WifiOff size={18} className="text-white/45" />
-                    )}
-                  </div>
-                  <div
-                    className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border border-[#0B0F14] ${
-                      scanLive ? 'bg-[#00E28A]' : 'bg-white/30'
-                    }`}
-                  />
-                </div>
-
-                {!compact && (
-                  <div>
-                    <div className="text-[10px] uppercase tracking-[0.22em] text-white/30 font-black">
-                      Scan Status
-                    </div>
-                    <div className="text-white font-extrabold mt-1">
-                      {scanLive ? 'Live signal active' : 'Passive watch mode'}
-                    </div>
-                    <div className="text-[11px] text-white/35 mt-1">
-                      Pulse #{String(scanPulseCount + 104).padStart(3, '0')}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
         <nav className="flex-1 px-3 py-4 space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;

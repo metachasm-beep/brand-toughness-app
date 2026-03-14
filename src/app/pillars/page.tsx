@@ -44,6 +44,7 @@ type Pillar = {
     border: string;
     bg: string;
     score: (scores: Scores) => number;
+    metricCategories: string[];
     issues: string[];
     wins: string[];
 };
@@ -59,6 +60,7 @@ const pillars: Pillar[] = [
         border: 'border-[#00D1FF]/20',
         bg: 'bg-[#00D1FF]/10',
         score: (scores) => Number(scores.marketPresence || 0),
+        metricCategories: ['SEO'],
         issues: [
             'Title, meta, and semantic relevance gaps',
             'Weak structured data and SERP enhancement signals',
@@ -80,6 +82,7 @@ const pillars: Pillar[] = [
         border: 'border-[#7B5CFF]/20',
         bg: 'bg-[#7B5CFF]/10',
         score: (scores) => Number(scores.technicalHealth || 0),
+        metricCategories: ['Performance', 'Lighthouse'],
         issues: [
             'Heavy payloads and rendering bottlenecks',
             'Slow critical path resources',
@@ -101,6 +104,7 @@ const pillars: Pillar[] = [
         border: 'border-[#00E28A]/20',
         bg: 'bg-[#00E28A]/10',
         score: (scores) => Number(scores.security || 0),
+        metricCategories: ['Security'],
         issues: [
             'Missing headers or weak hardening layers',
             'Reduced visible trust cues for users and buyers',
@@ -122,6 +126,7 @@ const pillars: Pillar[] = [
         border: 'border-[#FFB84D]/20',
         bg: 'bg-[#FFB84D]/10',
         score: (scores) => Number(scores.innovation || 0),
+        metricCategories: ['Brand', 'Innovation'],
         issues: [
             'Messaging may be broad or overly generic',
             'Differentiation not immediately obvious',
@@ -143,6 +148,7 @@ const pillars: Pillar[] = [
         border: 'border-[#FF3D57]/20',
         bg: 'bg-[#FF3D57]/10',
         score: (scores) => Number(scores.customerExperience || 0),
+        metricCategories: ['UX', 'Accessibility'],
         issues: [
             'Accessibility and navigation friction',
             'Unclear path to action or conversion',
@@ -164,6 +170,7 @@ const pillars: Pillar[] = [
         border: 'border-white/10',
         bg: 'bg-white/5',
         score: (scores) => Number(scores.contentQuality || 0),
+        metricCategories: ['Content'],
         issues: [
             'Thin or underpowered communication',
             'Insufficient authority-building substance',
@@ -192,6 +199,12 @@ export default function PillarsPage() {
 
     const result = guestAuditResult || null;
     const scores: Scores = result?.scores || {};
+    
+    const rawMetrics = Array.isArray(result?.rawData?.metrics) 
+        ? result.rawData.metrics 
+        : Array.isArray(result?.meta?.metrics) 
+        ? result.meta.metrics 
+        : [];
 
     return (
         <DashboardShell>
@@ -345,6 +358,43 @@ export default function PillarsPage() {
                                                 <span>{scorePercent.toFixed(0)}%</span>
                                             </div>
                                         </div>
+
+                                        {(() => {
+                                            const pillarMetrics = rawMetrics.filter((m: any) => pillar.metricCategories.includes(m.category));
+                                            if (pillarMetrics.length === 0) return null;
+                                            return (
+                                                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                                                    <div className="text-[11px] font-black uppercase tracking-[0.18em] text-white/50 mb-3">
+                                                        Analyzed Metrics
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        {pillarMetrics.slice(0, 10).map((m: any, idx: number) => {
+                                                            let unit = m.unit === 'v' || !m.unit ? '' : m.unit;
+                                                            if (unit === 'millisecond') {
+                                                                m.displayValue = (m.value / 1000).toFixed(2);
+                                                                unit = 's';
+                                                            }
+                                                            return (
+                                                                <div key={m.id || idx} className="group relative rounded-xl bg-white/[0.02] p-3 hover:bg-white/[0.05] transition-colors">
+                                                                    <div className="text-[9px] font-black uppercase text-white/50 mb-0.5 truncate">
+                                                                        {m.title}
+                                                                    </div>
+                                                                    <div className="text-sm font-bold text-white font-mono break-words">
+                                                                        {m.displayValue} {unit && <span className="text-[10px] text-white/40">{unit}</span>}
+                                                                    </div>
+                                                                    
+                                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 rounded-xl bg-black border border-white/20 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 hidden md:block">
+                                                                        <div className="text-[11px] font-medium text-white/90">
+                                                                            {m.description || m.title}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
 
                                         <div className="grid grid-cols-1 gap-4">
                                             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">

@@ -618,7 +618,7 @@ export class AuditEngine {
         value: wordCount,
         displayValue: String(wordCount),
         unit: 'words',
-        category: 'SEO'
+        category: 'Content'
       });
     }
 
