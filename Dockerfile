@@ -14,7 +14,6 @@ RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 COPY . .
 
-# Prisma client generation if Prisma exists
 RUN if [ -f prisma/schema.prisma ]; then npx prisma generate; fi
 
 RUN npm run build
