@@ -117,7 +117,7 @@ export default function Dashboard() {
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const telemetrySectionRef = useRef<HTMLElement | null>(null);
 
-    const { guestAuditResult } = useGuestAudit();
+    const { guestAuditResult, setGuestAuditResult } = useGuestAudit();
 
     useEffect(() => {
         if (guestAuditResult && !result) {
@@ -182,6 +182,7 @@ export default function Dashboard() {
             }
 
             setResult(data);
+            setGuestAuditResult(data);
             setProgress(100);
         } catch (err: any) {
             setError(err.message || 'Diagnostic protocol failed. Check your connection or the URL.');
