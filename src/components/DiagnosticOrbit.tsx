@@ -1,176 +1,386 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
+import {
+  Activity,
+  Shield,
+  Search,
+  Sparkles,
+  Users,
+  FileText,
+} from 'lucide-react';
 
-interface DiagnosticOrbitProps {
-    scores?: number[];
-    labels?: string[];
-    overallScore?: number | string;
+type DiagnosticOrbitProps = {
+  scores?: number[];
+  overallScore?: number;
+};
+
+type OrbitNode = {
+  label: string;
+  short: string;
+  value: number;
+  angle: number;
+  radius: number;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  color: string;
+  glow: string;
+  line: string;
+};
+
+function clamp(value: number, min = 0, max = 100) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function tone(score: number) {
+  if (score >= 85) {
+    return {
+      ring: 'border-[#00E28A]/40',
+      bg: 'bg-[#00E28A]/10',
+      text: 'text-[#00E28A]',
+      dot: 'bg-[#00E28A]',
+      shadow: 'shadow-[0_0_25px_rgba(0,226,138,0.28)]',
+    };
+  }
+
+  if (score >= 65) {
+    return {
+      ring: 'border-[#00D1FF]/40',
+      bg: 'bg-[#00D1FF]/10',
+      text: 'text-[#00D1FF]',
+      dot: 'bg-[#00D1FF]',
+      shadow: 'shadow-[0_0_25px_rgba(0,209,255,0.22)]',
+    };
+  }
+
+  return {
+    ring: 'border-[#FF3D57]/40',
+    bg: 'bg-[#FF3D57]/10',
+    text: 'text-[#FF3D57]',
+    dot: 'bg-[#FF3D57]',
+    shadow: 'shadow-[0_0_25px_rgba(255,61,87,0.22)]',
+  };
 }
 
 export default function DiagnosticOrbit({
-    scores = [],
-    labels,
-    overallScore = 0
+  scores = [0, 0, 0, 0, 0, 0],
+  overallScore = 0,
 }: DiagnosticOrbitProps) {
-    const defaultLabels = ['Market', 'Technical', 'Security', 'Innovation', 'Customer', 'Content'];
+  const safeScores = [
+    clamp(Number(scores[0] || 0)),
+    clamp(Number(scores[1] || 0)),
+    clamp(Number(scores[2] || 0)),
+    clamp(Number(scores[3] || 0)),
+    clamp(Number(scores[4] || 0)),
+    clamp(Number(scores[5] || 0)),
+  ];
 
-    const safeScores = useMemo(() => {
-        const normalized = Array.isArray(scores) ? scores : [];
-        const sliced = normalized.slice(0, 6).map((value) => {
-            const n = Number(value);
-            if (!Number.isFinite(n)) return 0;
-            return Math.max(0, Math.min(100, n));
-        });
+  const overallPercent = clamp(Number(overallScore || 0) * 10);
 
-        while (sliced.length < 6) {
-            sliced.push(0);
-        }
+  const nodes: OrbitNode[] = [
+    {
+      label: 'Discovery',
+      short: 'SEO',
+      value: safeScores[0],
+      angle: -90,
+      radius: 215,
+      icon: Search,
+      color: 'text-[#00D1FF]',
+      glow: 'shadow-[0_0_30px_rgba(0,209,255,0.22)]',
+      line: 'from-[#00D1FF]/50',
+    },
+    {
+      label: 'Performance',
+      short: 'PERF',
+      value: safeScores[1],
+      angle: -30,
+      radius: 215,
+      icon: Activity,
+      color: 'text-[#7B5CFF]',
+      glow: 'shadow-[0_0_30px_rgba(123,92,255,0.22)]',
+      line: 'from-[#7B5CFF]/50',
+    },
+    {
+      label: 'Trust',
+      short: 'TRUST',
+      value: safeScores[2],
+      angle: 30,
+      radius: 215,
+      icon: Shield,
+      color: 'text-[#00E28A]',
+      glow: 'shadow-[0_0_30px_rgba(0,226,138,0.22)]',
+      line: 'from-[#00E28A]/50',
+    },
+    {
+      label: 'Clarity',
+      short: 'BRAND',
+      value: safeScores[3],
+      angle: 90,
+      radius: 215,
+      icon: Sparkles,
+      color: 'text-[#FFB84D]',
+      glow: 'shadow-[0_0_30px_rgba(255,184,77,0.22)]',
+      line: 'from-[#FFB84D]/50',
+    },
+    {
+      label: 'Experience',
+      short: 'CX',
+      value: safeScores[4],
+      angle: 150,
+      radius: 215,
+      icon: Users,
+      color: 'text-[#FF3D57]',
+      glow: 'shadow-[0_0_30px_rgba(255,61,87,0.22)]',
+      line: 'from-[#FF3D57]/50',
+    },
+    {
+      label: 'Narrative',
+      short: 'CONTENT',
+      value: safeScores[5],
+      angle: 210,
+      radius: 215,
+      icon: FileText,
+      color: 'text-white',
+      glow: 'shadow-[0_0_30px_rgba(255,255,255,0.12)]',
+      line: 'from-white/35',
+    },
+  ];
 
-        return sliced;
-    }, [scores]);
+  const polarPoints = nodes.map((node) => {
+    const rad = (node.angle * Math.PI) / 180;
+    const x = 300 + Math.cos(rad) * 175;
+    const y = 300 + Math.sin(rad) * 175;
+    return `${x},${y}`;
+  });
 
-    const displayLabels = useMemo(() => {
-        const source = Array.isArray(labels) && labels.length ? labels : defaultLabels;
-        const sliced = source.slice(0, 6);
+  const radarPolygon = polarPoints.join(' ');
 
-        while (sliced.length < 6) {
-            sliced.push(defaultLabels[sliced.length] || `Metric ${sliced.length + 1}`);
-        }
+  return (
+    <div className="relative w-full flex items-center justify-center">
+      <div className="relative w-[620px] h-[620px] max-w-full">
+        <motion.div
+          className="absolute inset-0 rounded-full opacity-60 blur-3xl bg-[radial-gradient(circle,rgba(0,209,255,0.12)_0%,rgba(123,92,255,0.08)_35%,transparent_68%)]"
+          animate={{ scale: [1, 1.04, 1] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        />
 
-        return sliced;
-    }, [labels]);
+        <motion.div
+          className="absolute inset-[8%] rounded-full border border-[#00D1FF]/10"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
+        />
+        <motion.div
+          className="absolute inset-[15%] rounded-full border border-white/5"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 64, repeat: Infinity, ease: 'linear' }}
+        />
+        <motion.div
+          className="absolute inset-[22%] rounded-full border border-[#7B5CFF]/10"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 42, repeat: Infinity, ease: 'linear' }}
+        />
 
-    const safeOverallScore = useMemo(() => {
-        const n = Number(overallScore);
-        if (!Number.isFinite(n)) return '0.0';
-        return n.toFixed(1);
-    }, [overallScore]);
+        <div className="absolute inset-0 rounded-full border border-white/5" />
+        <div className="absolute inset-[11%] rounded-full border border-white/[0.05]" />
+        <div className="absolute inset-[22%] rounded-full border border-white/[0.05]" />
+        <div className="absolute inset-[33%] rounded-full border border-white/[0.05]" />
+        <div className="absolute inset-[44%] rounded-full border border-white/[0.06]" />
 
-    const getColor = (s: number) => {
-        if (s >= 80) return '#00E28A';
-        if (s >= 60) return '#00D1FF';
-        return '#FF3D57';
-    };
+        <div className="absolute inset-0">
+          <svg viewBox="0 0 600 600" className="w-full h-full overflow-visible">
+            <defs>
+              <linearGradient id="radarFill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="rgba(0,209,255,0.22)" />
+                <stop offset="55%" stopColor="rgba(123,92,255,0.16)" />
+                <stop offset="100%" stopColor="rgba(0,226,138,0.08)" />
+              </linearGradient>
 
-    const orbitLines = [0.28, 0.46, 0.64, 0.82];
+              <linearGradient id="radarStroke" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="rgba(0,209,255,0.95)" />
+                <stop offset="50%" stopColor="rgba(123,92,255,0.88)" />
+                <stop offset="100%" stopColor="rgba(0,226,138,0.9)" />
+              </linearGradient>
 
-    const points = useMemo(() => {
-        const n = safeScores.length || 6;
+              <filter id="radarGlow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="8" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
 
-        return safeScores.map((s, i) => {
-            const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+            {[0, 60, 120, 180, 240, 300].map((angle) => {
+              const rad = (angle * Math.PI) / 180;
+              const x = 300 + Math.cos(rad) * 250;
+              const y = 300 + Math.sin(rad) * 250;
 
-            // Reduced max radius so chart stays comfortably inside card
-            const radius = 0.22 + (s / 100) * 0.50;
-
-            return {
-                x: Math.cos(angle) * radius,
-                y: Math.sin(angle) * radius,
-                label: displayLabels[i] || `Metric ${i + 1}`,
-                score: s,
-                color: getColor(s)
-            };
-        });
-    }, [safeScores, displayLabels]);
-
-    const polygonPath = useMemo(() => {
-        if (!points.length) return '';
-        const first = points[0];
-        const rest = points.slice(1).map((p) => `L ${p.x} ${p.y}`).join(' ');
-        return `M ${first.x} ${first.y} ${rest} Z`;
-    }, [points]);
-
-    return (
-        <div className="relative w-full aspect-square flex items-center justify-center p-16 md:p-20 overflow-hidden select-none">
-            {orbitLines.map((r, i) => (
-                <div
-                    key={i}
-                    className="absolute rounded-full border border-white/5 pointer-events-none"
-                    style={{
-                        width: `${r * 100}%`,
-                        height: `${r * 100}%`,
-                        opacity: 1 - i * 0.15
-                    }}
+              return (
+                <line
+                  key={angle}
+                  x1="300"
+                  y1="300"
+                  x2={x}
+                  y2={y}
+                  stroke="rgba(255,255,255,0.07)"
+                  strokeWidth="1"
                 />
-            ))}
+              );
+            })}
 
-            {points.map((_, i) => (
-                <div
-                    key={`axis-${i}`}
-                    className="absolute h-px bg-white/5 origin-left pointer-events-none"
-                    style={{
-                        width: '41%',
-                        left: '50%',
-                        top: '50%',
-                        transform: `rotate(${(i / points.length) * 360 - 90}deg)`
-                    }}
-                />
-            ))}
+            <polygon
+              points={radarPolygon}
+              fill="url(#radarFill)"
+              stroke="url(#radarStroke)"
+              strokeWidth="2.2"
+              filter="url(#radarGlow)"
+            />
 
-            <svg
-                viewBox="-1.05 -1.05 2.1 2.1"
-                className="absolute inset-0 w-full h-full drop-shadow-[0_0_30px_rgba(0,209,255,0.08)]"
-            >
-                {polygonPath && (
-                    <path
-                        d={polygonPath}
-                        fill="rgba(0, 209, 255, 0.05)"
-                        stroke="rgba(0, 209, 255, 0.45)"
-                        strokeWidth="0.01"
-                        className="transition-all duration-1000"
-                    />
-                )}
+            {nodes.map((node) => {
+              const rad = (node.angle * Math.PI) / 180;
+              const x = 300 + Math.cos(rad) * 175;
+              const y = 300 + Math.sin(rad) * 175;
 
-                {points.map((p, i) => (
-                    <circle
-                        key={i}
-                        cx={p.x}
-                        cy={p.y}
-                        r="0.032"
-                        fill={p.color}
-                        className="transition-all duration-1000"
-                        style={{ filter: `drop-shadow(0 0 5px ${p.color})` }}
-                    />
-                ))}
-            </svg>
-
-            <div className="relative z-10 flex flex-col items-center justify-center pointer-events-none">
-                <motion.div
-                    initial={{ scale: 0.85, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="text-6xl md:text-7xl xl:text-8xl font-black font-display tracking-tighter text-white drop-shadow-[0_0_40px_rgba(0,209,255,0.25)]"
-                >
-                    {safeOverallScore}
-                </motion.div>
-                <div className="surgical-label !text-white/40 mt-2 text-center">
-                    Integrity Composite
-                </div>
-            </div>
-
-            {points.map((p, i) => (
-                <motion.div
-                    key={`label-${i}`}
-                    className="absolute flex flex-col items-center text-center pointer-events-none max-w-[92px] md:max-w-[110px]"
-                    style={{
-                        // Pulled inward so labels stay inside the card
-                        left: `${50 + p.x * 40}%`,
-                        top: `${50 + p.y * 40}%`,
-                        transform: 'translate(-50%, -50%)'
-                    }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.45 + i * 0.08 }}
-                >
-                    <span className="surgical-label text-[8px] md:text-[9px] !text-white/45 leading-tight whitespace-normal break-words">
-                        {p.label}
-                    </span>
-                    <span className="text-xs md:text-sm font-black font-display text-white leading-none mt-1">
-                        {p.score.toFixed(1)}
-                    </span>
-                </motion.div>
-            ))}
+              return (
+                <g key={node.label}>
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r="7"
+                    fill="rgba(11,15,20,1)"
+                    stroke="rgba(255,255,255,0.18)"
+                    strokeWidth="2"
+                  />
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r="3.6"
+                    fill="rgba(0,209,255,1)"
+                  />
+                </g>
+              );
+            })}
+          </svg>
         </div>
-    );
+
+        {nodes.map((node, i) => {
+          const rad = (node.angle * Math.PI) / 180;
+          const x = Math.cos(rad) * node.radius;
+          const y = Math.sin(rad) * node.radius;
+          const metricTone = tone(node.value);
+          const Icon = node.icon;
+
+          return (
+            <motion.div
+              key={node.label}
+              className="absolute left-1/2 top-1/2"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1, x, y }}
+              transition={{ duration: 0.6, delay: i * 0.08 }}
+              style={{ transform: `translate(-50%, -50%) translate(${x}px, ${y}px)` }}
+            >
+              <div className="relative -translate-x-1/2 -translate-y-1/2">
+                <motion.div
+                  className={`absolute inset-0 rounded-[28px] blur-xl opacity-60 ${node.glow}`}
+                  animate={{ scale: [1, 1.08, 1] }}
+                  transition={{ duration: 4 + i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+                />
+                <div
+                  className={`relative w-[126px] md:w-[136px] rounded-[28px] border backdrop-blur-xl p-4 ${metricTone.ring} ${metricTone.bg} bg-[#0B0F14]/70`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="text-[9px] font-black uppercase tracking-[0.22em] text-white/35">
+                        {node.short}
+                      </div>
+                      <div className="text-sm font-extrabold text-white leading-none">
+                        {node.label}
+                      </div>
+                    </div>
+
+                    <div
+                      className={`w-9 h-9 rounded-2xl border border-white/10 flex items-center justify-center ${node.color} bg-white/[0.03]`}
+                    >
+                      <Icon size={16} />
+                    </div>
+                  </div>
+
+                  <div className={`mt-4 text-2xl font-black font-display ${metricTone.text}`}>
+                    {node.value.toFixed(1)}
+                  </div>
+
+                  <div className="mt-3 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+                    <motion.div
+                      className={`h-full ${metricTone.dot}`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${node.value}%` }}
+                      transition={{ duration: 1, delay: 0.2 + i * 0.07 }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+
+        <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2">
+          <motion.div
+            className="relative w-[220px] h-[220px] rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+          >
+            <div className="absolute inset-0 rounded-full border border-[#00D1FF]/15" />
+            <div className="absolute inset-[12px] rounded-full border border-[#7B5CFF]/15" />
+            <div className="absolute inset-[24px] rounded-full border border-white/10" />
+            <div className="absolute inset-[36px] rounded-full border border-[#00E28A]/10" />
+          </motion.div>
+
+          <motion.div
+            className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-[182px] h-[182px] rounded-full border border-white/10 bg-[radial-gradient(circle,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.02)_55%,rgba(0,0,0,0.2)_100%)] backdrop-blur-2xl shadow-[0_0_60px_rgba(0,209,255,0.14)]"
+            animate={{ scale: [1, 1.015, 1] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <div className="absolute inset-[14px] rounded-full border border-white/[0.08]" />
+            <div className="absolute inset-[30px] rounded-full border border-white/[0.06]" />
+
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+              <div className="text-[10px] font-black uppercase tracking-[0.34em] text-white/35 mb-2">
+                Brand Core
+              </div>
+
+              <motion.div
+                className="text-5xl md:text-6xl font-black font-display text-white tracking-tighter leading-none"
+                animate={{ opacity: [0.92, 1, 0.92] }}
+                transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {Number(overallScore || 0).toFixed(1)}
+              </motion.div>
+
+              <div className="mt-3 text-[11px] uppercase tracking-[0.22em] font-black text-[#00D1FF]/80">
+                Composite Signal
+              </div>
+
+              <div className="mt-4 w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                <motion.div
+                  className="h-full bg-[linear-gradient(90deg,#00D1FF_0%,#7B5CFF_55%,#00E28A_100%)]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${overallPercent}%` }}
+                  transition={{ duration: 1.2, delay: 0.35 }}
+                />
+              </div>
+
+              <div className="mt-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">
+                {overallPercent.toFixed(0)}% resonance
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        <motion.div
+          className="absolute left-1/2 top-1/2 w-[540px] h-[540px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-white/[0.05]"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
+        />
+      </div>
+    </div>
+  );
 }
