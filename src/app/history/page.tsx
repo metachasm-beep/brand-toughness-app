@@ -49,7 +49,7 @@ export default function HistoryPage() {
             security: Number(row.categories?.Security?.score || 0),
             innovation: Number(row.categories?.UX?.score || 0),
             customerExperience: Number(row.categories?.Accessibility?.score || 0),
-            contentQuality: 8.5,
+            contentQuality: Number(row.categories?.Content?.score || 0),
         };
 
         const reconstructed = {

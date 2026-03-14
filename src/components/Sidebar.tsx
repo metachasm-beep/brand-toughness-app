@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
@@ -30,13 +30,6 @@ type NavItem = {
   badge?: string;
 };
 
-type Workspace = {
-  id: string;
-  name: string;
-  initials: string;
-  accent: string;
-};
-
 const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/', icon: BarChart3, shortcut: '' },
   { label: 'Pillars', href: '/pillars', icon: Sparkles, shortcut: '' },
@@ -61,6 +54,7 @@ function getLeaderboardPreview(pathname: string) {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const [isRetracted, setIsRetracted] = useState(true);
   const [scanLive, setScanLive] = useState(true);
@@ -82,7 +76,7 @@ export default function Sidebar() {
     let timer: number | null = null;
 
     const navigateTo = (href: string) => {
-      window.location.href = href;
+      router.push(href);
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
@@ -123,7 +117,7 @@ export default function Sidebar() {
       {/* Futuristic Shining Toggle Button */}
       <button
         onClick={() => setIsRetracted(!isRetracted)}
-        className="fixed top-8 left-8 z-[150] w-14 h-14 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl flex items-center justify-center group overflow-hidden transition-all duration-500 hover:border-[#00D1FF]/40"
+        className="fixed top-8 left-8 z-[180] w-14 h-14 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl flex items-center justify-center group overflow-hidden transition-all duration-500 hover:border-[#00D1FF]/40"
       >
         <div className="absolute inset-0 bg-gradient-to-tr from-[#00D1FF]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="absolute -inset-[100%] group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12 opacity-0 group-hover:opacity-100" />
@@ -147,7 +141,7 @@ export default function Sidebar() {
           {/* Logo Section */}
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] flex items-center justify-center text-black shadow-[0_0_20px_rgba(0,209,255,0.3)]">
-              <Command size={24} weight="bold" />
+              <Command size={24} />
             </div>
             <div>
               <div className="text-xl font-black font-display tracking-tighter text-white">BRAND OS</div>

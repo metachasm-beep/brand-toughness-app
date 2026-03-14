@@ -14,6 +14,7 @@ import {
 type DiagnosticOrbitProps = {
   scores?: number[];
   overallScore?: number;
+  onHoverChange?: (isHovering: boolean) => void;
 };
 
 type OrbitNode = {
@@ -77,6 +78,7 @@ function polarToCartesian(center: number, angle: number, radius: number) {
 export default function DiagnosticOrbit({
   scores = [0, 0, 0, 0, 0, 0],
   overallScore = 0,
+  onHoverChange,
 }: DiagnosticOrbitProps) {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
@@ -89,10 +91,10 @@ export default function DiagnosticOrbit({
     clamp(Number(scores[5] || 0)),
   ];
 
-  const overallPercent = clamp(Number(overallScore || 0) * 10);
+  const overallPercent = clamp(Number(overallScore || 0));
   const center = 300;
   const radarMaxRadius = 185;
-  const orbitCardRadius = 235;
+  const orbitCardRadius = 245;
 
   const nodes: OrbitNode[] = [
     {
@@ -330,8 +332,14 @@ export default function DiagnosticOrbit({
             >
               <div
                 className="relative -translate-x-1/2 -translate-y-1/2"
-                onMouseEnter={() => setHoveredNode(node.label)}
-                onMouseLeave={() => setHoveredNode(null)}
+                onMouseEnter={() => {
+                  setHoveredNode(node.label);
+                  onHoverChange?.(true);
+                }}
+                onMouseLeave={() => {
+                  setHoveredNode(null);
+                  onHoverChange?.(false);
+                }}
               >
                 <motion.div
                   className={`absolute inset-0 rounded-[28px] blur-xl opacity-60 ${node.glow}`}
@@ -382,7 +390,7 @@ export default function DiagnosticOrbit({
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.15 }}
-                      className={`absolute z-50 w-[220px] ${tooltipLeft} ${tooltipTop}`}
+                      className={`absolute z-[170] w-[220px] pointer-events-none ${tooltipLeft} ${tooltipTop}`}
                     >
                       <div className="bg-[#0B0F14]/95 border border-white/10 rounded-2xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
                         <div className="flex items-center justify-between mb-3">

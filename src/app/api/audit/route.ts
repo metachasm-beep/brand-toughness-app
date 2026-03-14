@@ -96,10 +96,10 @@ export async function POST(request: Request) {
         security: Number(cachedCategories?.Security?.score || 0),
         innovation: Number(cachedCategories?.UX?.score || 0),
         customerExperience: Number(cachedCategories?.Accessibility?.score || 0),
-        contentQuality: 8.5,
+        contentQuality: Number(cachedCategories?.Content?.score || 0),
       };
 
-      const aggregate = Number((Number(cachedAudit.overallScore || 0) / 10).toFixed(1));
+      const aggregate = Number(cachedAudit.overallScore || 0);
 
       return NextResponse.json({
         url: normalisedUrl,
@@ -223,10 +223,10 @@ export async function POST(request: Request) {
       security: Number(auditData?.categories?.Security?.score || 0),
       innovation: Number(auditData?.categories?.UX?.score || 0),
       customerExperience: Number(auditData?.categories?.Accessibility?.score || 0),
-      contentQuality: 8.5,
+      contentQuality: Number(auditData?.categories?.Content?.score || 0),
     };
 
-    const aggregate = Number((Number(auditData?.overallScore || 0) / 10).toFixed(1));
+    const aggregate = Number(auditData?.overallScore || 0);
 
     return NextResponse.json({
       url: normalisedUrl,

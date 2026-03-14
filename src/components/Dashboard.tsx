@@ -31,6 +31,7 @@ export default function Dashboard() {
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState('');
     const [pdfUnlocked, setPdfUnlocked] = useState(false);
+    const [isHoveringCategory, setIsHoveringCategory] = useState(false);
     const router = useRouter();
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -155,12 +156,13 @@ export default function Dashboard() {
           ]
         : [0, 0, 0, 0, 0, 0];
 
-    const aggregateScore =
-        typeof result?.aggregate === 'number'
-            ? result.aggregate
-            : Number(result?.aggregate ?? 0);
+    const aggregateScore = Number(result?.aggregate || 0);
 
-    const aggregatePercent = Math.max(0, Math.min(100, aggregateScore * 10));
+    const handleHoverChange = (isHovering: boolean) => {
+        setIsHoveringCategory(isHovering);
+    };
+
+    const aggregatePercent = Math.max(0, Math.min(100, aggregateScore));
     const ai = result?.aiSummary;
 
     const lowLeakage = Math.round((100 - aggregatePercent) * 1.8);
@@ -172,7 +174,6 @@ export default function Dashboard() {
     const totalMetricsAnalyzed = result ? baselineMetricsCount + dynamicMetricsCount : 0;
     const totalMetricsDisplay =
         totalMetricsAnalyzed >= 100 ? '100+' : String(totalMetricsAnalyzed);
-
     return (
         <div className="space-y-20 max-w-[1400px] mx-auto pt-16 pb-24">
             {/* Top Bar Removed as requested */}
@@ -215,7 +216,7 @@ export default function Dashboard() {
                         onSubmit={handleAudit}
                         className="group relative flex bg-white/[0.03] border border-white/10 rounded-[36px] p-2.5 pl-9 focus-within:bg-white/[0.06] focus-within:border-[#00D1FF]/40 focus-within:ring-4 focus-within:ring-[#00D1FF]/5 transition-all shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
                     >
-                        <div className="absolute inset-0 rounded-[36px] bg-gradient-to-r from-[#00D1FF]/5 to-[#7B5CFF]/5 opacity-0 group-focus-within:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 rounded-[36px] bg-gradient-to-r from-[#00D1FF]/5 to-[#7B5CFF]/5 opacity-0 group-focus-within:opacity-100 transition-opacity z-[170]" />
                         <Globe className="my-auto mr-4 text-white/20 shrink-0 relative z-10" size={24} />
                         <input
                             type="url"
@@ -255,11 +256,11 @@ export default function Dashboard() {
                 </div>
             </section>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
-                <div className="xl:col-span-2 apple-card overflow-hidden !bg-white/[0.01] relative flex flex-col items-center justify-center min-h-[620px] p-5 md:p-8">
+            <section className="grid grid-cols-1 xl:grid-cols-3 gap-10 relative z-20">
+                <div className="xl:col-span-2 apple-card overflow-hidden !bg-white/[0.01] relative flex flex-col items-center justify-center min-h-[620px] p-5 md:p-8 z-[160]">
                     {result && (
-                        <div className="absolute top-8 left-8 z-20">
-                            <div className="px-6 py-4 rounded-3xl border border-white/10 bg-[#0B0F14]/60 backdrop-blur-2xl shadow-2xl">
+                        <div className="absolute top-8 left-8 z-30">
+                            <div className="px-6 py-4 rounded-3xl border border-white/10 bg-[#0B0F14]/40 backdrop-blur-2xl shadow-2xl">
                                 <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-2">
                                     Metrics Analyzed
                                 </div>
@@ -275,8 +276,8 @@ export default function Dashboard() {
                     )}
 
                     {result && (
-                        <div className="absolute bottom-8 right-8 z-20 text-right">
-                           <div className="px-6 py-4 rounded-3xl border border-white/10 bg-[#0B0F14]/60 backdrop-blur-2xl shadow-2xl max-w-[200px]">
+                        <div className="absolute top-8 right-8 z-30 text-right">
+                           <div className="px-6 py-4 rounded-3xl border border-white/10 bg-[#0B0F14]/40 backdrop-blur-2xl shadow-2xl max-w-[200px]">
                                 <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00D1FF] mb-2">
                                     Composite Signal
                                 </div>
@@ -292,68 +293,16 @@ export default function Dashboard() {
 
                     <div className="w-full flex items-center justify-center pt-10 pb-10">
                         <div className="w-full max-w-[760px]">
-                            <DiagnosticOrbit scores={scoreValues} overallScore={aggregateScore} />
+                            <DiagnosticOrbit 
+                                scores={scoreValues} 
+                                overallScore={aggregateScore} 
+                                onHoverChange={handleHoverChange}
+                            />
                         </div>
-                    </div>
-
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] md:w-auto flex flex-col md:flex-row gap-3 md:gap-4 items-center justify-center z-20">
-                        <button
-                            onClick={handleDownloadPDF}
-                            disabled={!result}
-                            className="apple-button-outline flex items-center justify-center gap-2 disabled:opacity-30 w-full md:w-auto"
-                        >
-                            {pdfUnlocked ? (
-                                <>
-                                    <CheckCircle size={16} />
-                                    <span>PDF Ready</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Lock size={16} />
-                                    <span>Unlock Executive PDF</span>
-                                </>
-                            )}
-                        </button>
-
-                        <button
-                            onClick={() => router.push('/pricing')}
-                            className="apple-button-outline flex items-center justify-center gap-2 w-full md:w-auto"
-                        >
-                            <Users size={16} />
-                            <span>Compare Competitors</span>
-                        </button>
                     </div>
                 </div>
 
                 <div className="space-y-6">
-                    <MetricCard
-                        title="Performance Integrity Score"
-                        value={result ? Number(result.scores?.technicalHealth || 0).toFixed(1) : '--'}
-                        trend={result ? '+1.5%' : ''}
-                        trendDirection="up"
-                        status={result ? 'optimal' : 'stable'}
-                        icon={Users}
-                    />
-
-                    <button
-                        onClick={handleScrollToTelemetry}
-                        disabled={!result}
-                        className="w-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all text-left flex items-center justify-between group disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] flex items-center justify-center text-black shadow-[0_0_20px_rgba(0,209,255,0.3)]">
-                                <Command size={24} strokeWidth={3} />
-                            </div>
-                            <div>
-                                <div className="text-white font-bold text-sm">View Score Timeline</div>
-                                <div className="text-[10px] text-white/30 uppercase font-black">
-                                    Retention Data
-                                </div>
-                            </div>
-                        </div>
-                        <ArrowRight size={14} className="text-white/20 group-hover:text-[#00D1FF] transition-colors" />
-                    </button>
-
                     <MetricCard
                         title="Discovery Score"
                         value={result ? Number(result?.scores?.marketPresence || 0).toFixed(1) : '--'}
@@ -378,8 +327,27 @@ export default function Dashboard() {
                         status={result ? 'optimal' : 'stable'}
                         icon={Zap}
                     />
+                    
+                    <div className="apple-card p-6 bg-white/[0.02] border-white/5 space-y-4">
+                        <button
+                            onClick={handleDownloadPDF}
+                            disabled={!result}
+                            className="apple-button-outline w-full flex items-center justify-center gap-2"
+                        >
+                            {pdfUnlocked ? <CheckCircle size={16} /> : <Lock size={16} />}
+                            <span>{pdfUnlocked ? 'PDF Ready' : 'Unlock Executive PDF'}</span>
+                        </button>
+                        
+                        <button
+                            onClick={() => router.push('/pricing')}
+                            className="apple-button-primary-ghost w-full flex items-center justify-center gap-2"
+                        >
+                            <Users size={16} />
+                            <span>Compare Competitors</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </section>
 
             <AnimatePresence>
                 {result && (
@@ -463,7 +431,7 @@ export default function Dashboard() {
                                 <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mb-6">
                                     <div
                                         className="h-full bg-[#00D1FF]"
-                                        style={{ width: `${aggregatePercent}%` }}
+                                        style={{ width: `${aggregatePercent / 10}%` }}
                                     />
                                 </div>
 
@@ -615,7 +583,7 @@ export default function Dashboard() {
                                     Semantic Narrative weight.
                                 </p>
                             </div>
-                            <div className="bg-[#0B0F14] border border-white/10 p-8 rounded-3xl flex flex-col justify-between group hover:border-[#00D1FF]/30 transition-all cursor-pointer">
+                            <div className="bg-[#0B0F14] border border-white/10 p-8 rounded-3xl flex flex-col justify-between group hover:border-[#00D1FF]/30 transition-all cursor-pointer z-[180]">
                                 <div>
                                     <h5 className="text-sm font-black text-white uppercase tracking-tighter mb-2">
                                         Simulate Recovery
@@ -681,7 +649,7 @@ export default function Dashboard() {
                                                 <motion.div
                                                     className="h-full bg-[#00D1FF]"
                                                     initial={{ width: 0 }}
-                                                    animate={{ width: `${Math.max(0, Math.min(100, n.v * 10))}%` }}
+                                                    animate={{ width: `${Math.max(0, Math.min(100, n.v))}%` }}
                                                     transition={{ duration: 1, delay: i * 0.1 }}
                                                 />
                                             </div>
@@ -741,6 +709,17 @@ export default function Dashboard() {
                 )}
             </AnimatePresence>
 
+            {/* Hover Fade to White Backdrop */}
+            <AnimatePresence>
+                {isHoveringCategory && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[150] bg-white/95 backdrop-blur-md"
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

@@ -26,7 +26,7 @@ export async function GET() {
             id: a.id,
             url: a.url,
             uid: a.uid,
-            score: (a.overallScore || 0) / 10,
+            score: a.overallScore || 0,
             date: a.createdAt.toISOString(),
             status: a.status,
             findingCount: a.findings.length,
