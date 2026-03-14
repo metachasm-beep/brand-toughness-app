@@ -90,6 +90,12 @@ export default function TelemetricsPage() {
     ];
 
     const findings = Array.isArray(result?.findings) ? result.findings : [];
+    const rawMetrics = Array.isArray(result?.rawData?.metrics) 
+        ? result.rawData.metrics 
+        : Array.isArray(result?.meta?.metrics) 
+        ? result.meta.metrics 
+        : [];
+        
     const criticalCount = findings.filter((f: any) => f?.severity === 'CRITICAL').length;
     const highCount = findings.filter((f: any) => f?.severity === 'HIGH').length;
     const mediumCount = findings.filter((f: any) => f?.severity === 'MEDIUM').length;
@@ -330,6 +336,47 @@ export default function TelemetricsPage() {
                                 </button>
                             </div>
                         </section>
+
+                        {rawMetrics.length > 0 && (
+                            <section className="apple-card p-8 space-y-8">
+                                <div className="border-b border-white/10 pb-5">
+                                    <div className="text-[11px] font-black uppercase tracking-[0.28em] text-white/30">
+                                        Data Points
+                                    </div>
+                                    <h2 className="text-3xl font-extrabold font-display tracking-tight text-white mt-2">
+                                        Analyzed Metrics
+                                    </h2>
+                                </div>
+                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                                    {rawMetrics.map((m: any, i: number) => {
+                                        let unit = m.unit === 'v' || !m.unit ? '' : m.unit;
+                                        if (unit === 'millisecond') {
+                                            m.displayValue = (m.value / 1000).toFixed(2);
+                                            unit = 's';
+                                        }
+                                        return (
+                                        <div key={m.id || i} className="group relative rounded-2xl border border-white/10 bg-white/[0.03] p-4 hover:bg-white/[0.05] transition-colors">
+                                            <div className="text-[10px] font-black uppercase text-white/50 mb-1 truncate">
+                                                {m.title}
+                                            </div>
+                                            <div className="text-xl font-bold text-white font-mono break-words">
+                                                {m.displayValue} {unit && <span className="text-xs text-white/40">{unit}</span>}
+                                            </div>
+                                            
+                                            {/* Hover Modal */}
+                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-4 rounded-xl bg-black border border-white/20 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 hidden md:block">
+                                                <div className="text-xs font-medium text-white/90">
+                                                    {m.description || m.title}
+                                                </div>
+                                                <div className="text-[9px] text-[#00D1FF] mt-2 uppercase tracking-wider font-bold">
+                                                    Category: {m.category || 'General'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )})}
+                                </div>
+                            </section>
+                        )}
 
                         <section className="apple-card p-8 space-y-8">
                             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-white/10 pb-5">

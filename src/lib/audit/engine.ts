@@ -38,6 +38,7 @@ export class AuditEngine {
   private headers: HeaderMap = {};
   private status = 0;
   private findings: AuditFinding[] = [];
+  private metrics: any[] = [];
 
   constructor(url: string) {
     this.url = this.normalizeUrl(url);
@@ -77,6 +78,7 @@ export class AuditEngine {
           contentType: this.getHeader('content-type'),
           server: this.getHeader('server'),
           htmlBytes: this.html.length,
+          metrics: this.metrics,
         },
       };
     } catch (error: any) {
@@ -268,7 +270,20 @@ export class AuditEngine {
   }
 
   private loadCheerio() {
-    return cheerio.load(this.html || '');
+    const $ = cheerio.load(this.html || '');
+    if (this.html) {
+      if (!this.metrics.find(m => m.id === 'dom_size')) {
+        this.metrics.push({
+          id: 'dom_size',
+          title: 'DOM Elements',
+          description: 'Total number of HTML elements found on the page.',
+          value: $('*').length,
+          unit: 'elements',
+          category: 'Performance'
+        });
+      }
+    }
+    return $;
   }
 
   private runSeoChecks() {
@@ -594,6 +609,31 @@ export class AuditEngine {
     }
 
     const inlineStyleCount = $('[style]').length;
+    
+    if (!this.metrics.find((m) => m.id === 'word_count')) {
+      this.metrics.push({
+        id: 'word_count',
+        title: 'Word Count',
+        description: 'Total number of words detected in the page body.',
+        value: wordCount,
+        displayValue: String(wordCount),
+        unit: 'words',
+        category: 'SEO'
+      });
+    }
+
+    if (!this.metrics.find((m) => m.id === 'inline_styles')) {
+        this.metrics.push({
+          id: 'inline_styles',
+          title: 'Inline Styles',
+          description: 'Number of elements utilizing inline CSS.',
+          value: inlineStyleCount,
+          displayValue: String(inlineStyleCount),
+          unit: 'elements',
+          category: 'Performance'
+        });
+    }
+
     if (inlineStyleCount > 40) {
       this.addFinding({
         code: 'CONTENT_INLINE_STYLES',
@@ -628,6 +668,31 @@ export class AuditEngine {
     }
 
     const interactiveCount = $('a, button').length;
+
+    if (!this.metrics.find((m) => m.id === 'interactive_elements')) {
+        this.metrics.push({
+          id: 'interactive_elements',
+          title: 'Interactive Elements',
+          description: 'Total number of clickable buttons and links.',
+          value: interactiveCount,
+          displayValue: String(interactiveCount),
+          unit: 'elements',
+          category: 'UX'
+        });
+    }
+
+    if (!this.metrics.find((m) => m.id === 'modal_count')) {
+        this.metrics.push({
+          id: 'modal_count',
+          title: 'Modals / Popups',
+          description: 'Total number of dialogs or popups detected.',
+          value: modalCount,
+          displayValue: String(modalCount),
+          unit: 'modals',
+          category: 'UX'
+        });
+    }
+
     if (interactiveCount > 180) {
       this.addFinding({
         code: 'UX_CLUTTER',
@@ -719,9 +784,24 @@ export class AuditEngine {
 
       let added = 0;
       for (const auditId of Object.keys(audits)) {
-        if (added >= 20) break;
         const audit = audits[auditId];
         if (!audit) continue;
+
+        if (audit.numericValue !== undefined && audit.displayValue) {
+          if (!this.metrics.find((m) => m.id === auditId)) {
+            this.metrics.push({
+              id: audit.id || auditId,
+              title: audit.title || auditId,
+              description: audit.description || '',
+              value: audit.numericValue,
+              displayValue: audit.displayValue,
+              unit: audit.numericUnit || 'v',
+              category: 'Lighthouse' // Or extract true category
+            });
+          }
+        }
+
+        if (added >= 20) continue;
         if (audit.score === null || typeof audit.score !== 'number' || audit.score >= 0.9) continue;
 
         let severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' = 'LOW';
