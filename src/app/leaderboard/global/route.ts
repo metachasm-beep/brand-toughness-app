@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
-export const revalidate = 60 * 60 * 12;
+export const revalidate = 43200;
 
 type GlobalRow = {
   rank: number;
@@ -10,7 +10,7 @@ type GlobalRow = {
   source: 'tranco';
 };
 
-function titleCaseFromDomain(domain: string) {
+function titleCaseFromDomain(domain: string): string {
   const base = domain.replace(/^www\./, '').split('.')[0] || domain;
   return base
     .split(/[-_]/g)
@@ -22,7 +22,10 @@ function titleCaseFromDomain(domain: string) {
 export async function GET() {
   try {
     const res = await fetch('https://tranco-list.eu/top-1m.csv.zip', {
-      next: { revalidate },
+      next: { revalidate: 43200 },
+      headers: {
+        Accept: 'application/zip, application/octet-stream, */*',
+      },
     });
 
     if (!res.ok) {
@@ -82,4 +85,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-      }
+}
