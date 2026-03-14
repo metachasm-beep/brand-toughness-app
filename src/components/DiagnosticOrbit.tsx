@@ -24,7 +24,6 @@ type OrbitNode = {
   icon: React.ComponentType<{ size?: number; className?: string }>;
   color: string;
   glow: string;
-  line: string;
 };
 
 function clamp(value: number, min = 0, max = 100) {
@@ -38,7 +37,6 @@ function tone(score: number) {
       bg: 'bg-[#00E28A]/10',
       text: 'text-[#00E28A]',
       dot: 'bg-[#00E28A]',
-      shadow: 'shadow-[0_0_25px_rgba(0,226,138,0.28)]',
     };
   }
 
@@ -48,7 +46,6 @@ function tone(score: number) {
       bg: 'bg-[#00D1FF]/10',
       text: 'text-[#00D1FF]',
       dot: 'bg-[#00D1FF]',
-      shadow: 'shadow-[0_0_25px_rgba(0,209,255,0.22)]',
     };
   }
 
@@ -57,7 +54,14 @@ function tone(score: number) {
     bg: 'bg-[#FF3D57]/10',
     text: 'text-[#FF3D57]',
     dot: 'bg-[#FF3D57]',
-    shadow: 'shadow-[0_0_25px_rgba(255,61,87,0.22)]',
+  };
+}
+
+function polarToCartesian(center: number, angle: number, radius: number) {
+  const rad = (angle * Math.PI) / 180;
+  return {
+    x: center + Math.cos(rad) * radius,
+    y: center + Math.sin(rad) * radius,
   };
 }
 
@@ -75,6 +79,9 @@ export default function DiagnosticOrbit({
   ];
 
   const overallPercent = clamp(Number(overallScore || 0) * 10);
+  const center = 300;
+  const radarMaxRadius = 185;
+  const orbitCardRadius = 235;
 
   const nodes: OrbitNode[] = [
     {
@@ -82,77 +89,74 @@ export default function DiagnosticOrbit({
       short: 'SEO',
       value: safeScores[0],
       angle: -90,
-      radius: 215,
+      radius: orbitCardRadius,
       icon: Search,
       color: 'text-[#00D1FF]',
       glow: 'shadow-[0_0_30px_rgba(0,209,255,0.22)]',
-      line: 'from-[#00D1FF]/50',
     },
     {
       label: 'Performance',
       short: 'PERF',
       value: safeScores[1],
       angle: -30,
-      radius: 215,
+      radius: orbitCardRadius,
       icon: Activity,
       color: 'text-[#7B5CFF]',
       glow: 'shadow-[0_0_30px_rgba(123,92,255,0.22)]',
-      line: 'from-[#7B5CFF]/50',
     },
     {
       label: 'Trust',
       short: 'TRUST',
       value: safeScores[2],
       angle: 30,
-      radius: 215,
+      radius: orbitCardRadius,
       icon: Shield,
       color: 'text-[#00E28A]',
       glow: 'shadow-[0_0_30px_rgba(0,226,138,0.22)]',
-      line: 'from-[#00E28A]/50',
     },
     {
       label: 'Clarity',
       short: 'BRAND',
       value: safeScores[3],
       angle: 90,
-      radius: 215,
+      radius: orbitCardRadius,
       icon: Sparkles,
       color: 'text-[#FFB84D]',
       glow: 'shadow-[0_0_30px_rgba(255,184,77,0.22)]',
-      line: 'from-[#FFB84D]/50',
     },
     {
       label: 'Experience',
       short: 'CX',
       value: safeScores[4],
       angle: 150,
-      radius: 215,
+      radius: orbitCardRadius,
       icon: Users,
       color: 'text-[#FF3D57]',
       glow: 'shadow-[0_0_30px_rgba(255,61,87,0.22)]',
-      line: 'from-[#FF3D57]/50',
     },
     {
       label: 'Narrative',
       short: 'CONTENT',
       value: safeScores[5],
       angle: 210,
-      radius: 215,
+      radius: orbitCardRadius,
       icon: FileText,
       color: 'text-white',
       glow: 'shadow-[0_0_30px_rgba(255,255,255,0.12)]',
-      line: 'from-white/35',
     },
   ];
 
-  const polarPoints = nodes.map((node) => {
-    const rad = (node.angle * Math.PI) / 180;
-    const x = 300 + Math.cos(rad) * 175;
-    const y = 300 + Math.sin(rad) * 175;
-    return `${x},${y}`;
+  const dynamicRadarPoints = nodes.map((node) => {
+    const dynamicRadius = Math.max(36, (node.value / 100) * radarMaxRadius);
+    const point = polarToCartesian(center, node.angle, dynamicRadius);
+    return {
+      ...point,
+      value: node.value,
+      angle: node.angle,
+    };
   });
 
-  const radarPolygon = polarPoints.join(' ');
+  const radarPolygon = dynamicRadarPoints.map((p) => `${p.x},${p.y}`).join(' ');
 
   return (
     <div className="relative w-full flex items-center justify-center">
@@ -210,62 +214,73 @@ export default function DiagnosticOrbit({
             </defs>
 
             {[0, 60, 120, 180, 240, 300].map((angle) => {
-              const rad = (angle * Math.PI) / 180;
-              const x = 300 + Math.cos(rad) * 250;
-              const y = 300 + Math.sin(rad) * 250;
-
+              const outer = polarToCartesian(center, angle, 250);
               return (
                 <line
                   key={angle}
-                  x1="300"
-                  y1="300"
-                  x2={x}
-                  y2={y}
+                  x1={center}
+                  y1={center}
+                  x2={outer.x}
+                  y2={outer.y}
                   stroke="rgba(255,255,255,0.07)"
                   strokeWidth="1"
                 />
               );
             })}
 
-            <polygon
+            {[0.25, 0.5, 0.75, 1].map((ratio) => {
+              const ringPoints = nodes
+                .map((node) => {
+                  const point = polarToCartesian(center, node.angle, radarMaxRadius * ratio);
+                  return `${point.x},${point.y}`;
+                })
+                .join(' ');
+
+              return (
+                <polygon
+                  key={ratio}
+                  points={ringPoints}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.06)"
+                  strokeWidth="1"
+                />
+              );
+            })}
+
+            <motion.polygon
               points={radarPolygon}
               fill="url(#radarFill)"
               stroke="url(#radarStroke)"
               strokeWidth="2.2"
               filter="url(#radarGlow)"
+              initial={{ opacity: 0.7, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
             />
 
-            {nodes.map((node) => {
-              const rad = (node.angle * Math.PI) / 180;
-              const x = 300 + Math.cos(rad) * 175;
-              const y = 300 + Math.sin(rad) * 175;
-
-              return (
-                <g key={node.label}>
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r="7"
-                    fill="rgba(11,15,20,1)"
-                    stroke="rgba(255,255,255,0.18)"
-                    strokeWidth="2"
-                  />
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r="3.6"
-                    fill="rgba(0,209,255,1)"
-                  />
-                </g>
-              );
-            })}
+            {dynamicRadarPoints.map((point, i) => (
+              <g key={`${nodes[i].label}-point`}>
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="7"
+                  fill="rgba(11,15,20,1)"
+                  stroke="rgba(255,255,255,0.18)"
+                  strokeWidth="2"
+                />
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="3.6"
+                  fill="rgba(0,209,255,1)"
+                />
+              </g>
+            ))}
           </svg>
         </div>
 
         {nodes.map((node, i) => {
-          const rad = (node.angle * Math.PI) / 180;
-          const x = Math.cos(rad) * node.radius;
-          const y = Math.sin(rad) * node.radius;
+          const orbitPoint = polarToCartesian(0, node.angle, node.radius);
           const metricTone = tone(node.value);
           const Icon = node.icon;
 
@@ -274,9 +289,16 @@ export default function DiagnosticOrbit({
               key={node.label}
               className="absolute left-1/2 top-1/2"
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1, x, y }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                x: orbitPoint.x,
+                y: orbitPoint.y,
+              }}
               transition={{ duration: 0.6, delay: i * 0.08 }}
-              style={{ transform: `translate(-50%, -50%) translate(${x}px, ${y}px)` }}
+              style={{
+                transform: `translate(-50%, -50%) translate(${orbitPoint.x}px, ${orbitPoint.y}px)`,
+              }}
             >
               <div className="relative -translate-x-1/2 -translate-y-1/2">
                 <motion.div
