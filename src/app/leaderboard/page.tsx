@@ -523,4 +523,99 @@ export default function LeaderboardPage() {
                     <div className="text-[10px] uppercase tracking-[0.18em] text-white/25 font-black xl:hidden mb-1">
                       Rank
                     </div>
-                    <div className="text-white font-black text-lg">#{row.rank}<
+                    <div className="text-white font-black text-lg">#{row.rank}</div>
+                  </div>
+
+                  <div className="px-6 py-5 border-b xl:border-b-0 xl:border-r border-white/10">
+                    <div className="text-[10px] uppercase tracking-[0.18em] text-white/25 font-black xl:hidden mb-1">
+                      Score
+                    </div>
+                    <div className={`text-2xl font-black font-display ${scoreTone(row.score)}`}>
+                      {row.score.toFixed(1)}
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-white/10 mt-3 overflow-hidden">
+                      <div
+                        className={`h-full ${scoreBar(row.score)}`}
+                        style={{ width: `${Math.max(0, Math.min(100, row.score))}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="px-6 py-5 border-b xl:border-b-0 xl:border-r border-white/10">
+                    <div className="text-[10px] uppercase tracking-[0.18em] text-white/25 font-black xl:hidden mb-1">
+                      Trend
+                    </div>
+                    <div className={`inline-flex items-center gap-2 font-black ${trendTone(row.trend)}`}>
+                      <TrendingUp size={15} />
+                      {row.trend > 0 ? '+' : ''}
+                      {row.trend.toFixed(1)}
+                    </div>
+                  </div>
+
+                  <div className="px-6 py-5">
+                    <a
+                      href={`https://${row.domain}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-bold text-white/65 hover:text-white transition-colors"
+                    >
+                      Visit
+                      <ExternalLink size={14} />
+                    </a>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pt-2">
+            <div className="space-y-1">
+              <div className="text-sm text-white/40 font-medium">
+                Showing{' '}
+                <span className="text-white font-bold">
+                  {visibleRows.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1}
+                </span>{' '}
+                to{' '}
+                <span className="text-white font-bold">
+                  {Math.min(currentPage * PAGE_SIZE, filteredRows.length)}
+                </span>{' '}
+                of{' '}
+                <span className="text-white font-bold">
+                  {filteredRows.length.toLocaleString()}
+                </span>{' '}
+                ranked websites
+              </div>
+              <div className="text-xs text-white/28">
+                Last updated: {formatLastUpdated(activeData?.lastUpdated)}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={goPrev}
+                disabled={currentPage === 1}
+                className="apple-button-outline disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-2"
+              >
+                <ChevronLeft size={16} />
+                Prev
+              </button>
+
+              <div className="px-4 py-2 rounded-2xl border border-white/10 bg-white/[0.03] text-sm font-black text-white">
+                Page {currentPage} / {totalPages}
+              </div>
+
+              <button
+                onClick={goNext}
+                disabled={currentPage === totalPages}
+                className="apple-button-outline disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-2"
+              >
+                Next
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </DashboardShell>
+  );
+}
