@@ -13,7 +13,6 @@ export async function POST(request: Request) {
     }
 
     const { runRenderedAudit } = await import('@/lib/audit/renderedAudit');
-
     const rendered = await runRenderedAudit(url);
 
     const overallScore = Math.round(
