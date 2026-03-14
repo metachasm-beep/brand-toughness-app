@@ -3,16 +3,62 @@ import { NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const maxDuration = 180;
 
+type RenderedAuditResponse = {
+  url: string;
+  finalUrl?: string;
+  categories: Record<string, { score: number; confidence: number }>;
+  coreWebVitals: {
+    lcp?: number | null;
+    cls?: number | null;
+    tbt?: number | null;
+    fcp?: number | null;
+    si?: number | null;
+  };
+  lighthouse: {
+    performance: number;
+    accessibility: number;
+    seo: number;
+    bestPractices: number;
+  };
+  findings: Array<{
+    code: string;
+    title: string;
+    category: string;
+    severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+    confidence: number;
+    recommendation: string;
+    effort: 'EASY' | 'MEDIUM' | 'HARD';
+    impact: string;
+    evidence?: unknown;
+  }>;
+  meta: Record<string, unknown>;
+};
+
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const url = String(body?.url || '').trim();
+    const url = String((body as { url?: string })?.url || '').trim();
 
     if (!url) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
-    const { runRenderedAudit } = await import('@/lib/audit/renderedAudit');
+    let runRenderedAudit: ((inputUrl: string) => Promise<RenderedAuditResponse>);
+
+    try {
+      ({ runRenderedAudit } = await import('@/lib/audit/renderedAudit'));
+    } catch (importErr: unknown) {
+      return NextResponse.json(
+        {
+          error:
+            'Rendered audit dependencies are not installed. Install playwright, lighthouse, and chrome-launcher.',
+          stage: 'rendered-audit-import',
+          details: importErr instanceof Error ? importErr.message : 'Import failed',
+        },
+        { status: 500 }
+      );
+    }
+
     const rendered = await runRenderedAudit(url);
 
     const overallScore = Math.round(
@@ -49,12 +95,12 @@ export async function POST(request: Request) {
         cached: false,
       },
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[/api/audit-rendered] FAILED:', err);
 
     return NextResponse.json(
       {
-        error: err?.message || 'Rendered Lighthouse audit failed',
+        error: err instanceof Error ? err.message : 'Rendered Lighthouse audit failed',
         stage: 'rendered-audit',
       },
       { status: 500 }
