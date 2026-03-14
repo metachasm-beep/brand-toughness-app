@@ -30,6 +30,8 @@ services:
         sync: false
       - key: COHERE_API_KEY
         sync: false
+      - key: CLOUDFLARE_RADAR_API_TOKEN
+        sync: false
 
       - key: DISABLE_PSI
         value: "true"
