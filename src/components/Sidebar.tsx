@@ -38,18 +38,12 @@ type Workspace = {
 };
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/', icon: BarChart3, shortcut: 'G D' },
-  { label: 'Pillars', href: '/pillars', icon: Sparkles, shortcut: 'G P' },
-  { label: 'Telemetrics', href: '/telemetrics', icon: Activity, shortcut: 'G T' },
-  { label: 'Leaderboard', href: '/leaderboard', icon: Trophy, shortcut: 'G L', badge: '10k' },
-  { label: 'History', href: '/history', icon: Clock3, shortcut: 'G H' },
-  { label: 'Pricing', href: '/pricing', icon: CreditCard, shortcut: 'G $', badge: 'New' },
-];
-
-const workspaces: Workspace[] = [
-  { id: 'turtle-labs', name: 'Turtle Labs', initials: 'TL', accent: 'from-[#00D1FF] to-[#7B5CFF]' },
-  { id: 'brand-os', name: 'Brand OS', initials: 'BO', accent: 'from-[#7B5CFF] to-[#00E28A]' },
-  { id: 'global-rank', name: 'Global Rank', initials: 'GR', accent: 'from-[#FFB84D] to-[#FF3D57]' },
+  { label: 'Dashboard', href: '/', icon: BarChart3, shortcut: '' },
+  { label: 'Pillars', href: '/pillars', icon: Sparkles, shortcut: '' },
+  { label: 'Telemetrics', href: '/telemetrics', icon: Activity, shortcut: '' },
+  { label: 'Leaderboard', href: '/leaderboard', icon: Trophy, shortcut: '', badge: '10k' },
+  { label: 'History', href: '/history', icon: Clock3, shortcut: '' },
+  { label: 'Pricing', href: '/pricing', icon: CreditCard, shortcut: '', badge: 'New' },
 ];
 
 function getLeaderboardPreview(pathname: string) {
@@ -68,15 +62,8 @@ function getLeaderboardPreview(pathname: string) {
 export default function Sidebar() {
   const pathname = usePathname();
 
-  const [collapsed, setCollapsed] = useState(false);
-  const [iconOnly, setIconOnly] = useState(false);
-  const [workspaceOpen, setWorkspaceOpen] = useState(false);
-  const [commandPaletteHint, setCommandPaletteHint] = useState(false);
-  const [activeWorkspace, setActiveWorkspace] = useState<Workspace>(workspaces[0]);
+  const [isRetracted, setIsRetracted] = useState(true);
   const [scanLive, setScanLive] = useState(true);
-  const [scanPulseCount, setScanPulseCount] = useState(0);
-
-  const compact = collapsed || iconOnly;
 
   const leaderboardPreview = useMemo(
     () => getLeaderboardPreview(pathname),
@@ -84,37 +71,9 @@ export default function Sidebar() {
   );
 
   useEffect(() => {
-    const storedCollapsed = window.localStorage.getItem('brandos.sidebar.collapsed');
-    const storedIconOnly = window.localStorage.getItem('brandos.sidebar.iconOnly');
-    const storedWorkspace = window.localStorage.getItem('brandos.sidebar.workspace');
-
-    if (storedCollapsed === 'true') setCollapsed(true);
-    if (storedIconOnly === 'true') setIconOnly(true);
-
-    if (storedWorkspace) {
-      const found = workspaces.find((w) => w.id === storedWorkspace);
-      if (found) setActiveWorkspace(found);
-    }
-  }, []);
-
-  useEffect(() => {
-    window.localStorage.setItem('brandos.sidebar.collapsed', String(collapsed));
-  }, [collapsed]);
-
-  useEffect(() => {
-    window.localStorage.setItem('brandos.sidebar.iconOnly', String(iconOnly));
-  }, [iconOnly]);
-
-  useEffect(() => {
-    window.localStorage.setItem('brandos.sidebar.workspace', activeWorkspace.id);
-  }, [activeWorkspace]);
-
-  useEffect(() => {
     const timer = window.setInterval(() => {
-      setScanPulseCount((v) => v + 1);
       setScanLive((prev) => !prev);
     }, 5000);
-
     return () => window.clearInterval(timer);
   }, []);
 
@@ -131,25 +90,6 @@ export default function Sidebar() {
       const tag = target?.tagName?.toLowerCase();
       const isTyping =
         tag === 'input' || tag === 'textarea' || target?.getAttribute('contenteditable') === 'true';
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
-        e.preventDefault();
-        setCollapsed((prev) => !prev);
-        return;
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'i') {
-        e.preventDefault();
-        setIconOnly((prev) => !prev);
-        return;
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setCommandPaletteHint(true);
-        window.setTimeout(() => setCommandPaletteHint(false), 1600);
-        return;
-      }
 
       if (isTyping) return;
 
@@ -180,248 +120,121 @@ export default function Sidebar() {
 
   return (
     <>
-      {commandPaletteHint && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[300] px-4 py-3 rounded-2xl border border-[#00D1FF]/20 bg-[#0B0F14]/90 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
-          <div className="flex items-center gap-2 text-sm font-bold text-white">
-            <Command size={15} className="text-[#00D1FF]" />
-            Command palette shortcut detected
-          </div>
-          <div className="text-xs text-white/45 mt-1">Connect your actual command modal here.</div>
-        </div>
-      )}
+      {/* Futuristic Shining Toggle Button */}
+      <button
+        onClick={() => setIsRetracted(!isRetracted)}
+        className="fixed top-8 left-8 z-[150] w-14 h-14 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl flex items-center justify-center group overflow-hidden transition-all duration-500 hover:border-[#00D1FF]/40"
+      >
+        <div className="absolute inset-0 bg-gradient-to-tr from-[#00D1FF]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute -inset-[100%] group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12 opacity-0 group-hover:opacity-100" />
+        <PanelLeft
+          size={24}
+          className={`text-white transition-all duration-500 ${isRetracted ? 'opacity-100' : 'opacity-0 scale-50 rotate-90'}`}
+        />
+        <ChevronLeft
+          size={24}
+          className={`text-[#00D1FF] absolute transition-all duration-500 ${isRetracted ? 'opacity-0 scale-50 -rotate-90' : 'opacity-100 rotate-0'}`}
+        />
+      </button>
 
+      {/* Retractable Sidebar */}
       <aside
-        className={`min-h-screen border-r border-white/10 bg-[#0B0F14] flex flex-col transition-all duration-300 ${
-          compact ? 'w-[92px]' : 'w-[300px]'
+        className={`fixed left-0 top-0 h-screen z-[140] w-80 bg-[#0B0F14]/95 backdrop-blur-3xl border-r border-white/5 flex flex-col shadow-2xl transition-all duration-700 ease-apple ${
+          isRetracted ? '-translate-x-full' : 'translate-x-0'
         }`}
       >
-        <div className="px-4 py-4 border-b border-white/10">
-          <div className="flex items-center justify-between gap-2">
-            <button
-              onClick={() => setWorkspaceOpen((v) => !v)}
-              className={`w-full rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] transition-all ${
-                compact ? 'p-3' : 'px-4 py-3'
-              }`}
-              title={compact ? activeWorkspace.name : undefined}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`shrink-0 w-10 h-10 rounded-2xl bg-gradient-to-br ${activeWorkspace.accent} flex items-center justify-center text-black font-black text-sm`}
-                >
-                  {activeWorkspace.initials}
-                </div>
-
-                {!compact && (
-                  <>
-                    <div className="min-w-0 text-left flex-1">
-                      <div className="text-xs uppercase tracking-[0.24em] text-white/35 font-black">
-                        Workspace
-                      </div>
-                      <div className="text-white font-extrabold truncate mt-1">
-                        {activeWorkspace.name}
-                      </div>
-                    </div>
-                    <ChevronDown
-                      size={16}
-                      className={`text-white/35 transition-transform ${workspaceOpen ? 'rotate-180' : ''}`}
-                    />
-                  </>
-                )}
-              </div>
-            </button>
-
-            {!compact && (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIconOnly((v) => !v)}
-                  className="w-10 h-10 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] text-white/65 hover:text-white transition-all flex items-center justify-center"
-                  title="Toggle icons-only mode (Ctrl/Cmd + I)"
-                >
-                  <PanelLeft size={16} />
-                </button>
-                <button
-                  onClick={() => setCollapsed((v) => !v)}
-                  className="w-10 h-10 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] text-white/65 hover:text-white transition-all flex items-center justify-center"
-                  title="Collapse sidebar (Ctrl/Cmd + B)"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-              </div>
-            )}
-
-            {compact && (
-              <button
-                onClick={() => {
-                  if (iconOnly) setIconOnly(false);
-                  else setCollapsed(false);
-                }}
-                className="w-10 h-10 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] text-white/65 hover:text-white transition-all flex items-center justify-center shrink-0"
-                title="Expand sidebar"
-              >
-                <ChevronRight size={16} />
-              </button>
-            )}
+        <div className="p-8 pt-24 space-y-8 flex-1 overflow-y-auto scrollbar-hide">
+          {/* Logo Section */}
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] flex items-center justify-center text-black shadow-[0_0_20px_rgba(0,209,255,0.3)]">
+              <Command size={24} weight="bold" />
+            </div>
+            <div>
+              <div className="text-xl font-black font-display tracking-tighter text-white">BRAND OS</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00D1FF]/70">Intelligence</div>
+            </div>
           </div>
 
-          {workspaceOpen && !compact && (
-            <div className="mt-3 space-y-2">
-              {workspaces.map((workspace) => (
-                <button
-                  key={workspace.id}
-                  onClick={() => {
-                    setActiveWorkspace(workspace);
-                    setWorkspaceOpen(false);
-                  }}
-                  className={`w-full rounded-2xl border text-left px-4 py-3 transition-all ${
-                    activeWorkspace.id === workspace.id
-                      ? 'border-[#00D1FF]/20 bg-[#00D1FF]/10'
-                      : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05]'
+          <nav className="px-5 py-4 space-y-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`group flex items-center justify-between px-6 py-4 rounded-2xl border transition-all ${
+                    active
+                      ? 'border-[#00D1FF]/30 bg-[#00D1FF]/10 text-[#00D1FF]'
+                      : 'border-transparent text-white/50 hover:text-white hover:bg-white/[0.04]'
                   }`}
+                  onClick={() => setIsRetracted(true)}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <div
-                      className={`w-9 h-9 rounded-xl bg-gradient-to-br ${workspace.accent} flex items-center justify-center text-black font-black text-xs`}
+                      className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
+                        active ? 'bg-[#00D1FF]/10' : 'bg-white/[0.03] group-hover:bg-white/[0.06]'
+                      }`}
                     >
-                      {workspace.initials}
+                      <Icon size={20} />
                     </div>
-                    <div>
-                      <div className="text-white font-bold">{workspace.name}</div>
-                      <div className="text-[11px] text-white/35 mt-0.5">Live workspace context</div>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <nav className="flex-1 px-3 py-4 space-y-2">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                title={compact ? item.label : undefined}
-                className={`group flex items-center ${
-                  compact ? 'justify-center px-0 py-3' : 'justify-between px-4 py-3.5'
-                } rounded-2xl border transition-all ${
-                  active
-                    ? 'border-[#00D1FF]/20 bg-[#00D1FF]/10 text-[#00D1FF]'
-                    : 'border-transparent text-white/60 hover:text-white hover:bg-white/[0.04]'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                      active ? 'bg-[#00D1FF]/10' : 'bg-white/[0.03] group-hover:bg-white/[0.06]'
-                    }`}
-                  >
-                    <Icon size={18} />
+                    <div className="font-bold text-sm tracking-tight">{item.label}</div>
                   </div>
 
-                  {!compact && (
-                    <div>
-                      <div className="font-semibold">{item.label}</div>
-                      <div className="text-[10px] uppercase tracking-[0.18em] text-white/28 mt-1">
-                        {item.shortcut}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {!compact && (
                   <div className="flex items-center gap-2">
                     {item.badge && (
-                      <span className="px-2 py-1 rounded-lg bg-white/[0.05] text-[10px] font-black uppercase tracking-[0.14em] text-white/45">
+                      <span className="px-2.5 py-1 rounded-lg bg-[#00D1FF]/10 text-[9px] font-black uppercase tracking-widest text-[#00D1FF]">
                         {item.badge}
                       </span>
                     )}
                     <ChevronRight
                       size={14}
-                      className={`transition-transform ${active ? 'text-[#00D1FF]' : 'text-white/20 group-hover:translate-x-0.5'}`}
+                      className={`transition-all duration-300 ${active ? 'text-[#00D1FF] opacity-100' : 'text-white/10 opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`}
                     />
                   </div>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
 
-        <div className="px-4 py-4 border-t border-white/10 space-y-3">
-          <div
-            className={`rounded-2xl border border-[#7B5CFF]/20 bg-[#7B5CFF]/10 ${
-              compact ? 'p-3' : 'p-4'
-            }`}
-            title={compact ? 'Live leaderboard rank preview' : undefined}
-          >
-            <div className={`flex items-start gap-3 ${compact ? 'justify-center' : ''}`}>
-              <div className="w-10 h-10 rounded-2xl bg-[#7B5CFF]/15 border border-[#7B5CFF]/20 flex items-center justify-center shrink-0">
-                <Trophy size={18} className="text-[#7B5CFF]" />
-              </div>
-
-              {!compact && (
-                <div className="min-w-0">
-                  <div className="text-[10px] uppercase tracking-[0.22em] text-[#C9BEFF]/70 font-black">
-                    Leaderboard Preview
-                  </div>
-                  <div className="flex items-end gap-2 mt-1">
-                    <div className="text-2xl font-black font-display text-white">
-                      {leaderboardPreview.rank}
-                    </div>
-                    <div className="text-sm font-black text-[#00E28A]">
-                      {leaderboardPreview.movement}
-                    </div>
-                  </div>
-                  <div className="text-[11px] text-white/45 mt-1">
-                    {leaderboardPreview.label}
-                  </div>
+        <div className="p-8 border-t border-white/5 space-y-6">
+          <div className="rounded-3xl border border-[#7B5CFF]/20 bg-[#7B5CFF]/5 p-6 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#7B5CFF]/10 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-[#7B5CFF]/20 flex items-center justify-center shrink-0">
+                  <Trophy size={20} className="text-[#7B5CFF]" />
                 </div>
-              )}
+                <div className="text-[10px] uppercase font-black tracking-[0.2em] text-[#C9BEFF]/70">Leaderboard</div>
+              </div>
+              <div className="flex items-end gap-2">
+                <div className="text-3xl font-black font-display text-white">{leaderboardPreview.rank}</div>
+                <div className="text-sm font-black text-[#30D158] mb-1">{leaderboardPreview.movement}</div>
+              </div>
+              <p className="text-[11px] text-white/40 mt-2 font-medium leading-relaxed">{leaderboardPreview.label}</p>
             </div>
           </div>
 
-          <button
-            onClick={() => setCommandPaletteHint(true)}
-            className={`w-full rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] transition-all ${
-              compact ? 'p-3 flex justify-center' : 'px-4 py-3'
-            }`}
-            title={compact ? 'Search / shortcuts' : undefined}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
-                <Search size={16} className="text-white/60" />
-              </div>
-
-              {!compact && (
-                <>
-                  <div className="text-left flex-1">
-                    <div className="text-white font-semibold">Quick search</div>
-                    <div className="text-[11px] text-white/35 mt-1">
-                      Use keyboard shortcuts and navigation commands
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg border border-white/10 bg-black/20 text-[10px] font-black text-white/45">
-                    <Command size={11} />
-                    K
-                  </div>
-                </>
-              )}
+          <div className="flex items-center gap-3 px-2">
+            <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
             </div>
-          </button>
-
-          {!compact && (
-            <div className="px-1 pt-1">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-white/28 font-black">
-                <Globe2 size={12} />
-                Enterprise navigation layer
-              </div>
+            <div className="text-[10px] font-black uppercase tracking-[0.24em] text-white/30">
+              BrandOS AI | Turtle Labs
             </div>
-          )}
+          </div>
         </div>
       </aside>
+
+      {/* Backdrop */}
+      {!isRetracted && (
+        <div
+          className="fixed inset-0 z-[130] bg-black/40 backdrop-blur-sm transition-opacity duration-500"
+          onClick={() => setIsRetracted(true)}
+        />
+      )}
     </>
   );
 }

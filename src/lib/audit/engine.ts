@@ -1,6 +1,6 @@
 import 'server-only';
 
-import axios, { AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios';
+import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -229,11 +229,7 @@ export class AuditEngine {
   }
 
   private normalizeHeaders(
-    headers:
-      | AxiosResponseHeaders
-      | RawAxiosResponseHeaders
-      | Record<string, any>
-      | undefined
+    headers: any
   ): HeaderMap {
     const out: HeaderMap = {};
     if (!headers || typeof headers !== 'object') return out;
@@ -594,18 +590,33 @@ export class AuditEngine {
     const bodyText = $('body').text().replace(/\s+/g, ' ').trim();
     const wordCount = bodyText ? bodyText.split(' ').filter(Boolean).length : 0;
 
-    if (wordCount < 120) {
+    if (wordCount < 200) {
       this.addFinding({
         code: 'CONTENT_THIN',
-        title: 'Thin Content',
-        category: 'SEO',
-        severity: 'LOW',
-        confidence: 0.7,
-        recommendation: 'Add more descriptive, relevant page content.',
+        title: wordCount < 100 ? 'Critically Thin Content' : 'Thin Content',
+        category: 'Content',
+        severity: wordCount < 100 ? 'HIGH' : 'MEDIUM',
+        confidence: 0.85,
+        recommendation: 'Expand page content to improve brand authority and narrative depth.',
         effort: 'HARD',
-        impact: 'Low',
+        impact: 'High',
         evidence: { wordCount },
       });
+    }
+
+    if (bodyText.length > 500 && wordCount > 300) {
+        // Positive signal if no other findings
+    } else {
+        this.addFinding({
+            code: 'CONTENT_STRUCTURE',
+            title: 'Sub-optimal Content Structure',
+            category: 'Content',
+            severity: 'LOW',
+            confidence: 0.7,
+            recommendation: 'Use more descriptive headers and breakdown paragraphs for better clarity.',
+            effort: 'MEDIUM',
+            impact: 'Medium'
+        });
     }
 
     const inlineStyleCount = $('[style]').length;
@@ -927,6 +938,8 @@ export class AuditEngine {
         return 42;
       case 'UX':
         return 26;
+      case 'Content':
+        return 38;
       default:
         return 35;
     }
@@ -944,13 +957,15 @@ export class AuditEngine {
         return 90;
       case 'UX':
         return 91;
+      case 'Content':
+        return 94;
       default:
         return 90;
     }
   }
 
   private calculateCategoryScores(): Record<string, { score: number; confidence: number }> {
-    const categories = ['SEO', 'Security', 'Accessibility', 'Performance', 'UX'];
+    const categories = ['SEO', 'Security', 'Accessibility', 'Performance', 'UX', 'Content'];
     const results: Record<string, { score: number; confidence: number }> = {};
 
     for (const cat of categories) {
@@ -1016,7 +1031,8 @@ export class AuditEngine {
       categories.Performance.score * 0.24 +
       categories.Security.score * 0.2 +
       categories.Accessibility.score * 0.17 +
-      categories.UX.score * 0.15;
+      categories.UX.score * 0.15 +
+      categories.Content.score * 0.1; // Added Content category with a weight of 0.1
 
     return Math.round(Math.max(35, Math.min(99, weighted)));
   }

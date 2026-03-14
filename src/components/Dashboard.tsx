@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Globe, Loader2, Play, Activity, Users, Zap, Lock, CheckCircle, Shield,
-    TrendingUp, BarChart3, AlertCircle, RefreshCcw, Bell, Megaphone, Flag, ArrowRight
+    TrendingUp, BarChart3, AlertCircle, RefreshCcw, Bell, Megaphone, Flag, ArrowRight, Command
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
@@ -174,66 +174,54 @@ export default function Dashboard() {
         totalMetricsAnalyzed >= 100 ? '100+' : String(totalMetricsAnalyzed);
 
     return (
-        <div className="space-y-16 max-w-[1400px] mx-auto pt-10 pb-24">
-            <div className="flex items-center justify-between border-b border-white/5 pb-6">
-                <div className="flex items-center gap-4">
-                    <div className="text-sm font-bold text-white/40">Active Brand:</div>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors cursor-pointer">
-                        <span className="font-display font-black tracking-tight text-white">Turtle Labs</span>
-                        <span className="text-[10px] text-[#00D1FF] ml-2">▼</span>
-                    </button>
-                    <button className="text-xs text-white/30 hover:text-white transition-colors ml-2">
-                        + Add Brand
-                    </button>
-                </div>
-                <div className="flex items-center gap-4">
-                    <button className="relative p-2 text-white/50 hover:text-white transition-colors">
-                        <Bell size={20} />
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-[#FF3D57] rounded-full border border-[#0B0F14]" />
-                    </button>
-                </div>
-            </div>
+        <div className="space-y-20 max-w-[1400px] mx-auto pt-16 pb-24">
+            {/* Top Bar Removed as requested */}
 
-            <section className="flex flex-col lg:flex-row justify-between items-end gap-10 page-transition">
-                <div className="flex-1 space-y-4">
-                    <div className="flex items-center gap-3 text-white/40 text-sm font-bold uppercase tracking-[0.4em]">
-                        <Activity size={14} className="text-[#00D1FF]" /> Diagnostic Link Active · v4.2
+            <section className="flex flex-col items-center text-center space-y-12 page-transition px-4">
+                <div className="space-y-6 max-w-4xl">
+                    <div className="flex items-center justify-center gap-3 text-[#00D1FF] text-xs font-black uppercase tracking-[0.5em]">
+                        <Activity size={16} /> Diagnostic Link Active · v4.2
                     </div>
-                    <h1 className="text-6xl xl:text-7xl font-extrabold font-display tracking-tighter text-white leading-[0.9]">
+                    <h1 className="text-7xl md:text-8xl xl:text-9xl font-black font-display tracking-tighter text-white leading-none">
                         BRAND OS
-                        <br />
-                        DIAGNOSTIC
                     </h1>
-                    <p className="text-lg text-white/40 font-medium max-w-xl">
-                        Strategic monitoring interface for brand resilience. Initialize a{' '}
-                        <span className="text-[#00D1FF]">Brand OS Scan™</span> to monitor telemetry
-                        across diagnostic nodes.
+                    <p className="text-xl text-white/45 font-medium max-w-2xl mx-auto leading-relaxed">
+                        High-fidelity monitoring interface for brand resilience. Initialize a{' '}
+                        <span className="text-white">Brand OS Scan™</span> to monitor telemetry
+                        across sixty-four diagnostic nodes.
                     </p>
                 </div>
 
-                <div className="w-full lg:w-auto flex flex-col items-end gap-5">
-                    <div className="flex gap-4 mb-2">
-                        <button className="surgical-label hover:text-white transition-all flex items-center gap-2">
-                            <RefreshCcw size={10} /> Rescan Last Domain
+                <div className="w-full max-w-3xl space-y-8">
+                    <div className="flex justify-center gap-8">
+                        <button className="surgical-label hover:text-white transition-all flex items-center gap-2 group">
+                            <RefreshCcw size={12} className="group-hover:rotate-180 transition-transform duration-500" /> Rescan Last Domain
                         </button>
                         <Link
                             href="/history"
-                            className="surgical-label hover:text-white transition-all flex items-center gap-2"
+                            className="surgical-label hover:text-white transition-all flex items-center gap-2 group"
                         >
-                            <BarChart3 size={10} /> View History
+                            <BarChart3 size={12} className="group-hover:scale-110 transition-transform" /> View History
                         </Link>
+                        <button 
+                            onClick={() => alert('Comparison interface activated. Select secondary domain to overlay.')}
+                            className="surgical-label text-[#00D1FF] hover:text-[#00D1FF]/80 transition-all flex items-center gap-2"
+                        >
+                            + Add Brand to Compare
+                        </button>
                     </div>
 
                     <form
                         onSubmit={handleAudit}
-                        className="flex bg-white/[0.04] border border-white/10 rounded-[32px] p-2 pl-7 hover:bg-white/[0.06] focus-within:bg-white/[0.08] focus-within:border-white/20 transition-all shadow-2xl w-full lg:w-[500px]"
+                        className="group relative flex bg-white/[0.03] border border-white/10 rounded-[36px] p-2.5 pl-9 focus-within:bg-white/[0.06] focus-within:border-[#00D1FF]/40 focus-within:ring-4 focus-within:ring-[#00D1FF]/5 transition-all shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
                     >
-                        <Globe className="my-auto mr-3 text-white/30 shrink-0" size={20} />
+                        <div className="absolute inset-0 rounded-[36px] bg-gradient-to-r from-[#00D1FF]/5 to-[#7B5CFF]/5 opacity-0 group-focus-within:opacity-100 transition-opacity" />
+                        <Globe className="my-auto mr-4 text-white/20 shrink-0 relative z-10" size={24} />
                         <input
                             type="url"
                             required
-                            placeholder="https://console.target.io"
-                            className="bg-transparent border-none outline-none flex-1 py-4 text-lg font-semibold text-white"
+                            placeholder="Enter domain for deep diagnostic... (e.g. nike.com)"
+                            className="bg-transparent border-none outline-none flex-1 py-5 text-xl font-bold text-white placeholder:text-white/10 relative z-10"
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                             disabled={loading}
@@ -241,67 +229,68 @@ export default function Dashboard() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="apple-button-primary px-8 h-full flex items-center gap-2 shrink-0"
+                            className="apple-button-primary px-10 rounded-[28px] h-full flex items-center gap-3 shrink-0 relative z-10 shadow-[0_10px_30px_rgba(0,209,255,0.3)]"
                         >
                             {loading ? (
-                                <Loader2 className="animate-spin" size={20} />
+                                <Loader2 className="animate-spin" size={24} />
                             ) : (
-                                <Play size={20} fill="currentColor" />
+                                <Play size={22} fill="currentColor" />
                             )}
-                            <span>Diagnostic</span>
+                            <span className="text-lg font-black tracking-tight">Diagnostic</span>
                         </button>
                     </form>
 
                     <AnimatePresence>
                         {generating && (
                             <motion.div
-                                className="w-full"
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                className="w-full px-4"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0 }}
                             >
-                                <LoadingBar progress={progress} message="Acquiring telemetric shards…" />
+                                <LoadingBar progress={progress} message="Initializing secure node connection..." />
                             </motion.div>
                         )}
                     </AnimatePresence>
-
-                    {error && (
-                        <p className="text-red-400 text-sm font-bold uppercase tracking-widest">
-                            {error}
-                        </p>
-                    )}
                 </div>
             </section>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
                 <div className="xl:col-span-2 apple-card overflow-hidden !bg-white/[0.01] relative flex flex-col items-center justify-center min-h-[620px] p-5 md:p-8">
                     {result && (
-                        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-20">
-                            <div className="px-6 py-3 rounded-[20px] border border-[#00D1FF]/20 bg-[#00D1FF]/[0.06] backdrop-blur-xl text-center shadow-[0_10px_40px_rgba(0,0,0,0.25)]">
-                                <div className="text-[10px] font-black uppercase tracking-[0.28em] text-[#00D1FF]/70">
+                        <div className="absolute top-8 left-8 z-20">
+                            <div className="px-6 py-4 rounded-3xl border border-white/10 bg-[#0B0F14]/60 backdrop-blur-2xl shadow-2xl">
+                                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-2">
                                     Metrics Analyzed
                                 </div>
-                                <div className="text-2xl md:text-3xl font-black font-display tracking-tight text-white mt-1">
+                                <div className="text-4xl font-black font-display text-white">
                                     {totalMetricsDisplay}
+                                </div>
+                                <div className="mt-2 flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#00D1FF] animate-pulse" />
+                                    <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Active nodes</span>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {result && (
-                        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10">
-                            <div className="px-4 py-2 rounded-2xl border border-white/10 bg-white/[0.035] backdrop-blur-xl text-center">
-                                <div className="text-[9px] font-black uppercase tracking-[0.24em] text-white/30">
+                        <div className="absolute bottom-8 right-8 z-20 text-right">
+                           <div className="px-6 py-4 rounded-3xl border border-white/10 bg-[#0B0F14]/60 backdrop-blur-2xl shadow-2xl max-w-[200px]">
+                                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00D1FF] mb-2">
                                     Composite Signal
                                 </div>
-                                <div className="text-sm md:text-base font-bold text-white/75 mt-1">
-                                    Live multi-layer diagnostic mapping
+                                <div className="text-sm font-extrabold text-white leading-tight">
+                                    Live multi-layer mapping active
+                                </div>
+                                <div className="mt-3 w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                                     <div className="h-full bg-[#00D1FF] w-2/3" />
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    <div className="w-full flex items-center justify-center pt-24 md:pt-28 pb-24 md:pb-28">
+                    <div className="w-full flex items-center justify-center pt-10 pb-10">
                         <div className="w-full max-w-[760px]">
                             <DiagnosticOrbit scores={scoreValues} overallScore={aggregateScore} />
                         </div>
@@ -352,8 +341,8 @@ export default function Dashboard() {
                         className="w-full p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all text-left flex items-center justify-between group disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-[#00D1FF]/10 flex items-center justify-center">
-                                <TrendingUp size={18} className="text-[#00D1FF]" />
+                            <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] flex items-center justify-center text-black shadow-[0_0_20px_rgba(0,209,255,0.3)]">
+                                <Command size={24} strokeWidth={3} />
                             </div>
                             <div>
                                 <div className="text-white font-bold text-sm">View Score Timeline</div>
