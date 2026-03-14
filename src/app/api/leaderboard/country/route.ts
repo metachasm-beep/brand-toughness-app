@@ -12,13 +12,15 @@ type CountryRow = {
 };
 
 type RadarListItem = {
-  rank: number;
-  domain: string;
+  rank?: number;
+  domain?: string;
 };
 
 type RadarApiResponse = {
   result?: {
     top_0?: RadarListItem[];
+    top?: RadarListItem[];
+    domains?: RadarListItem[];
   };
   success?: boolean;
   errors?: Array<{ message?: string }>;
@@ -40,6 +42,13 @@ function countryNameFromCode(code: string): string {
   } catch {
     return code.toUpperCase();
   }
+}
+
+function extractRadarList(data: RadarApiResponse): RadarListItem[] {
+  if (Array.isArray(data?.result?.top_0)) return data.result.top_0;
+  if (Array.isArray(data?.result?.top)) return data.result.top;
+  if (Array.isArray(data?.result?.domains)) return data.result.domains;
+  return [];
 }
 
 export async function GET(request: Request) {
@@ -76,7 +85,7 @@ export async function GET(request: Request) {
       return NextResponse.json(
         {
           error: `Failed to fetch country leaderboard (HTTP ${res.status})`,
-          details: raw.slice(0, 500),
+          details: raw.slice(0, 1000),
           source: 'cloudflare-radar',
         },
         { status: 502 }
@@ -90,22 +99,41 @@ export async function GET(request: Request) {
       return NextResponse.json(
         {
           error: 'Cloudflare Radar returned invalid JSON',
-          details: raw.slice(0, 500),
+          details: raw.slice(0, 1000),
           source: 'cloudflare-radar',
         },
         { status: 502 }
       );
     }
 
-    const list: RadarListItem[] = data?.result?.top_0 || [];
+    const list = extractRadarList(data);
 
-    const rows: CountryRow[] = list.map((item) => ({
-      rank: Number(item.rank),
-      domain: String(item.domain || '').trim(),
-      brand: titleCaseFromDomain(String(item.domain || '').trim()),
-      countryCode: code,
-      source: 'cloudflare-radar',
-    }));
+    if (!list.length) {
+      return NextResponse.json(
+        {
+          error: 'Cloudflare Radar returned no ranked domains for this country query',
+          source: 'cloudflare-radar',
+          countryCode: code,
+          debug: {
+            success: data?.success ?? null,
+            errors: data?.errors ?? [],
+            resultKeys: data?.result ? Object.keys(data.result) : [],
+            preview: raw.slice(0, 1000),
+          },
+        },
+        { status: 502 }
+      );
+    }
+
+    const rows: CountryRow[] = list
+      .filter((item) => item && item.domain)
+      .map((item, index) => ({
+        rank: Number(item.rank || index + 1),
+        domain: String(item.domain || '').trim(),
+        brand: titleCaseFromDomain(String(item.domain || '').trim()),
+        countryCode: code,
+        source: 'cloudflare-radar',
+      }));
 
     return NextResponse.json({
       scope: 'country',
@@ -126,4 +154,4 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
-      }
+        }
