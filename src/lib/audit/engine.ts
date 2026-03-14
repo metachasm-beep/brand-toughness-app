@@ -987,7 +987,13 @@ export class AuditEngine {
         score += 1.5;
       }
 
-      score = Math.max(35, Math.min(99, score));
+      // Enterprise Brand Curve: Redesigning logic so that ultra-premium apps 
+      // (Nike, Facebook) don't get heavily penalized simply for having vast DOM sizes/payloads.
+      // We apply a fractional power curve to raise the floor significantly.
+      score = Math.max(10, Math.min(100, score));
+      score = Math.pow(score / 100, 0.35) * 100;
+
+      score = Math.max(45, Math.min(99, score));
 
       if (catFindings.length === 0) {
         score = 96;

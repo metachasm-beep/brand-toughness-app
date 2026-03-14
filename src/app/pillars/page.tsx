@@ -243,10 +243,10 @@ export default function PillarsPage() {
                             <ArrowLeft size={16} />
                             <span>Return to Scan</span>
                         </Link>
-                        <button className="apple-button-primary flex items-center justify-center gap-2">
+                        <Link href="/pricing" className="apple-button-primary flex items-center justify-center gap-2">
                             <Lock size={16} />
                             <span>Unlock Full Pillar Report</span>
-                        </button>
+                        </Link>
                     </div>
                 </div>
 
@@ -426,11 +426,11 @@ export default function PillarsPage() {
                                             </div>
                                         </div>
 
-                                        <button className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-black uppercase tracking-[0.16em] text-white/75 hover:bg-white/[0.06] hover:text-white transition-all">
+                                        <Link href="/pricing" className="w-full flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-black uppercase tracking-[0.16em] text-white/75 hover:bg-white/[0.06] hover:text-white transition-all">
                                             <Lock size={14} />
                                             Unlock {pillar.title}
                                             <ArrowRight size={14} />
-                                        </button>
+                                        </Link>
                                     </motion.article>
                                 );
                             })}

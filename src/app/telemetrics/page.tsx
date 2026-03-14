@@ -143,10 +143,10 @@ export default function TelemetricsPage() {
                             <ArrowLeft size={16} />
                             <span>Return to Dashboard</span>
                         </Link>
-                        <button className="apple-button-primary flex items-center justify-center gap-2">
+                        <Link href="/pricing" className="apple-button-primary flex items-center justify-center gap-2">
                             <Lock size={16} />
                             <span>Unlock Executive Telemetry Export</span>
-                        </button>
+                        </Link>
                     </div>
                 </div>
 
@@ -330,10 +330,10 @@ export default function TelemetricsPage() {
                                     </div>
                                 </div>
 
-                                <button className="w-full apple-button-outline flex items-center justify-center gap-2">
+                                <Link href="/pricing" className="w-full apple-button-outline flex items-center justify-center gap-2">
                                     <Lock size={16} />
                                     <span>Unlock Live Trend Graphs</span>
-                                </button>
+                                </Link>
                             </div>
                         </section>
 
@@ -485,10 +485,10 @@ export default function TelemetricsPage() {
                                     competitor comparisons, and prioritized execution flows.
                                 </p>
 
-                                <button className="mt-6 apple-button-primary flex items-center gap-2">
+                                <Link href="/pricing" className="mt-6 apple-button-primary flex items-center gap-2">
                                     <Lock size={16} />
                                     <span>Unlock Recovery Simulator</span>
-                                </button>
+                                </Link>
                             </div>
 
                             <div className="apple-card p-8">

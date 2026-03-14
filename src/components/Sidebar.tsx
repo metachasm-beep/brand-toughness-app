@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Clock3,
   Command,
+  CreditCard,
   Globe2,
   PanelLeft,
   Search,
@@ -42,6 +43,7 @@ const navItems: NavItem[] = [
   { label: 'Telemetrics', href: '/telemetrics', icon: Activity, shortcut: 'G T' },
   { label: 'Leaderboard', href: '/leaderboard', icon: Trophy, shortcut: 'G L', badge: '10k' },
   { label: 'History', href: '/history', icon: Clock3, shortcut: 'G H' },
+  { label: 'Pricing', href: '/pricing', icon: CreditCard, shortcut: 'G $', badge: 'New' },
 ];
 
 const workspaces: Workspace[] = [

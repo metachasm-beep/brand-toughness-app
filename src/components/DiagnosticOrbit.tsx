@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Activity,
   Shield,
@@ -24,6 +25,8 @@ type OrbitNode = {
   icon: React.ComponentType<{ size?: number; className?: string }>;
   color: string;
   glow: string;
+  description: string;
+  whatItMeasures: string[];
 };
 
 function clamp(value: number, min = 0, max = 100) {
@@ -37,6 +40,8 @@ function tone(score: number) {
       bg: 'bg-[#00E28A]/10',
       text: 'text-[#00E28A]',
       dot: 'bg-[#00E28A]',
+      label: 'Excellent',
+      labelColor: 'text-[#00E28A]',
     };
   }
 
@@ -46,6 +51,8 @@ function tone(score: number) {
       bg: 'bg-[#00D1FF]/10',
       text: 'text-[#00D1FF]',
       dot: 'bg-[#00D1FF]',
+      label: 'Good',
+      labelColor: 'text-[#00D1FF]',
     };
   }
 
@@ -54,6 +61,8 @@ function tone(score: number) {
     bg: 'bg-[#FF3D57]/10',
     text: 'text-[#FF3D57]',
     dot: 'bg-[#FF3D57]',
+    label: 'Needs Work',
+    labelColor: 'text-[#FF3D57]',
   };
 }
 
@@ -69,6 +78,8 @@ export default function DiagnosticOrbit({
   scores = [0, 0, 0, 0, 0, 0],
   overallScore = 0,
 }: DiagnosticOrbitProps) {
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+
   const safeScores = [
     clamp(Number(scores[0] || 0)),
     clamp(Number(scores[1] || 0)),
@@ -93,6 +104,8 @@ export default function DiagnosticOrbit({
       icon: Search,
       color: 'text-[#00D1FF]',
       glow: 'shadow-[0_0_30px_rgba(0,209,255,0.22)]',
+      description: 'Measures how visible and discoverable your brand is to search engines and users.',
+      whatItMeasures: ['Title & meta tags', 'Heading structure', 'Schema markup', 'Open Graph tags', 'Canonical tags', 'Sitemap presence'],
     },
     {
       label: 'Performance',
@@ -103,6 +116,8 @@ export default function DiagnosticOrbit({
       icon: Activity,
       color: 'text-[#7B5CFF]',
       glow: 'shadow-[0_0_30px_rgba(123,92,255,0.22)]',
+      description: 'Evaluates page load speed, rendering pipeline efficiency, and Core Web Vitals.',
+      whatItMeasures: ['LCP / FCP / CLS', 'Server response time', 'JS bundle weight', 'Image optimization', 'Caching headers', 'DOM complexity'],
     },
     {
       label: 'Trust',
@@ -113,6 +128,8 @@ export default function DiagnosticOrbit({
       icon: Shield,
       color: 'text-[#00E28A]',
       glow: 'shadow-[0_0_30px_rgba(0,226,138,0.22)]',
+      description: 'Quantifies your security posture and the trust signals your site broadcasts.',
+      whatItMeasures: ['HTTPS enforcement', 'HSTS policy', 'Content Security Policy', 'X-Frame-Options', 'Referrer Policy', 'Header exposure'],
     },
     {
       label: 'Clarity',
@@ -123,6 +140,8 @@ export default function DiagnosticOrbit({
       icon: Sparkles,
       color: 'text-[#FFB84D]',
       glow: 'shadow-[0_0_30px_rgba(255,184,77,0.22)]',
+      description: 'Assesses the clarity, consistency, and strategic precision of your brand messaging.',
+      whatItMeasures: ['Brand voice consistency', 'CTA clarity', 'Value proposition', 'Visual hierarchy', 'UX clutter score', 'Viewport config'],
     },
     {
       label: 'Experience',
@@ -133,6 +152,8 @@ export default function DiagnosticOrbit({
       icon: Users,
       color: 'text-[#FF3D57]',
       glow: 'shadow-[0_0_30px_rgba(255,61,87,0.22)]',
+      description: 'Measures how inclusive and navigable your digital experience is for all users.',
+      whatItMeasures: ['Alt text coverage', 'ARIA labels', 'Form labeling', 'Keyboard navigation', 'Main landmark', 'Color contrast'],
     },
     {
       label: 'Narrative',
@@ -143,6 +164,8 @@ export default function DiagnosticOrbit({
       icon: FileText,
       color: 'text-white',
       glow: 'shadow-[0_0_30px_rgba(255,255,255,0.12)]',
+      description: 'Evaluates the depth, structure, and strategic quality of your written content.',
+      whatItMeasures: ['Word count & depth', 'Reading level', 'Keyword density', 'Content freshness', 'Inline style ratio', 'Paragraph structure'],
     },
   ];
 
@@ -283,6 +306,11 @@ export default function DiagnosticOrbit({
           const orbitPoint = polarToCartesian(0, node.angle, node.radius);
           const metricTone = tone(node.value);
           const Icon = node.icon;
+          const isHovered = hoveredNode === node.label;
+
+          // Position tooltip: flip to opposite side if near edges
+          const tooltipLeft = orbitPoint.x > 0 ? 'right-full mr-3' : 'left-full ml-3';
+          const tooltipTop = orbitPoint.y > 80 ? 'bottom-0' : orbitPoint.y < -80 ? 'top-0' : 'top-1/2 -translate-y-1/2';
 
           return (
             <motion.div
@@ -300,14 +328,20 @@ export default function DiagnosticOrbit({
                 transform: `translate(-50%, -50%) translate(${orbitPoint.x}px, ${orbitPoint.y}px)`,
               }}
             >
-              <div className="relative -translate-x-1/2 -translate-y-1/2">
+              <div
+                className="relative -translate-x-1/2 -translate-y-1/2"
+                onMouseEnter={() => setHoveredNode(node.label)}
+                onMouseLeave={() => setHoveredNode(null)}
+              >
                 <motion.div
                   className={`absolute inset-0 rounded-[28px] blur-xl opacity-60 ${node.glow}`}
                   animate={{ scale: [1, 1.08, 1] }}
                   transition={{ duration: 4 + i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
                 />
                 <div
-                  className={`relative w-[126px] md:w-[136px] rounded-[28px] border backdrop-blur-xl p-4 ${metricTone.ring} ${metricTone.bg} bg-[#0B0F14]/70`}
+                  className={`relative w-[126px] md:w-[136px] rounded-[28px] border backdrop-blur-xl p-4 cursor-pointer transition-all duration-200 ${
+                    isHovered ? 'scale-[1.06] z-30 ' : ''
+                  } ${metricTone.ring} ${metricTone.bg} bg-[#0B0F14]/70`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
@@ -339,6 +373,43 @@ export default function DiagnosticOrbit({
                     />
                   </div>
                 </div>
+
+                {/* Hover tooltip */}
+                <AnimatePresence>
+                  {isHovered && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.15 }}
+                      className={`absolute z-50 w-[220px] ${tooltipLeft} ${tooltipTop}`}
+                    >
+                      <div className="bg-[#0B0F14]/95 border border-white/10 rounded-2xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="text-[9px] font-black uppercase tracking-widest text-white/30">{node.short}</div>
+                          <div className={`text-[10px] font-black uppercase tracking-wider ${metricTone.labelColor}`}>
+                            {metricTone.label}
+                          </div>
+                        </div>
+                        <div className={`text-2xl font-black font-display mb-2 ${metricTone.text}`}>
+                          {node.value.toFixed(1)}
+                        </div>
+                        <p className="text-[11px] text-white/50 leading-relaxed mb-4 font-medium">
+                          {node.description}
+                        </p>
+                        <div className="border-t border-white/[0.06] pt-3 space-y-1.5">
+                          <div className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Signals Analyzed</div>
+                          {node.whatItMeasures.map((item) => (
+                            <div key={item} className="flex items-center gap-2 text-[11px] text-white/50">
+                              <div className={`w-1 h-1 rounded-full shrink-0 ${metricTone.dot}`} />
+                              {item}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </motion.div>
           );

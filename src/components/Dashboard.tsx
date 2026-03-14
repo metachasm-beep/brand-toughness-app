@@ -8,6 +8,7 @@ import {
     TrendingUp, BarChart3, AlertCircle, RefreshCcw, Bell, Megaphone, Flag, ArrowRight
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import MetricCard from '@/components/MetricCard';
 import LoadingBar from '@/components/LoadingBar';
 import { useGuestAudit } from '@/context/GuestAuditContext';
@@ -21,88 +22,6 @@ const DiagnosticOrbit = dynamic(() => import('@/components/DiagnosticOrbit'), {
     )
 });
 
-function PaywallModal({ onClose }: { onClose: () => void }) {
-    const [email, setEmail] = useState('');
-
-    const handlePay = async () => {
-        if (!email) return alert('Please enter your email.');
-        try {
-            const res = await fetch('/api/phonepe/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount: 299,
-                    redirectUrl:
-                        typeof window !== 'undefined'
-                            ? window.location.origin + '/?payment=success'
-                            : ''
-                })
-            });
-
-            const data = await res.json();
-
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                alert('Payment initialization failed: ' + (data.error || 'Unknown error'));
-            }
-        } catch (err) {
-            console.error('Checkout error:', err);
-            alert('An error occurred. Please try again.');
-        }
-    };
-
-    return (
-        <motion.div
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-        >
-            <motion.div
-                className="relative w-full max-w-md apple-glass rounded-[40px] p-12"
-                initial={{ scale: 0.9, y: 30 }}
-                animate={{ scale: 1, y: 0 }}
-            >
-                <div className="text-center space-y-4 mb-10">
-                    <div className="text-5xl">📊</div>
-                    <h2 className="text-3xl font-extrabold tracking-tighter text-white">
-                        Unlock Deep Diagnostics
-                    </h2>
-                    <p className="text-white/40 font-medium text-sm leading-relaxed">
-                        Acquire full telemetry access for ₹299. Includes 100+ pillar audits,
-                        AI strategic positioning, and a high-fidelity PDF report.
-                    </p>
-                    <div className="text-4xl font-black text-white mt-4">
-                        ₹299 <span className="text-base font-normal text-white/30">/ report</span>
-                    </div>
-                </div>
-
-                <div className="space-y-4">
-                    <input
-                        type="email"
-                        placeholder="Diagnostic Destination Email"
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-white/30 text-sm font-medium transition-all text-white"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <button
-                        onClick={handlePay}
-                        className="w-full apple-button-primary py-4 text-lg font-bold rounded-2xl flex items-center justify-center gap-3"
-                    >
-                        <Lock size={20} /> Authorize Payment & Download
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className="w-full text-white/30 text-sm font-semibold mt-2 hover:text-white transition-colors cursor-pointer"
-                    >
-                        Cancel Protocol
-                    </button>
-                </div>
-            </motion.div>
-        </motion.div>
-    );
-}
 
 export default function Dashboard() {
     const [url, setUrl] = useState('');
@@ -111,8 +30,8 @@ export default function Dashboard() {
     const [progress, setProgress] = useState(0);
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState('');
-    const [showPaywall, setShowPaywall] = useState(false);
     const [pdfUnlocked, setPdfUnlocked] = useState(false);
+    const router = useRouter();
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const telemetrySectionRef = useRef<HTMLElement | null>(null);
@@ -194,7 +113,7 @@ export default function Dashboard() {
 
     const handleDownloadPDF = async () => {
         if (!pdfUnlocked) {
-            setShowPaywall(true);
+            router.push('/pricing');
             return;
         }
 
@@ -243,6 +162,10 @@ export default function Dashboard() {
 
     const aggregatePercent = Math.max(0, Math.min(100, aggregateScore * 10));
     const ai = result?.aiSummary;
+
+    const lowLeakage = Math.round((100 - aggregatePercent) * 1.8);
+    const highLeakage = Math.round((100 - aggregatePercent) * 5.2);
+    const retentionIndex = Math.min(100, aggregatePercent * 1.05).toFixed(1);
 
     const baselineMetricsCount = 25;
     const dynamicMetricsCount = Array.isArray(result?.findings) ? result.findings.length : 0;
@@ -404,7 +327,7 @@ export default function Dashboard() {
                         </button>
 
                         <button
-                            onClick={() => setShowPaywall(true)}
+                            onClick={() => router.push('/pricing')}
                             className="apple-button-outline flex items-center justify-center gap-2 w-full md:w-auto"
                         >
                             <Users size={16} />
@@ -579,7 +502,7 @@ export default function Dashboard() {
                             </div>
 
                             <button
-                                onClick={() => setShowPaywall(true)}
+                                onClick={() => router.push('/pricing')}
                                 className="w-full py-4 bg-[#7B5CFF]/10 text-[#7B5CFF] font-black uppercase tracking-widest text-xs rounded-xl border border-[#7B5CFF]/30 hover:bg-[#7B5CFF]/20 transition-all flex items-center justify-center gap-2"
                             >
                                 <Lock size={14} /> Add Immediate Rivals
@@ -680,7 +603,7 @@ export default function Dashboard() {
                                             Est. Annual Trust Leakage
                                         </div>
                                         <div className="text-4xl font-black font-display text-white tabular-nums tracking-tighter">
-                                            $14k — $92k
+                                            ${lowLeakage}k — ${highLeakage}k
                                         </div>
                                         <div className="text-[8px] text-white/20 mt-3 font-bold uppercase tracking-widest">
                                             Calculated per $1M Rev
@@ -691,7 +614,7 @@ export default function Dashboard() {
                                             Growth Retention Index
                                         </div>
                                         <div className="text-4xl font-black font-display text-white tabular-nums tracking-tighter">
-                                            84.2%
+                                            {retentionIndex}%
                                         </div>
                                         <div className="text-[8px] text-white/20 mt-3 font-bold uppercase tracking-widest">
                                             Signal Consistency Score
@@ -713,7 +636,7 @@ export default function Dashboard() {
                                     </p>
                                 </div>
                                 <button
-                                    onClick={() => setShowPaywall(true)}
+                                    onClick={() => router.push('/pricing')}
                                     className="surgical-label !text-[#00D1FF] flex items-center gap-2 mt-10"
                                 >
                                     Acquire Simulator <ArrowRight size={10} />
@@ -829,9 +752,6 @@ export default function Dashboard() {
                 )}
             </AnimatePresence>
 
-            <AnimatePresence>
-                {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} />}
-            </AnimatePresence>
         </div>
     );
 }
