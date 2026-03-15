@@ -1,13 +1,4 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: 'standalone',
-  serverExternalPackages: ['playwright', 'lighthouse', 'chrome-launcher'],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-};
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: import('next').NextConfig = {
   output: 'standalone',
   serverExternalPackages: ['playwright', 'lighthouse', 'chrome-launcher'],
   eslint: {
@@ -18,4 +9,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

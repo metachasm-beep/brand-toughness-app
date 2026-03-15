@@ -10,8 +10,12 @@ const hasGoogleCreds =
 
 export const authOptions: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET || 'e43f9a72b8d0c6f1a9b2d4e7f8c0a3b5',
+    // In Auth.js/NextAuth v4, we can force trust the host for environments like Render
+    // that use various proxies/load balancers.
+    // NOTE: On Render, set AUTH_TRUST_HOST=true in Dashboard
     session: {
         strategy: 'jwt',
+        maxAge: 30 * 24 * 60 * 60, // 30 days
     },
     providers: [
         ...(hasGoogleCreds
