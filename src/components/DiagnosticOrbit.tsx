@@ -403,9 +403,9 @@ export default function DiagnosticOrbit({
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.15 }}
-                      className={`absolute z-[170] w-[240px] pointer-events-none ${tooltipClass} ${tooltipAlign}`}
+                      className={`absolute z-[999] w-[240px] pointer-events-none ${tooltipClass} ${tooltipAlign}`}
                     >
-                      <div className="bg-[#0B0F14]/95 border border-white/10 rounded-2xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
+                      <div className="bg-[#0B0F14]/98 border border-[#00D1FF]/30 rounded-2xl p-5 shadow-[0_20px_80px_rgba(0,0,0,0.8)] backdrop-blur-3xl ring-1 ring-white/10">
                         <div className="flex items-center justify-between mb-3">
                           <div className="text-[9px] font-black uppercase tracking-widest text-white/30">{node.short}</div>
                           <div className={`text-[10px] font-black uppercase tracking-wider ${metricTone.labelColor}`}>

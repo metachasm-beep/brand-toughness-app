@@ -252,7 +252,7 @@ export default function Dashboard() {
             </section>
 
             <section className="grid grid-cols-1 xl:grid-cols-3 gap-10 relative z-20">
-                <div className="xl:col-span-2 apple-card overflow-hidden !bg-white/[0.01] relative flex flex-col items-center justify-center min-h-[620px] p-5 md:p-8 z-[160]">
+                <div className="xl:col-span-2 apple-card !bg-white/[0.01] relative flex flex-col items-center justify-center min-h-[620px] p-5 md:p-8 z-[160]">
                     {result && (
                         <div className="absolute top-8 left-8 z-30">
                             <div className="px-6 py-4 rounded-3xl border border-white/10 bg-[#0B0F14]/40 backdrop-blur-2xl shadow-2xl">

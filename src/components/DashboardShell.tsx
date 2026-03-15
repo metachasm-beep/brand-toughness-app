@@ -12,7 +12,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
             <div className="pointer-events-none absolute bottom-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(123,92,255,0.03)_0%,transparent_70%)] z-0" />
 
             {/* Sidebar */}
-            <div className="w-[280px] h-full flex-shrink-0 z-40 relative">
+            <div className="w-80 h-full flex-shrink-0 z-40 relative">
                 <Sidebar />
             </div>
 

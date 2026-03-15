@@ -56,7 +56,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [isRetracted, setIsRetracted] = useState(true);
+  const [isRetracted] = useState(false);
   const [scanLive, setScanLive] = useState(true);
 
   const leaderboardPreview = useMemo(
@@ -114,28 +114,11 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Futuristic Shining Toggle Button */}
-      <button
-        onClick={() => setIsRetracted(!isRetracted)}
-        className="fixed top-8 left-8 z-[180] w-14 h-14 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl flex items-center justify-center group overflow-hidden transition-all duration-500 hover:border-[#00D1FF]/40"
-      >
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#00D1FF]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="absolute -inset-[100%] group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12 opacity-0 group-hover:opacity-100" />
-        <PanelLeft
-          size={24}
-          className={`text-white transition-all duration-500 ${isRetracted ? 'opacity-100' : 'opacity-0 scale-50 rotate-90'}`}
-        />
-        <ChevronLeft
-          size={24}
-          className={`text-[#00D1FF] absolute transition-all duration-500 ${isRetracted ? 'opacity-0 scale-50 -rotate-90' : 'opacity-100 rotate-0'}`}
-        />
-      </button>
+
 
       {/* Retractable Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen z-[140] w-80 bg-[#0B0F14]/95 backdrop-blur-3xl border-r border-white/5 flex flex-col shadow-2xl transition-all duration-700 ease-apple ${
-          isRetracted ? '-translate-x-full' : 'translate-x-0'
-        }`}
+        className="h-screen w-80 bg-[#0B0F14]/95 backdrop-blur-3xl border-r border-white/5 flex flex-col shadow-2xl relative"
       >
         <div className="p-8 pt-24 space-y-8 flex-1 overflow-y-auto scrollbar-hide">
           {/* Logo Section */}
@@ -163,7 +146,7 @@ export default function Sidebar() {
                       ? 'border-[#00D1FF]/30 bg-[#00D1FF]/10 text-[#00D1FF]'
                       : 'border-transparent text-white/50 hover:text-white hover:bg-white/[0.04]'
                   }`}
-                  onClick={() => setIsRetracted(true)}
+
                 >
                   <div className="flex items-center gap-4">
                     <div
@@ -222,13 +205,7 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Backdrop */}
-      {!isRetracted && (
-        <div
-          className="fixed inset-0 z-[130] bg-black/20 transition-opacity duration-500"
-          onClick={() => setIsRetracted(true)}
-        />
-      )}
+
     </>
   );
 }
