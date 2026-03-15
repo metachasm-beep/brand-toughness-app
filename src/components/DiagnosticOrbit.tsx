@@ -426,9 +426,10 @@ export default function DiagnosticOrbit({
                               {item}
                             </div>
                           ))}
-                      </div>
-                    </motion.div>
-                  )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
                 </AnimatePresence>
               </div>
             </motion.div>
