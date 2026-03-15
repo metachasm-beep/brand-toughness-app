@@ -996,29 +996,14 @@ export class AuditEngine {
         score = score * 0.55 + psiScore * 0.45;
       }
 
-      const hasCritical = catFindings.some((f) => f.severity === 'CRITICAL');
-      const hasHigh = catFindings.some((f) => f.severity === 'HIGH');
-
-      if (!hasCritical && !hasHigh) {
-        score += 4;
-      } else if (!hasCritical && hasHigh) {
-        score += 1.5;
-      }
-
-      // Enterprise Brand Curve: Redesigning logic so that ultra-premium apps 
-      // (Nike, Facebook) don't get heavily penalized simply for having vast DOM sizes/payloads.
-      // We apply a fractional power curve to raise the floor significantly.
       score = Math.max(10, Math.min(100, score));
-      score = Math.pow(score / 100, 0.35) * 100;
-
-      score = Math.max(45, Math.min(99, score));
 
       if (catFindings.length === 0) {
         score = 96;
       }
 
       results[cat] = {
-        score: Math.round(score),
+        score: Math.round(score * 10) / 10,
         confidence: catFindings.length > 0 ? 0.9 : 0.82,
       };
     }
@@ -1029,14 +1014,6 @@ export class AuditEngine {
   private calculateOverallScore(
     categories: Record<string, { score: number; confidence: number }>
   ): number {
-
-
-
-
-
-
-
-
     const scores = Object.values(categories).map((c) => c.score);
     if (scores.length === 0) return 45.0;
     const average = scores.reduce((a, b) => a + b, 0) / scores.length;
