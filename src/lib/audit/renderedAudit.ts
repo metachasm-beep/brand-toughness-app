@@ -44,9 +44,12 @@ function normalizeUrl(input: string): string {
 }
 
 export async function runRenderedAudit(inputUrl: string): Promise<RenderedAuditResult> {
-  const { chromium } = await import('playwright');
-  const lighthouseModule = await import('lighthouse');
-  const chromeLauncher = await import('chrome-launcher');
+  // @ts-ignore
+  const { chromium } = (await import('playwright')) as any;
+  // @ts-ignore
+  const lighthouseModule = (await import('lighthouse')) as any;
+  // @ts-ignore
+  const chromeLauncher = (await import('chrome-launcher')) as any;
 
   const lighthouse = (lighthouseModule as any).default || lighthouseModule;
   const url = normalizeUrl(inputUrl);
@@ -262,4 +265,4 @@ export async function runRenderedAudit(inputUrl: string): Promise<RenderedAuditR
       if (chrome) await chrome.kill();
     } catch {}
   }
-                       }
+}

@@ -204,7 +204,7 @@ export async function POST(request: Request) {
               recommendation: f.recommendation,
               effort: f.effort,
               impact: f.impact,
-              evidence: f.evidence,
+              evidence: f.evidence as any,
             })),
           },
         },

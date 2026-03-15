@@ -334,6 +334,7 @@ export default function Dashboard() {
                             </motion.div>
                         )}
                     </AnimatePresence>
+                    </form>
 
 
                 </div>
