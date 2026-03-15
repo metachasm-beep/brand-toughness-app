@@ -279,7 +279,61 @@ export default function Dashboard() {
                                 </button>
                             )}
                         </div>
-                    </form>
+                    <AnimatePresence>
+                        {loading && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                                animate={{ opacity: 1, height: 'auto', marginTop: 32 }}
+                                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                                className="overflow-hidden"
+                            >
+                                <div className="space-y-4 px-2">
+                                    <div className="flex justify-between items-end">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex gap-1.5">
+                                                <motion.div 
+                                                    animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+                                                    transition={{ duration: 1.5, repeat: Infinity }}
+                                                    className="w-1.5 h-1.5 rounded-full bg-[#00D1FF]" 
+                                                />
+                                                <motion.div 
+                                                    animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+                                                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+                                                    className="w-1.5 h-1.5 rounded-full bg-[#7B5CFF]" 
+                                                />
+                                            </div>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">
+                                                Multi-Layer Mapping Active
+                                            </span>
+                                        </div>
+                                        <span className="font-display font-black text-xs text-[#00D1FF] tabular-nums">
+                                            {Math.round(progress)}%
+                                        </span>
+                                    </div>
+                                    <div className="h-1.5 w-full bg-white/[0.03] rounded-full overflow-hidden border border-white/10 p-[0.5px] relative">
+                                        <motion.div
+                                            className="h-full bg-gradient-to-r from-[#00D1FF] via-[#7B5CFF] to-[#00D1FF] rounded-full shadow-[0_0_15px_rgba(0,209,255,0.3)] relative z-10"
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${progress}%` }}
+                                            transition={{ duration: 0.5, ease: "easeOut" }}
+                                        />
+                                        <motion.div
+                                            className="absolute inset-0 bg-gradient-to-r from-transparent via-[#00D1FF]/20 to-transparent w-1/2"
+                                            animate={{ x: ['-100%', '250%'] }}
+                                            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                        />
+                                    </div>
+                                    <div className="flex justify-between items-center text-[8px] font-bold text-white/20 uppercase tracking-widest pl-1 pr-1">
+                                        <span>Initialize</span>
+                                        <span>Parsing DOM</span>
+                                        <span>Security check</span>
+                                        <span>Performance</span>
+                                        <span>Complete</span>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
 
                 </div>
@@ -690,11 +744,16 @@ export default function Dashboard() {
                                 <h5 className="surgical-label !text-white/20">Diagnostic Shards</h5>
                                 <div className="space-y-2">
                                     {result?.findings ? (
-                                        result.findings.map((f: any) => (
-                                            <div
-                                                key={f.code}
-                                                className="flex justify-between items-center py-3 border-b border-white/[0.03] group transition-colors"
-                                            >
+                                        [...result.findings]
+                                            .sort((a, b) => {
+                                                const weights: Record<string, number> = { 'CRITICAL': 4, 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 };
+                                                return (weights[b.severity] || 0) - (weights[a.severity] || 0);
+                                            })
+                                            .map((f: any) => (
+                                                <div
+                                                    key={f.code}
+                                                    className="flex justify-between items-center py-4 border-b border-white/[0.03] group transition-all hover:bg-white/[0.01] px-2 rounded-xl"
+                                                >
                                                 <div className="flex flex-col">
                                                     <span className="text-white/80 font-bold text-sm tracking-tight">
                                                         {f.title}
