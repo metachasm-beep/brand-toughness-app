@@ -92,8 +92,8 @@ export default function DiagnosticOrbit({
 
   const overallPercent = clamp(Number(overallScore || 0));
   const center = 300;
-  const radarMaxRadius = 185;
-  const orbitCardRadius = 245;
+  const radarMaxRadius = 180;
+  const orbitCardRadius = 285;
 
   const nodes: OrbitNode[] = [
     {
@@ -184,7 +184,7 @@ export default function DiagnosticOrbit({
 
   return (
     <div className="relative w-full flex items-center justify-center">
-      <div className="relative w-[620px] h-[620px] max-w-full">
+      <div className="relative w-[780px] h-[780px] max-w-full">
         <motion.div
           className="absolute inset-0 rounded-full opacity-60 blur-3xl bg-[radial-gradient(circle,rgba(0,209,255,0.12)_0%,rgba(123,92,255,0.08)_35%,transparent_68%)]"
           animate={{ scale: [1, 1.04, 1] }}
@@ -309,9 +309,23 @@ export default function DiagnosticOrbit({
           const Icon = node.icon;
           const isHovered = hoveredNode === node.label;
 
-          // Position tooltip: flip to opposite side if near edges
-          const tooltipLeft = orbitPoint.x > 0 ? 'right-full mr-3' : 'left-full ml-3';
-          const tooltipTop = orbitPoint.y > 80 ? 'bottom-0' : orbitPoint.y < -80 ? 'top-0' : 'top-1/2 -translate-y-1/2';
+          // Position tooltip: push OUTWARD from the center to avoid overlap
+          const isRight = orbitPoint.x > 40;
+          const isLeft = orbitPoint.x < -40;
+          const isVeryTop = orbitPoint.y < -150;
+          const isVeryBottom = orbitPoint.y > 150;
+
+          const tooltipClass = isRight 
+            ? 'left-full ml-6' 
+            : isLeft 
+              ? 'right-full mr-6' 
+              : isVeryTop 
+                ? 'bottom-full mb-6' 
+                : 'top-full mt-6';
+
+          const tooltipAlign = (isVeryTop || isVeryBottom) 
+            ? 'left-1/2 -translate-x-1/2' 
+            : 'top-1/2 -translate-y-1/2';
 
           return (
             <motion.div
@@ -389,7 +403,7 @@ export default function DiagnosticOrbit({
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.15 }}
-                      className={`absolute z-[170] w-[220px] pointer-events-none ${tooltipLeft} ${tooltipTop}`}
+                      className={`absolute z-[170] w-[240px] pointer-events-none ${tooltipClass} ${tooltipAlign}`}
                     >
                       <div className="bg-[#0B0F14]/95 border border-white/10 rounded-2xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
                         <div className="flex items-center justify-between mb-3">
@@ -412,7 +426,6 @@ export default function DiagnosticOrbit({
                               {item}
                             </div>
                           ))}
-                        </div>
                       </div>
                     </motion.div>
                   )}

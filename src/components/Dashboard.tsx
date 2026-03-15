@@ -173,15 +173,15 @@ export default function Dashboard() {
         <div className="space-y-20 max-w-[1400px] mx-auto pt-16 pb-24">
             {/* Top Bar Removed as requested */}
 
-            <section className="flex flex-col items-center text-center space-y-12 page-transition px-4">
-                <div className="space-y-6 max-w-4xl">
-                    <div className="flex items-center justify-center gap-3 text-[#00D1FF] text-xs font-black uppercase tracking-[0.5em]">
+            <section className="flex flex-col items-start text-left space-y-12 page-transition px-10">
+                <div className="space-y-6 max-w-4xl text-left">
+                    <div className="flex items-center justify-start gap-3 text-[#00D1FF] text-xs font-black uppercase tracking-[0.5em]">
                         <Activity size={16} /> Diagnostic Link Active · v4.2
                     </div>
                     <h1 className="text-7xl md:text-8xl xl:text-9xl font-black font-display tracking-tighter text-white leading-none">
                         BRAND OS
                     </h1>
-                    <p className="text-xl text-white/45 font-medium max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-xl text-white/45 font-medium max-w-2xl leading-relaxed">
                         High-fidelity monitoring interface for brand resilience. Initialize a{' '}
                         <span className="text-white">Brand OS Scan™</span> to monitor telemetry
                         across sixty-four diagnostic nodes.
@@ -189,7 +189,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="w-full max-w-3xl space-y-8">
-                    <div className="flex justify-center gap-8">
+                    <div className="flex justify-start gap-8">
                         <button className="surgical-label hover:text-white transition-all flex items-center gap-2 group">
                             <RefreshCcw size={12} className="group-hover:rotate-180 transition-transform duration-500" /> Rescan Last Domain
                         </button>
@@ -232,14 +232,14 @@ export default function Dashboard() {
                             ) : (
                                 <Play size={22} fill="currentColor" />
                             )}
-                            <span className="text-lg font-black tracking-tight">Diagnostic</span>
+                            <span className="text-lg font-black tracking-tight text-black">Diagnostic</span>
                         </button>
                     </form>
 
                     <AnimatePresence>
                         {generating && (
                             <motion.div
-                                className="w-full px-4"
+                                className="w-full"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0 }}
@@ -287,7 +287,7 @@ export default function Dashboard() {
                     )}
 
                     <div className="w-full flex items-center justify-center pt-10 pb-10">
-                        <div className="w-full max-w-[760px]">
+                        <div className="w-full max-w-[920px]">
                             <DiagnosticOrbit 
                                 scores={scoreValues} 
                                 overallScore={aggregateScore} 

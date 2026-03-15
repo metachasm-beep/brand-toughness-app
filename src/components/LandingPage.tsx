@@ -75,41 +75,19 @@ export default function LandingPage() {
         <div className="bg-[#0B0F14] min-h-screen selection:bg-[#00D1FF] selection:text-black">
             {/* ── Navbar ────────────────────────────────────────────────────────── */}
             <nav className="fixed top-0 w-full z-[100] border-b border-white/5 bg-[#0B0F14]/80 backdrop-blur-xl">
-                <div className="max-w-7xl mx-auto px-10 h-24 flex items-center justify-between gap-10">
-                    <div className="flex items-center gap-3 shrink-0">
+                <div className="max-w-7xl mx-auto px-10 h-20 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-[#00D1FF] rounded-lg flex items-center justify-center font-black text-black">OS</div>
-                        <span className="font-display font-bold tracking-tighter text-xl text-white">BRANDOS</span>
+                        <span className="font-display font-bold tracking-tighter text-xl">BRANDOS</span>
                     </div>
-
-                    <div className="flex-1 max-w-xl mx-auto">
-                        <form onSubmit={handleAudit} className="relative group">
-                            <div className="absolute inset-0 bg-[#00D1FF]/5 blur-xl group-focus-within:bg-[#00D1FF]/10 transition-all opacity-0 group-focus-within:opacity-100" />
-                            <div className="relative flex items-center bg-white/5 border border-white/10 rounded-2xl p-1.5 focus-within:border-[#00D1FF]/40 transition-all">
-                                <Globe className="ml-4 mr-3 text-white/20 shrink-0" size={16} />
-                                <input
-                                    type="text"
-                                    placeholder="SCAN DOMAIN (E.G. NIKE.COM)"
-                                    value={url}
-                                    onChange={(e) => setUrl(e.target.value)}
-                                    className="flex-1 bg-transparent py-2.5 outline-none text-[10px] font-black tracking-widest uppercase placeholder:text-white/20 text-white"
-                                    disabled={loading}
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="bg-[#00D1FF] text-black px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
-                                >
-                                    {loading ? <Loader2 className="animate-spin" size={14} /> : <Activity size={14} />}
-                                    SCAN
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div className="flex items-center gap-8 shrink-0">
-                        <a href="#signals" className="surgical-label hover:text-white transition-colors hidden xl:block">Signals</a>
-                        <a href="#pricing" className="surgical-label hover:text-white transition-colors hidden xl:block">Acquisition</a>
-                        <button onClick={login} className="apple-button-outline !px-6 !py-2.5 text-[10px] font-black uppercase tracking-widest hover:bg-[#00D1FF] hover:text-black transition-all">
+                    <div className="flex items-center gap-8">
+                        <a href="#signals" className="surgical-label hover:text-white transition-colors">Signals</a>
+                        <a href="#comparison" className="surgical-label hover:text-white transition-colors">OS Comparison</a>
+                        <a href="#pricing" className="surgical-label hover:text-white transition-colors">Acquisition</a>
+                        <Link href="/faq" className="surgical-label hover:text-white transition-colors flex items-center gap-2">
+                            FAQ <div className="w-1.5 h-1.5 rounded-full bg-[#00D1FF] animate-pulse" />
+                        </Link>
+                        <button onClick={login} className="apple-button-outline !px-6 !py-2 text-[10px] font-black uppercase tracking-widest hover:bg-[#00D1FF] hover:text-black transition-all">
                             Sign In
                         </button>
                     </div>
@@ -118,49 +96,74 @@ export default function LandingPage() {
 
             {/* ── Hero Section ──────────────────────────────────────────────────── */}
             <section className="relative pt-48 pb-20 px-10 overflow-hidden hero-grid">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
                     <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="relative z-10 space-y-10"
+                        className="relative z-10 space-y-12 w-full flex flex-col items-center"
                     >
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-[#00D1FF] animate-pulse" />
-                            <span className="surgical-label !text-[#00D1FF]">Brand Intelligence Operating System</span>
-                        </div>
-                        <h1 className="text-7xl xl:text-8xl font-black font-display tracking-tighter leading-[0.85] text-white">
-                            YOUR BRAND IS BEING <span className="text-gradient-blue">JUDGED IN 3 SECONDS.</span>
-                        </h1>
-                        <p className="text-xl text-white/40 font-medium max-w-xl leading-relaxed">
-                            BrandOS™ measures what they see. We analyze performance, security, narrative clarity, and search authority to compute your <span className="text-[#00D1FF]">Brand Toughness Score™</span>.
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row gap-5 pt-8">
-                             <button
-                                 onClick={login}
-                                 className="apple-button-primary flex items-center justify-center gap-3 border-[#00D1FF] bg-[#00D1FF] text-black w-full sm:w-auto"
-                             >
-                                 Get Your Brand Score <ArrowRight size={20} />
-                             </button>
-                             <button onClick={login} className="apple-button-outline inline-flex items-center justify-center w-full sm:w-auto">
-                                 View Sample Report
-                             </button>
+                        <div className="space-y-6 max-w-4xl">
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-[#00D1FF] animate-pulse" />
+                                <span className="surgical-label !text-[#00D1FF]">Brand Intelligence Operating System</span>
+                            </div>
+                            <h1 className="text-7xl md:text-8xl xl:text-9xl font-black font-display tracking-tighter leading-[0.85] text-white">
+                                YOUR BRAND IS BEING <span className="text-gradient-blue">JUDGED IN 3 SECONDS.</span>
+                            </h1>
+                            <p className="text-xl text-white/45 font-medium max-w-2xl mx-auto leading-relaxed">
+                                BrandOS™ measures what they see. We analyze performance, security, narrative clarity, and search authority to compute your <span className="text-[#00D1FF]">Brand Toughness Score™</span>.
+                            </p>
                         </div>
 
-                        {loading && (
-                            <div className="mt-6 px-2">
-                                <LoadingBar progress={progress} message="Initializing Diagnostic Orbit..." />
-                            </div>
-                        )}
+                        <div className="w-full max-w-lg space-y-6">
+                            <form onSubmit={handleAudit} className="relative group">
+                                <div className="absolute inset-x-0 -bottom-2 bg-[#00D1FF]/20 blur-xl h-10 opacity-0 group-focus-within:opacity-100 transition-all" />
+                                <div className="relative flex flex-col sm:flex-row gap-4 p-2 bg-white/5 border border-white/10 rounded-[28px] focus-within:border-[#00D1FF]/40 transition-all backdrop-blur-3xl">
+                                    <input
+                                        type="text"
+                                        placeholder="ENTER BRAND DOMAIN (E.G. NIKE.COM)"
+                                        value={url}
+                                        onChange={(e) => setUrl(e.target.value)}
+                                        className="flex-1 bg-transparent px-8 py-5 outline-none text-[10px] font-black tracking-widest uppercase placeholder:text-white/20 text-white"
+                                        disabled={loading}
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="apple-button-primary !py-5 !px-10 rounded-[22px] flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" size={20} /> : <Activity size={20} />}
+                                        <span className="whitespace-nowrap font-black tracking-widest text-xs">START SCAN</span>
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            {loading && (
+                                <div className="w-full px-2">
+                                    <LoadingBar progress={progress} message="Initializing Diagnostic Orbit..." />
+                                </div>
+                            )}
 
-                        {error && (
-                            <div className="mt-4 flex items-center gap-2 text-[#FF3D57] px-4 py-2 bg-[#FF3D57]/10 border border-[#FF3D57]/20 rounded-xl">
-                                <AlertCircle size={14} />
-                                <span className="text-[10px] font-bold uppercase tracking-tight">{error}</span>
-                            </div>
-                        )}
+                            {error && (
+                                <div className="flex items-center justify-center gap-2 text-[#FF3D57] px-4 py-3 bg-[#FF3D57]/10 border border-[#FF3D57]/20 rounded-2xl">
+                                    <AlertCircle size={14} />
+                                    <span className="text-[10px] font-bold uppercase tracking-tight">{error}</span>
+                                </div>
+                            )}
+                        </div>
 
+                        <div className="flex flex-col sm:flex-row gap-5 pt-4">
+                            <button
+                                onClick={login}
+                                className="apple-button-primary flex items-center justify-center gap-3 border-[#00D1FF] bg-[#00D1FF] text-black"
+                            >
+                                Get Your Brand Score <ArrowRight size={20} />
+                            </button>
+                            <button onClick={login} className="apple-button-outline inline-flex items-center justify-center">
+                                View Sample Report
+                            </button>
+                        </div>
                         <p className="surgical-label text-white/20 uppercase">TRUSTED BY MODERN BRAND TEAMS & FOUNDERS</p>
                     </motion.div>
 
