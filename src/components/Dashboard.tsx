@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Globe, Loader2, Play, Activity, Users, Zap, Lock, CheckCircle, Shield,
-    TrendingUp, BarChart3, AlertCircle, RefreshCcw, Bell, Megaphone, Flag, ArrowRight, Command
+    TrendingUp, BarChart3, AlertCircle, RefreshCcw, Bell, Megaphone, Flag, ArrowRight, Command, XCircle
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
@@ -34,6 +34,7 @@ export default function Dashboard() {
     const router = useRouter();
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const abortControllerRef = useRef<AbortController | null>(null);
     const telemetrySectionRef = useRef<HTMLElement | null>(null);
 
     const { guestAuditResult, setGuestAuditResult } = useGuestAudit();
@@ -76,11 +77,15 @@ export default function Dashboard() {
         setError('');
         setResult(null);
 
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
         try {
             const response = await fetch('/api/audit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url })
+                body: JSON.stringify({ url }),
+                signal: controller.signal
             });
 
             const text = await response.text();
@@ -104,10 +109,22 @@ export default function Dashboard() {
             setGuestAuditResult(data);
             setProgress(100);
         } catch (err: any) {
+            if (err.name === 'AbortError') return;
             setError(err.message || 'Diagnostic protocol failed. Check your connection or the URL.');
         } finally {
             setLoading(false);
             setGenerating(false);
+            abortControllerRef.current = null;
+        }
+    };
+
+    const handleStop = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+            setLoading(false);
+            setGenerating(false);
+            setProgress(0);
+            setError('Diagnostic cancelled by operator.');
         }
     };
 
@@ -239,12 +256,20 @@ export default function Dashboard() {
                     <AnimatePresence>
                         {generating && (
                             <motion.div
-                                className="w-full"
+                                className="w-full space-y-4"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0 }}
                             >
                                 <LoadingBar progress={progress} message="Initializing secure node connection..." />
+                                <div className="flex justify-center">
+                                    <button
+                                        onClick={handleStop}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-[#FF3D57] hover:border-[#FF3D57]/30 transition-all text-[10px] font-black uppercase tracking-widest"
+                                    >
+                                        <XCircle size={14} /> Stop Diagnostic Scan
+                                    </button>
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>

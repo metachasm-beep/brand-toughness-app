@@ -82,7 +82,8 @@ export class AuditEngine {
         },
       };
     } catch (error: any) {
-      throw new Error(`Audit failed: ${error?.message || 'Unknown error'}`);
+      const msg = error instanceof Error ? error.message : String(error || 'Internal Failure');
+      throw new Error(`Audit failed: ${msg}`);
     } finally {
       this.html = '';
     }
@@ -103,7 +104,7 @@ export class AuditEngine {
         timeout: 25000,
         maxRedirects: 5,
         responseType: 'text',
-        transformResponse: [(data) => data],
+        transformResponse: (data: any) => data,
         maxContentLength: MAX_REMOTE_BYTES,
         maxBodyLength: MAX_REMOTE_BYTES,
         headers: {
@@ -760,7 +761,7 @@ export class AuditEngine {
         return;
       }
 
-      const lighthouse = response.data?.lighthouseResult;
+      const lighthouse = (response.data as any)?.lighthouseResult;
       const audits = lighthouse?.audits || {};
       const categories = lighthouse?.categories || {};
 
@@ -1028,14 +1029,16 @@ export class AuditEngine {
   private calculateOverallScore(
     categories: Record<string, { score: number; confidence: number }>
   ): number {
-    const weighted =
-      categories.SEO.score * 0.24 +
+
+
       categories.Performance.score * 0.24 +
       categories.Security.score * 0.2 +
       categories.Accessibility.score * 0.17 +
       categories.UX.score * 0.15 +
       categories.Content.score * 0.1; // Added Content category with a weight of 0.1
 
-    return Math.round(Math.max(35, Math.min(99, weighted)));
+    const scores = Object.values(categories).map((c) => c.score);
+    const average = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 45;
+    return Math.round(Math.max(35, Math.min(99, average)));
   }
 }
