@@ -116,7 +116,7 @@ export class AuditEngine {
           Pragma: 'no-cache',
         },
         validateStatus: () => true,
-      });
+      } as any);
 
       this.status = response.status;
       this.headers = this.normalizeHeaders(response.headers);
@@ -740,7 +740,7 @@ export class AuditEngine {
         validateStatus: () => true,
         maxContentLength: MAX_REMOTE_BYTES,
         maxBodyLength: MAX_REMOTE_BYTES,
-      });
+      } as any);
 
       if (response.status >= 400) {
         this.addFinding({
@@ -1031,14 +1031,15 @@ export class AuditEngine {
   ): number {
 
 
-      categories.Performance.score * 0.24 +
-      categories.Security.score * 0.2 +
-      categories.Accessibility.score * 0.17 +
-      categories.UX.score * 0.15 +
-      categories.Content.score * 0.1; // Added Content category with a weight of 0.1
+
+
+
+
+
 
     const scores = Object.values(categories).map((c) => c.score);
-    const average = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 45;
-    return Math.round(Math.max(35, Math.min(99, average)));
+    if (scores.length === 0) return 45.0;
+    const average = scores.reduce((a, b) => a + b, 0) / scores.length;
+    return Math.round(average * 10) / 10;
   }
 }

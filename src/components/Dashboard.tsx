@@ -128,6 +128,16 @@ export default function Dashboard() {
         }
     };
 
+    const handleRefresh = () => {
+        setUrl('');
+        setResult(null);
+        setError('');
+        setGenerating(false);
+        setLoading(false);
+        setProgress(0);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+
     const handleDownloadPDF = async () => {
         if (!pdfUnlocked) {
             router.push('/pricing');
@@ -226,10 +236,10 @@ export default function Dashboard() {
 
                     <form
                         onSubmit={handleAudit}
-                        className="group relative flex bg-white/[0.03] border border-white/10 rounded-[36px] p-2.5 pl-9 focus-within:bg-white/[0.06] focus-within:border-[#00D1FF]/40 focus-within:ring-4 focus-within:ring-[#00D1FF]/5 transition-all shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
+                        className="group relative flex items-center bg-white/[0.03] border border-white/10 rounded-[36px] p-2.5 pl-9 focus-within:bg-white/[0.06] focus-within:border-[#00D1FF]/40 focus-within:ring-4 focus-within:ring-[#00D1FF]/5 transition-all shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
                     >
                         <div className="absolute inset-0 rounded-[36px] bg-gradient-to-r from-[#00D1FF]/5 to-[#7B5CFF]/5 opacity-0 group-focus-within:opacity-100 transition-opacity z-0" />
-                        <Globe className="my-auto mr-4 text-white/20 shrink-0 relative z-10" size={24} />
+                        <Globe className="mr-4 text-white/20 shrink-0 relative z-10" size={24} />
                         <input
                             type="text"
                             required
@@ -239,40 +249,39 @@ export default function Dashboard() {
                             onChange={(e) => setUrl(e.target.value)}
                             disabled={loading}
                         />
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="apple-button-primary px-10 rounded-[28px] h-full flex items-center gap-3 shrink-0 relative z-10 shadow-[0_10px_30px_rgba(0,209,255,0.3)]"
-                        >
+                        
+                        <div className="flex items-center gap-2 relative z-10 pr-2">
+                            <button
+                                type="button"
+                                onClick={handleRefresh}
+                                className="p-4 rounded-full bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all group"
+                                title="Clear & Reset Terminal"
+                            >
+                                <RefreshCcw size={20} className="group-active:rotate-180 transition-transform duration-500" />
+                            </button>
+
                             {loading ? (
-                                <Loader2 className="animate-spin" size={24} />
+                                <button
+                                    type="button"
+                                    onClick={handleStop}
+                                    className="apple-button-primary !bg-[#FF3D57] !shadow-[0_10px_30px_rgba(255,61,87,0.3)] px-10 rounded-[28px] h-[64px] flex items-center gap-3 shrink-0 transition-all active:scale-[0.98]"
+                                >
+                                    <XCircle size={22} />
+                                    <span className="text-lg font-black tracking-tight text-white">STOP SCAN</span>
+                                </button>
                             ) : (
-                                <Play size={22} fill="currentColor" />
+                                <button
+                                    type="submit"
+                                    className="apple-button-primary px-10 rounded-[28px] h-[64px] flex items-center gap-3 shrink-0 shadow-[0_10px_30px_rgba(0,209,255,0.3)]"
+                                >
+                                    <Play size={22} fill="currentColor" />
+                                    <span className="text-lg font-black tracking-tight text-black">Diagnostic</span>
+                                </button>
                             )}
-                            <span className="text-lg font-black tracking-tight text-black">Diagnostic</span>
-                        </button>
+                        </div>
                     </form>
 
-                    <AnimatePresence>
-                        {generating && (
-                            <motion.div
-                                className="w-full space-y-4"
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0 }}
-                            >
-                                <LoadingBar progress={progress} message="Initializing secure node connection..." />
-                                <div className="flex justify-center">
-                                    <button
-                                        onClick={handleStop}
-                                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-[#FF3D57] hover:border-[#FF3D57]/30 transition-all text-[10px] font-black uppercase tracking-widest"
-                                    >
-                                        <XCircle size={14} /> Stop Diagnostic Scan
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+
                 </div>
             </section>
 
