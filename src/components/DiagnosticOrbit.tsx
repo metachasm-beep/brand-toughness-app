@@ -309,23 +309,9 @@ export default function DiagnosticOrbit({
           const Icon = node.icon;
           const isHovered = hoveredNode === node.label;
 
-          // Position tooltip: push OUTWARD from the center to avoid overlap
-          const isRight = orbitPoint.x > 40;
-          const isLeft = orbitPoint.x < -40;
-          const isVeryTop = orbitPoint.y < -150;
-          const isVeryBottom = orbitPoint.y > 150;
-
-          const tooltipClass = isRight 
-            ? 'left-full ml-6' 
-            : isLeft 
-              ? 'right-full mr-6' 
-              : isVeryTop 
-                ? 'bottom-full mb-6' 
-                : 'top-full mt-6';
-
-          const tooltipAlign = (isVeryTop || isVeryBottom) 
-            ? 'left-1/2 -translate-x-1/2' 
-            : 'top-1/2 -translate-y-1/2';
+          // Position tooltip: overlap the categories to avoid cutting at edges
+          const tooltipClass = 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2';
+          const tooltipAlign = '';
 
           return (
             <motion.div
@@ -399,13 +385,13 @@ export default function DiagnosticOrbit({
                 <AnimatePresence>
                   {isHovered && (
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
+                      initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.15 }}
-                      className={`absolute z-[999] w-[240px] pointer-events-none ${tooltipClass} ${tooltipAlign}`}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className={`absolute z-[200] w-[260px] pointer-events-none ${tooltipClass} ${tooltipAlign}`}
                     >
-                      <div className="bg-[#0B0F14]/98 border border-[#00D1FF]/30 rounded-2xl p-5 shadow-[0_20px_80px_rgba(0,0,0,0.8)] backdrop-blur-3xl ring-1 ring-white/10">
+                      <div className="bg-[#0B0F14] border border-[#00D1FF]/50 rounded-3xl p-6 shadow-[0_0_100px_rgba(0,0,0,1),0_0_40px_rgba(0,209,255,0.2)] backdrop-blur-3xl ring-1 ring-white/10">
                         <div className="flex items-center justify-between mb-3">
                           <div className="text-[9px] font-black uppercase tracking-widest text-white/30">{node.short}</div>
                           <div className={`text-[10px] font-black uppercase tracking-wider ${metricTone.labelColor}`}>
