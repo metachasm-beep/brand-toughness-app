@@ -214,9 +214,9 @@ export default function Dashboard() {
                         <div className="absolute inset-0 rounded-[36px] bg-gradient-to-r from-[#00D1FF]/5 to-[#7B5CFF]/5 opacity-0 group-focus-within:opacity-100 transition-opacity z-0" />
                         <Globe className="my-auto mr-4 text-white/20 shrink-0 relative z-10" size={24} />
                         <input
-                            type="url"
+                            type="text"
                             required
-                            placeholder="Enter domain for deep diagnostic... (e.g. nike.com)"
+                            placeholder="Domain (e.g. nike.com, brand.co.in, site.fun)"
                             className="bg-transparent border-none outline-none flex-1 py-5 text-xl font-bold text-white placeholder:text-white/10 relative z-10"
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}

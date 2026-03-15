@@ -91,7 +91,9 @@ export class AuditEngine {
   private normalizeUrl(input: string): string {
     const trimmed = String(input || '').trim();
     if (!trimmed) throw new Error('URL is required.');
-    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    if (/^https?:\/\//i.test(trimmed)) {
+      if (trimmed.includes('.')) return trimmed;
+    }
     return `https://${trimmed}`;
   }
 

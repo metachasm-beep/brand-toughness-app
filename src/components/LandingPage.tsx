@@ -122,7 +122,7 @@ export default function LandingPage() {
                                 <div className="relative flex flex-col sm:flex-row gap-4 p-2 bg-white/5 border border-white/10 rounded-[28px] focus-within:border-[#00D1FF]/40 transition-all backdrop-blur-3xl">
                                     <input
                                         type="text"
-                                        placeholder="ENTER BRAND DOMAIN (E.G. NIKE.COM)"
+                                        placeholder="DOMAIN (E.G. NIKE.COM, BRAND.CO.IN, SITE.FUN)"
                                         value={url}
                                         onChange={(e) => setUrl(e.target.value)}
                                         className="flex-1 bg-transparent px-8 py-5 outline-none text-[10px] font-black tracking-widest uppercase placeholder:text-white/20 text-white"
