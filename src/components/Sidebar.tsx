@@ -225,7 +225,7 @@ export default function Sidebar() {
       {/* Backdrop */}
       {!isRetracted && (
         <div
-          className="fixed inset-0 z-[130] bg-black/40 backdrop-blur-sm transition-opacity duration-500"
+          className="fixed inset-0 z-[130] bg-black/20 transition-opacity duration-500"
           onClick={() => setIsRetracted(true)}
         />
       )}

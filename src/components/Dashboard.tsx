@@ -211,7 +211,7 @@ export default function Dashboard() {
                         onSubmit={handleAudit}
                         className="group relative flex bg-white/[0.03] border border-white/10 rounded-[36px] p-2.5 pl-9 focus-within:bg-white/[0.06] focus-within:border-[#00D1FF]/40 focus-within:ring-4 focus-within:ring-[#00D1FF]/5 transition-all shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
                     >
-                        <div className="absolute inset-0 rounded-[36px] bg-gradient-to-r from-[#00D1FF]/5 to-[#7B5CFF]/5 opacity-0 group-focus-within:opacity-100 transition-opacity z-[170]" />
+                        <div className="absolute inset-0 rounded-[36px] bg-gradient-to-r from-[#00D1FF]/5 to-[#7B5CFF]/5 opacity-0 group-focus-within:opacity-100 transition-opacity z-0" />
                         <Globe className="my-auto mr-4 text-white/20 shrink-0 relative z-10" size={24} />
                         <input
                             type="url"
