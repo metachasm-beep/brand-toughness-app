@@ -13,7 +13,7 @@ export default function AuthBar() {
     if (!session) {
         return (
             <button
-                onClick={() => signIn('google', { callbackUrl: '/' })}
+                onClick={() => signIn('google')}
                 className="flex items-center gap-3 px-5 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] bg-[#00D1FF] text-black rounded-xl hover:scale-[1.02] transition-all"
             >
                 <LogIn size={14} />

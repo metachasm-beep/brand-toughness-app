@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { verifyPhonePeCallback } from '@/lib/payment/phonepe';
-import { getPrisma } from '@/lib/db';
+import { prisma } from '@/lib/db';
 
 export async function POST(request: Request) {
-    const prisma = await getPrisma();
     try {
         const formData = await request.formData();
         const response = formData.get('response') as string;

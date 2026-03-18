@@ -3,31 +3,29 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import LandingPage from '@/components/LandingPage';
 import Dashboard from '@/components/Dashboard';
-import { useGuestAudit } from '@/context/GuestAuditContext';
-import DashboardShell from '@/components/DashboardShell';
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const { guestAuditResult } = useGuestAudit();
   const [mounted, setMounted] = useState(false);
   const [bypassAuth, setBypassAuth] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const timer = setTimeout(() => {
-      setBypassAuth(true);
-    }, 3000); // Reduce to 3 seconds for faster unblocking
-    return () => clearTimeout(timer);
-  }, []);
+      if (status === 'loading') {
+        console.warn('[AUTH] Session check timed out (3s). Bypassing to Landing Page.');
+        setBypassAuth(true);
+      }
+    }, 3000); 
 
-  // Prevent hydration mismatch by not rendering server-side
+    return () => clearTimeout(timer);
+  }, [status]);
+
+  // Prevent hydration mismatch
   if (!mounted) return null;
 
-  // Use session if available, otherwise check guest result
-  const activeUser = session || guestAuditResult;
-
-  // Show status check ONLY if NOT bypassing and still loading
-  if (status === 'loading' && !bypassAuth && !activeUser) {
+  // Show loading spinner ONLY if status is 'loading' AND we haven't timed out yet
+  if (status === 'loading' && !bypassAuth && !session) {
     return (
       <div className="min-h-screen bg-[#0B0F14] flex items-center justify-center">
         <div className="relative group">
@@ -43,13 +41,9 @@ export default function Home() {
     );
   }
 
-  if (activeUser) {
-    return (
-      <DashboardShell>
-        <Dashboard />
-      </DashboardShell>
-    );
+  if (!session) {
+    return <LandingPage />;
   }
 
-  return <LandingPage />;
+  return <Dashboard />;
 }

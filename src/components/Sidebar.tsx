@@ -1,211 +1,83 @@
 'use client';
 
+import { Activity, BarChart3, LayoutGrid, History, Settings, HelpCircle, Shield, Command } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-import {
-  Activity,
-  BarChart3,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Clock3,
-  Command,
-  CreditCard,
-  Globe2,
-  PanelLeft,
-  Search,
-  Shield,
-  Sparkles,
-  Trophy,
-  Wifi,
-  WifiOff,
-} from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
-type NavItem = {
-  label: string;
-  href: string;
-  icon: any;
-  shortcut: string;
-  badge?: string;
-};
-
-const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/', icon: BarChart3, shortcut: '' },
-  { label: 'Pillars', href: '/pillars', icon: Sparkles, shortcut: '' },
-  { label: 'Telemetrics', href: '/telemetrics', icon: Activity, shortcut: '' },
-  { label: 'Leaderboard', href: '/leaderboard', icon: Trophy, shortcut: '', badge: '10k' },
-  { label: 'History', href: '/history', icon: Clock3, shortcut: '' },
-  { label: 'Pricing', href: '/pricing', icon: CreditCard, shortcut: '', badge: 'New' },
+const menuItems = [
+    { name: 'Dashboard', icon: Activity, href: '/' },
+    { name: 'Pillars', icon: BarChart3, href: '/pillars' },
+    { name: 'Telemetrics', icon: LayoutGrid, href: '/telemetrics' },
+    { name: 'History', icon: History, href: '/history' },
 ];
 
-function getLeaderboardPreview(pathname: string) {
-  if (pathname === '/leaderboard') {
-    return { rank: '#128', movement: '+7', label: 'Live rank snapshot' };
-  }
-  if (pathname === '/pillars') {
-    return { rank: '#412', movement: '+18', label: 'Pillar-based momentum' };
-  }
-  if (pathname === '/telemetrics') {
-    return { rank: '#263', movement: '+11', label: 'Telemetry rank estimate' };
-  }
-  return { rank: '#305', movement: '+9', label: 'Brand OS position signal' };
-}
+const secondaryItems = [
+    { name: 'Settings', icon: Settings, href: '/settings' },
+    { name: 'Support', icon: HelpCircle, href: '/support' },
+];
 
 export default function Sidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
+    const pathname = usePathname();
 
-  const [isRetracted] = useState(false);
-  const [scanLive, setScanLive] = useState(true);
-
-  const leaderboardPreview = useMemo(
-    () => getLeaderboardPreview(pathname),
-    [pathname]
-  );
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setScanLive((prev) => !prev);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    let pendingG = false;
-    let timer: number | null = null;
-
-    const navigateTo = (href: string) => {
-      router.push(href);
-    };
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null;
-      const tag = target?.tagName?.toLowerCase();
-      const isTyping =
-        tag === 'input' || tag === 'textarea' || target?.getAttribute('contenteditable') === 'true';
-
-      if (isTyping) return;
-
-      if (pendingG) {
-        const key = e.key.toLowerCase();
-        pendingG = false;
-        if (timer) window.clearTimeout(timer);
-
-        if (key === 'd') navigateTo('/');
-        if (key === 'p') navigateTo('/pillars');
-        if (key === 't') navigateTo('/telemetrics');
-        if (key === 'l') navigateTo('/leaderboard');
-        if (key === 'h') navigateTo('/history');
-        return;
-      }
-
-      if (e.key.toLowerCase() === 'g') {
-        pendingG = true;
-        timer = window.setTimeout(() => {
-          pendingG = false;
-        }, 1200);
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
-
-  return (
-    <>
-
-
-      {/* Retractable Sidebar */}
-      <aside
-        className="h-screen w-80 bg-[#0B0F14]/95 backdrop-blur-3xl border-r border-white/5 flex flex-col shadow-2xl relative"
-      >
-        <div className="p-8 pt-24 space-y-8 flex-1 overflow-y-auto scrollbar-hide">
-          {/* Logo Section */}
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] flex items-center justify-center text-black shadow-[0_0_20px_rgba(0,209,255,0.3)]">
-              <Command size={24} />
-            </div>
-            <div>
-              <div className="text-xl font-black font-display tracking-tighter text-white">BRAND OS</div>
-              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00D1FF]/70">Intelligence</div>
-            </div>
-          </div>
-
-          <nav className="px-5 py-4 space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const active = pathname === item.href;
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`group flex items-center justify-between px-6 py-4 rounded-2xl border transition-all ${
-                    active
-                      ? 'border-[#00D1FF]/30 bg-[#00D1FF]/10 text-[#00D1FF]'
-                      : 'border-transparent text-white/50 hover:text-white hover:bg-white/[0.04]'
-                  }`}
-
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                        active ? 'bg-[#00D1FF]/10' : 'bg-white/[0.03] group-hover:bg-white/[0.06]'
-                      }`}
-                    >
-                      <Icon size={20} />
-                    </div>
-                    <div className="font-bold text-sm tracking-tight">{item.label}</div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {item.badge && (
-                      <span className="px-2.5 py-1 rounded-lg bg-[#00D1FF]/10 text-[9px] font-black uppercase tracking-widest text-[#00D1FF]">
-                        {item.badge}
-                      </span>
-                    )}
-                    <ChevronRight
-                      size={14}
-                      className={`transition-all duration-300 ${active ? 'text-[#00D1FF] opacity-100' : 'text-white/10 opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`}
-                    />
-                  </div>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="p-8 border-t border-white/5 space-y-6">
-          <div className="rounded-3xl border border-[#7B5CFF]/20 bg-[#7B5CFF]/5 p-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#7B5CFF]/10 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-[#7B5CFF]/20 flex items-center justify-center shrink-0">
-                  <Trophy size={20} className="text-[#7B5CFF]" />
+    return (
+        <aside className="w-full h-screen flex flex-col p-8 border-r border-white/[0.05] select-none bg-[#0B0F14] relative z-40">
+            {/* Brand logo */}
+            <div className="flex items-center gap-4 mb-14 px-2">
+                <div className="w-10 h-10 bg-[#00D1FF] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(0,209,255,0.3)]">
+                    <Command className="text-black" size={22} strokeWidth={3} />
                 </div>
-                <div className="text-[10px] uppercase font-black tracking-[0.2em] text-[#C9BEFF]/70">Leaderboard</div>
-              </div>
-              <div className="flex items-end gap-2">
-                <div className="text-3xl font-black font-display text-white">{leaderboardPreview.rank}</div>
-                <div className="text-sm font-black text-[#30D158] mb-1">{leaderboardPreview.movement}</div>
-              </div>
-              <p className="text-[11px] text-white/40 mt-2 font-medium leading-relaxed">{leaderboardPreview.label}</p>
+                <div className="flex flex-col">
+                    <span className="font-display font-black text-xl tracking-tighter text-white leading-none">BRAND OS</span>
+                    <span className="surgical-label !text-[7px] mt-1">Intelligence Unit</span>
+                </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3 px-2">
-            <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            {/* Primary nav */}
+            <nav className="flex-1 space-y-2">
+                {menuItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                        <Link
+                            key={item.name}
+                            href={item.href}
+                            className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 ${isActive
+                                ? 'bg-white/5 border border-white/10 text-[#00D1FF]'
+                                : 'text-white/30 hover:text-white hover:bg-white/[0.03]'
+                                }`}
+                        >
+                            <item.icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                            <span className={`text-xs font-black uppercase tracking-[0.2em] ${isActive ? 'text-white' : ''}`}>{item.name}</span>
+                            {isActive && (
+                                <div className="ml-auto w-1 h-1 rounded-full bg-[#00D1FF] shadow-[0_0_8px_#00D1FF]" />
+                            )}
+                        </Link>
+                    );
+                })}
+            </nav>
+
+            {/* Secondary nav */}
+            <div className="mt-auto pt-8 border-t border-white/[0.05] space-y-1">
+                {secondaryItems.map((item) => (
+                    <Link
+                        key={item.name}
+                        href={item.href}
+                        className="flex items-center gap-4 px-5 py-3 rounded-2xl text-white/20 hover:text-white transition-all"
+                    >
+                        <item.icon size={16} />
+                        <span className="text-[10px] font-black uppercase tracking-widest">{item.name}</span>
+                    </Link>
+                ))}
+
+                {/* Status chip */}
+                <div className="mt-6 p-6 rounded-3xl bg-white/[0.02] border border-white/[0.05]">
+                    <div className="flex items-center justify-between mb-4">
+                        <span className="surgical-label !text-[8px]">Secure Link</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#00E28A] animate-pulse glow-blue" />
+                    </div>
+                    <div className="text-sm font-black font-display text-white mb-1">NODE ACTIVE</div>
+                    <div className="surgical-label !text-[7px]">Telemetry Nominal</div>
+                </div>
             </div>
-            <div className="text-[10px] font-black uppercase tracking-[0.24em] text-white/30">
-              BrandOS AI | Turtle Labs
-            </div>
-          </div>
-        </div>
-      </aside>
-
-
-    </>
-  );
+        </aside>
+    );
 }

@@ -2,10 +2,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { getPrisma } from '@/lib/db';
+import { prisma } from '@/lib/db';
 
 export async function GET() {
-    const prisma = await getPrisma();
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -15,24 +14,30 @@ export async function GET() {
     try {
         const email = session.user.email.toLowerCase();
 
+        // Fetch from Prisma DB
         const audits = await prisma.audit.findMany({
-            where: { userEmail: email },
-            orderBy: { createdAt: 'desc' },
-            include: { findings: true },
+            where: {
+                userEmail: email
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                findings: true
+            }
         });
 
-        // categories and meta are JSON columns on the Audit model — auto-returned with the row
+        // Structure data for the history table if needed, or return raw
+        // The current History page might expect specific headers/rows format used by Sheets
+        // Let's map it to something the UI can use, or update the UI later.
+
         const historyData = audits.map((a: any) => ({
             id: a.id,
             url: a.url,
-            uid: a.uid,
-            score: a.overallScore || 0,
+            score: (a.overallScore || 0) / 10,
             date: a.createdAt.toISOString(),
             status: a.status,
-            findingCount: a.findings.length,
-            categories: a.categories || {},
-            meta: a.meta || {},
-            findings: a.findings || [],
+            findingCount: a.findings.length
         }));
 
         return NextResponse.json({ audits: historyData });

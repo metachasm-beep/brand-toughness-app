@@ -1,15 +1,8 @@
 'use client';
-
+// SessionProvider client wrapper so layout.tsx (server) can use next-auth
 import { SessionProvider } from 'next-auth/react';
 import { ReactNode } from 'react';
-import { GuestAuditProvider } from '@/context/GuestAuditContext';
 
 export default function Providers({ children }: { children: ReactNode }) {
-    return (
-        <SessionProvider>
-            <GuestAuditProvider>
-                {children}
-            </GuestAuditProvider>
-        </SessionProvider>
-    );
+    return <SessionProvider>{children}</SessionProvider>;
 }

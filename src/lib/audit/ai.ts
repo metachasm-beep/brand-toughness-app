@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 export async function getAiInsights(url: string, findings: any[]) {
-    const apiKey = process.env.COHERE_API_KEY || 'occgoxFaNQvZZVufa3sWhMAGsoux3wCI401690Rg'; 
-    const apiUrl = 'https://api.cohere.ai/v1/chat';
+    const apiKey = process.env.COHERE_API_KEY || 'L47ePrt3wY6lJ0kKntEqH0K3s3fXF9A7sTbbS0aL'; // Replace with a valid test key if available
+    const apiUrl = 'https://api.cohere.ai/v1/generate';
 
     try {
-        const message = `
+        const prompt = `
 You are the "Brand OS v4.2 Diagnostic Core". 
 I have performed a deep-telemetry audit of ${url}.
 Findings: ${JSON.stringify(findings.slice(0, 30).map(f => ({ title: f.title, severity: f.severity })), null, 2)}
@@ -28,9 +28,10 @@ Format:
         const response: any = await axios.post(
             apiUrl,
             {
-                model: 'command-a-03-2025', 
-                message: message,
-                temperature: 0.3,
+                model: 'command',
+                prompt: prompt,
+                max_tokens: 1000,
+                temperature: 0.5,
             },
             {
                 headers: {
@@ -41,13 +42,12 @@ Format:
             }
         );
 
-        const text = response.data.text;
+        const text = response.data.generations[0].text;
         try {
-            // Find JSON in text if Cohere adds markdown or fluff
+            // Find JSON in text if Cohere adds fluff
             const jsonMatch = text.match(/\{[\s\S]*\}/);
             return jsonMatch ? JSON.parse(jsonMatch[0]) : { overview: text };
         } catch (e) {
-            console.warn('[AI JSON PARSE FAILED]', text);
             return { overview: text };
         }
     } catch (error: any) {
