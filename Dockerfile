@@ -1,23 +1,27 @@
-FROM mcr.microsoft.com/playwright:v1.54.2-jammy
+FROM node:20-slim
 
 WORKDIR /app
 
+# Core environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
+# Install dependencies - using npm install for reliability in varying environments
 COPY package.json package-lock.json* ./
+RUN npm install
 
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-
+# Copy source files
 COPY . .
 
-RUN if [ -f prisma/schema.prisma ]; then npx prisma generate; fi
+# Generate Prisma client
+RUN npx prisma generate
 
+# Build the application
 RUN npm run build
 
 EXPOSE 3000
 
+# Start command
 CMD ["npm", "run", "start"]

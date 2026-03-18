@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "build": "prisma generate && next build",
     "dev": "next dev",
-    "start": "next start -p 3000",
+    "db:migrate": "prisma migrate deploy",
+    "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
     "lint": "eslint"
   },
   "dependencies": {
