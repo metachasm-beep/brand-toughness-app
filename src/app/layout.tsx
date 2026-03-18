@@ -18,9 +18,13 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   let session = null;
 
   try {
-    session = await getServerSession(authOptions);
+    // 10-second server-side timeout for session fetching
+    session = await Promise.race([
+      getServerSession(authOptions),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Session Timeout')), 10000))
+    ]) as any;
   } catch (error: any) {
-    console.error("NextAuth Initialization Error:", error);
+    console.warn("[AUTH] Server-side session fetch failed or timed out:", error.message);
   }
 
   return (
