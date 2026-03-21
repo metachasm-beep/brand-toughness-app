@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import LandingPage from '@/components/LandingPage';
 import Dashboard from '@/components/Dashboard';
+import DashboardShell from '@/components/DashboardShell';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -21,13 +22,13 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [status]);
 
-  // Prevent hydration mismatch
-  if (!mounted) return null;
+  // Keep background stable during hydration
+  const containerClass = "min-h-screen bg-[#0B0F14] text-white";
 
   // Show loading spinner ONLY if status is 'loading' AND we haven't timed out yet
-  if (status === 'loading' && !bypassAuth && !session) {
+  if (!mounted || (status === 'loading' && !bypassAuth && !session)) {
     return (
-      <div className="min-h-screen bg-[#0B0F14] flex items-center justify-center">
+      <div className={containerClass + " flex items-center justify-center"}>
         <div className="relative group">
           <div className="w-20 h-20 border-2 border-[#00D1FF]/5 border-t-[#00D1FF] rounded-full animate-spin" />
           <div className="absolute inset-0 flex items-center justify-center">
@@ -41,9 +42,13 @@ export default function Home() {
     );
   }
 
-  if (!session) {
-    return <LandingPage />;
+  if (session) {
+    return (
+      <DashboardShell>
+        <Dashboard />
+      </DashboardShell>
+    );
   }
 
-  return <Dashboard />;
+  return <LandingPage />;
 }
