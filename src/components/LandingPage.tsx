@@ -12,21 +12,23 @@ export default function LandingPage() {
 
     return (
         <div className="bg-[#0B0F14] min-h-screen selection:bg-[#00D1FF] selection:text-black">
-            {/* ── Navbar ────────────────────────────────────────────────────────── */}
-            <nav className="fixed top-0 w-full z-[100] border-b border-white/5 bg-[#0B0F14]/80 backdrop-blur-xl">
-                <div className="max-w-7xl mx-auto px-10 h-20 flex items-center justify-between">
+            {/* ── Navbar (UX PRO MAX Floating variant) ─────────────────────────────────── */}
+            <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-7xl z-[100] transition-all duration-300">
+                <div className="apple-glass rounded-[24px] px-8 h-18 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-white/5">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-[#00D1FF] rounded-lg flex items-center justify-center font-black text-black">OS</div>
-                        <span className="font-display font-bold tracking-tighter text-xl">BRAND OS</span>
+                        <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] rounded-lg flex items-center justify-center font-black text-black text-xs shadow-[0_0_20px_rgba(0,209,255,0.3)]">OS</div>
+                        <span className="font-display font-bold tracking-tighter text-xl text-white">BRAND OS</span>
                     </div>
                     <div className="flex items-center gap-8">
-                        <a href="#features" className="surgical-label hover:text-white transition-colors">Intelligence</a>
-                        <a href="#pricing" className="surgical-label hover:text-white transition-colors">Acquisition</a>
+                        <div className="hidden md:flex items-center gap-8">
+                            <a href="#intelligence" className="surgical-label hover:text-[#00D1FF] transition-colors">Intelligence</a>
+                            <a href="#nodes" className="surgical-label hover:text-[#00D1FF] transition-colors">Nodes</a>
+                        </div>
                         <button
                             onClick={login}
-                            className="bg-white/5 border border-white/10 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                            className="bg-[#00D1FF] text-black px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.05] hover:shadow-[0_0_20px_rgba(0,209,255,0.4)] transition-all active:scale-[0.95]"
                         >
-                            Command Auth
+                            ACCESS COMMAND
                         </button>
                     </div>
                 </div>
