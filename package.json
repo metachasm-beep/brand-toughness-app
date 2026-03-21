@@ -8,14 +8,11 @@
     "db:migrate": "prisma migrate deploy",
     "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
     "lint": "eslint",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
+    "lint": "eslint"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@opennextjs/cloudflare": "^1.17.1",
     "@prisma/client": "^6.19.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
@@ -25,8 +22,6 @@
     "clsx": "^2.1.1",
     "fflate": "^0.8.2",
     "framer-motion": "^12.34.3",
-    "jspdf": "^4.2.0",
-    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.575.0",
     "next": "^15.1.0",
     "next-auth": "^4.24.13",
@@ -51,7 +46,6 @@
     "eslint": "^9",
     "eslint-config-next": "^15.1.0",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "wrangler": "^4.69.0"
+    "typescript": "^5"
   }
 }
