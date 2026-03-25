@@ -139,13 +139,7 @@ export default function Dashboard() {
 
     const handleDownloadPDF = async () => {
         if (!pdfUnlocked) { setShowPaywall(true); return; }
-        const { generatePDF } = await import('@/utils/pdf');
-        try {
-            const pdf = await generatePDF(result.scores, url, result.rawData, result.aggregate);
-            pdf.save(`BrandIntelligence_${new URL(url).hostname}.pdf`);
-        } catch {
-            alert('PDF generation failed. Please try again.');
-        }
+        alert('PDF generation is currently undergoing maintenance. Please try again later.');
     };
 
     const scoreValues = result ? [
