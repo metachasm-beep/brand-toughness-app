@@ -61,8 +61,7 @@ export default function Home() {
         
         <motion.div 
           className="relative z-10 flex flex-col items-center"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+          animate={{ scale: 1 }}
         >
           {/* Main Logo/Pulse */}
           <div style={{ width: '96px', height: '96px', position: 'relative', marginBottom: '48px' }}>
@@ -80,7 +79,6 @@ export default function Home() {
             <motion.div
               key={diagnosticStep}
               style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(0,209,255,0.6)', textAlign: 'center', minWidth: '200px' }}
-              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
               transition={{ duration: 0.4 }}
