@@ -41,10 +41,23 @@ export default function Home() {
 
   if (!mounted || (status === 'loading' && !bypassAuth && !session)) {
     return (
-      <div className="min-h-screen bg-[#0B0F14] flex flex-col items-center justify-center relative overflow-hidden">
-        {/* Background Atmosphere */}
+      <div 
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          backgroundColor: '#0B0F14',
+          color: 'white',
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          fontFamily: 'system-ui, sans-serif'
+        }}
+      >
+        {/* Background Atmosphere (Optional, keep if Tailwind works) */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,209,255,0.03)_0%,transparent_70%)]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#00D1FF]/5 blur-[120px] rounded-full" />
         
         <motion.div 
           className="relative z-10 flex flex-col items-center"
@@ -52,26 +65,21 @@ export default function Home() {
           animate={{ opacity: 1, scale: 1 }}
         >
           {/* Main Logo/Pulse */}
-          <div className="w-24 h-24 relative mb-12">
+          <div style={{ width: '96px', height: '96px', position: 'relative', marginBottom: '48px' }}>
             <motion.div 
-               className="absolute inset-0 border-2 border-[#00D1FF]/20 rounded-2xl"
+               style={{ position: 'absolute', inset: 0, border: '2px solid rgba(0,209,255,0.2)', borderRadius: '16px' }}
                animate={{ rotate: 360 }}
                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
             />
-            <motion.div 
-               className="absolute inset-2 border border-[#00D1FF]/40 rounded-xl"
-               animate={{ rotate: -180 }}
-               transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-4 h-4 rounded-full bg-[#00D1FF] shadow-[0_0_25px_#00D1FF] animate-pulse" />
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '16px', height: '16px', borderRadius: '50%', backgroundColor: '#00D1FF', boxShadow: '0 0 25px #00D1FF' }} />
             </div>
           </div>
 
           <AnimatePresence mode="wait">
             <motion.div
               key={diagnosticStep}
-              className="surgical-label !text-[10px] !text-[#00D1FF]/60 text-center min-w-[200px]"
+              style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(0,209,255,0.6)', textAlign: 'center', minWidth: '200px' }}
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
