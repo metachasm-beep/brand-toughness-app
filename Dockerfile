@@ -14,15 +14,15 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# Copy static assets and public folder
-COPY --from=builder /app/public ./public
+# Copy essentials from builder
+# Standalone server and bundled modules
+COPY --from=builder /app/.next/standalone ./
+# Static assets (required for standalone)
 COPY --from=builder /app/.next/static ./.next/static
-
-# Copy the standalone build properly
-# Render expects .next/standalone/server.js
-COPY --from=builder /app/.next/standalone ./.next/standalone
+# Public files (required for standalone)
+COPY --from=builder /app/public ./public
 
 EXPOSE 3000
 
-# Explicitly set the CMD to match Render's logs
-CMD ["node", ".next/standalone/server.js"]
+# Entry point
+CMD ["node", "server.js"]
