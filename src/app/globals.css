@@ -8,8 +8,11 @@
   --color-brand-red: #FF3D57;
   --color-brand-green: #00E28A;
   
-  --font-sans: 'Inter', sans-serif;
-  --font-display: 'Space Grotesk', sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  
+  --shadow-pro: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --shadow-neon: 0 0 30px rgba(0, 209, 255, 0.3);
 }
 
 :root {
@@ -22,28 +25,30 @@ body {
   color: rgb(var(--foreground-rgb));
   background: #0B0F14;
   font-family: var(--font-sans);
+  letter-spacing: -0.01em;
 }
 
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
+  letter-spacing: -0.03em;
 }
 
 /* ── UI UTILITIES ───────────────────────────────────────────────────────── */
 
 .surgical-label {
-  @apply text-[10px] font-black uppercase tracking-[0.3em] text-white/30;
+  @apply text-[10px] font-black uppercase tracking-[0.35em] text-white/40;
 }
 
 .apple-glass {
-  @apply bg-white/[0.03] border border-white/10 backdrop-blur-2xl;
+  @apply bg-white/[0.04] border border-white/10 backdrop-blur-2xl shadow-pro;
 }
 
 .apple-card {
-  @apply bg-[#121822]/80 border border-white/5 rounded-[32px] transition-all duration-500 backdrop-blur-xl;
+  @apply bg-[#121822]/40 border border-white/5 rounded-[32px] transition-all duration-500 backdrop-blur-xl hover:bg-[#121822]/60 hover:border-white/10;
 }
 
 .apple-button-primary {
-  @apply bg-[#00D1FF] text-black font-extrabold px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] active:scale-[0.98] cursor-pointer;
+  @apply bg-[#00D1FF] text-black font-black px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.03] shadow-neon active:scale-[0.97] cursor-pointer;
 }
 
 .apple-button-outline {
@@ -52,49 +57,44 @@ h1, h2, h3, h4, .font-display {
 
 /* ── ANIMATIONS ─────────────────────────────────────────────────────────── */
 
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
+.neural-grid {
+  background-image: 
+    linear-gradient(to right, rgba(0, 209, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 209, 255, 0.07) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(circle at center, black, transparent 80%);
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 3s infinite ease-in-out;
+.glow-mesh {
+  background: radial-gradient(circle at 50% 50%, rgba(0, 209, 255, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(123, 92, 255, 0.08) 0%, transparent 40%);
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
 .glass-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 .glass-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .glass-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
-.glass-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.1);
+
+.text-gradient-pro {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/40;
 }
 
-.hero-grid {
-  background-image: 
-    linear-gradient(to right, rgba(0, 209, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 209, 255, 0.05) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-.text-gradient-blue {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#00D1FF] to-[#7B5CFF];
-}
-
-.glow-blue {
-  box-shadow: 0 0 50px rgba(0, 209, 255, 0.15);
-}
-
-.page-transition {
-  animation: fade-in 1s cubic-bezier(0.2, 0, 0, 1) forwards;
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.neon-text-blue {
+  text-shadow: 0 0 20px rgba(0, 209, 255, 0.5);
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { Activity, BarChart3, LayoutGrid, History, Settings, HelpCircle, Shield, Command } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -20,35 +21,35 @@ export default function Sidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="w-full h-screen flex flex-col p-8 border-r border-white/[0.05] select-none bg-[#0B0F14] relative z-40">
+        <aside className="w-full h-screen flex flex-col p-8 border-r border-white/5 select-none bg-[#0B0F14]/50 backdrop-blur-3xl relative z-40">
             {/* Brand logo */}
-            <div className="flex items-center gap-4 mb-14 px-2">
-                <div className="w-10 h-10 bg-[#00D1FF] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(0,209,255,0.3)]">
-                    <Command className="text-black" size={22} strokeWidth={3} />
+            <div className="flex items-center gap-4 mb-14 px-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] rounded-[14px] flex items-center justify-center shadow-neon">
+                    <Command className="text-black" size={24} strokeWidth={3} />
                 </div>
                 <div className="flex flex-col">
-                    <span className="font-display font-black text-xl tracking-tighter text-white leading-none">BRAND OS</span>
-                    <span className="surgical-label !text-[7px] mt-1">Intelligence Unit</span>
+                    <span className="font-display font-black text-2xl tracking-tighter text-white leading-none">BRAND OS</span>
+                    <span className="surgical-label !text-[8px] mt-1.5 !text-[#00D1FF]">INTEL UNIT v4.2</span>
                 </div>
             </div>
 
             {/* Primary nav */}
-            <nav className="flex-1 space-y-2">
+            <nav className="flex-1 space-y-3">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
                         <Link
                             key={item.name}
                             href={item.href}
-                            className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 ${isActive
-                                ? 'bg-white/5 border border-white/10 text-[#00D1FF]'
-                                : 'text-white/30 hover:text-white hover:bg-white/[0.03]'
+                            className={`flex items-center gap-5 px-6 py-4.5 rounded-[20px] transition-all duration-300 group ${isActive
+                                ? 'bg-[#00D1FF]/10 border border-[#00D1FF]/20 text-[#00D1FF] shadow-[0_10px_30px_rgba(0,209,255,0.1)]'
+                                : 'text-white/30 hover:text-white hover:bg-white/[0.04]'
                                 }`}
                         >
-                            <item.icon size={18} strokeWidth={isActive ? 2.5 : 2} />
-                            <span className={`text-xs font-black uppercase tracking-[0.2em] ${isActive ? 'text-white' : ''}`}>{item.name}</span>
+                            <item.icon size={20} className={`${isActive ? 'text-[#00D1FF]' : 'group-hover:text-white'} transition-colors`} strokeWidth={isActive ? 2.5 : 2} />
+                            <span className={`text-[11px] font-black uppercase tracking-[0.25em] ${isActive ? 'text-white' : ''}`}>{item.name}</span>
                             {isActive && (
-                                <div className="ml-auto w-1 h-1 rounded-full bg-[#00D1FF] shadow-[0_0_8px_#00D1FF]" />
+                                <motion.div layoutId="sidebar-active" className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00D1FF] shadow-[0_0_12px_#00D1FF]" />
                             )}
                         </Link>
                     );
@@ -56,26 +57,27 @@ export default function Sidebar() {
             </nav>
 
             {/* Secondary nav */}
-            <div className="mt-auto pt-8 border-t border-white/[0.05] space-y-1">
+            <div className="mt-auto pt-8 border-t border-white/5 space-y-2">
                 {secondaryItems.map((item) => (
                     <Link
                         key={item.name}
                         href={item.href}
-                        className="flex items-center gap-4 px-5 py-3 rounded-2xl text-white/20 hover:text-white transition-all"
+                        className="flex items-center gap-5 px-6 py-3.5 rounded-[18px] text-white/20 hover:text-white transition-all hover:bg-white/[0.02]"
                     >
-                        <item.icon size={16} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">{item.name}</span>
+                        <item.icon size={18} />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">{item.name}</span>
                     </Link>
                 ))}
 
                 {/* Status chip */}
-                <div className="mt-6 p-6 rounded-3xl bg-white/[0.02] border border-white/[0.05]">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="surgical-label !text-[8px]">Secure Link</span>
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#00E28A] animate-pulse glow-blue" />
+                <div className="mt-8 p-7 rounded-[28px] apple-glass border-white/5 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#00D1FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="flex items-center justify-between mb-5 relative z-10">
+                        <span className="surgical-label !text-[9px]">Neural Link</span>
+                        <div className="w-2 h-2 rounded-full bg-[#00E28A] animate-pulse shadow-[0_0_10px_#00E28A]" />
                     </div>
-                    <div className="text-sm font-black font-display text-white mb-1">NODE ACTIVE</div>
-                    <div className="surgical-label !text-[7px]">Telemetry Nominal</div>
+                    <div className="text-base font-black font-display text-white mb-1.5 relative z-10 tracking-tight">NODE ACTIVE</div>
+                    <div className="surgical-label !text-[8px] !opacity-40 relative z-10">Telemetry Logic Nominal</div>
                 </div>
             </div>
         </aside>
