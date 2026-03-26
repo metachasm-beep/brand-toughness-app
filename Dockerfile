@@ -1,27 +1,26 @@
-FROM node:20-slim
-
+# Stage 1: Build
+FROM node:20-slim AS builder
 WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm install
+COPY . .
+RUN npx prisma generate
+RUN npm run build
 
-# Core environment variables
+# Stage 2: Runner
+FROM node:20-slim AS runner
+WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# Install dependencies - using npm install for reliability in varying environments
-COPY package.json package-lock.json* ./
-RUN npm install
-
-# Copy source files
-COPY . .
-
-# Generate Prisma client
-RUN npx prisma generate
-
-# Build the application
-RUN npm run build
+# Copy necessary files from builder
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE 3000
 
-# Start command
-CMD ["npm", "run", "start"]
+# Start with the standalone server
+CMD ["node", "server.js"]
