@@ -7,8 +7,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
 export const metadata = {
-  title: 'BRAND OS | Diagnostic Intelligence',
-  description: 'Brand Perception & Performance Intelligence System',
+  title: 'WEB OS | Diagnostic Intelligence',
+  description: 'Web Performance & Diagnostic Intelligence System',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

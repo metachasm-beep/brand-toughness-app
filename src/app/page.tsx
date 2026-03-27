@@ -14,19 +14,20 @@ export default function Home() {
   const [diagnosticStep, setDiagnosticStep] = useState(0);
 
   const diagnosticStages = [
-    "Initializing Neural Link...",
-    "Syncing Brand Identity...",
+    "Initializing WEB OS...",
+    "Syncing Web Identity...",
     "Stabilizing Telemetry Nodes..."
   ];
 
+  // Run ONCE on mount — do NOT depend on [status] or the timer resets every auth change
   useEffect(() => {
     setMounted(true);
+
+    // Hard timeout: after 4s, always bypass the loader regardless of auth state
     const timer = setTimeout(() => {
-      if (status === 'loading') {
-        console.warn('[AUTH] Session check timed out (3s). Bypassing.');
-        setBypassAuth(true);
-      }
-    }, 4000); 
+      console.warn('[AUTH] Session check timed out (4s). Bypassing loader.');
+      setBypassAuth(true);
+    }, 4000);
 
     // Diagnostic text rotation
     const interval = setInterval(() => {
@@ -37,7 +38,7 @@ export default function Home() {
       clearTimeout(timer);
       clearInterval(interval);
     };
-  }, [status]);
+  }, []); // ← EMPTY DEPS: runs once, timer is never reset
 
   if (!mounted || (status === 'loading' && !bypassAuth && !session)) {
     return (

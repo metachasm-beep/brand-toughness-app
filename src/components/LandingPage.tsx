@@ -21,7 +21,7 @@ export default function LandingPage() {
                 <div className="apple-glass rounded-[28px] px-8 h-20 flex items-center justify-between border-white/10">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] rounded-xl flex items-center justify-center font-black text-black text-xs shadow-[0_0_25px_rgba(0,209,255,0.4)]">OS</div>
-                        <span className="font-display font-black tracking-tighter text-2xl text-white">BRAND OS</span>
+                        <span className="font-display font-black tracking-tighter text-2xl text-white">WEB OS</span>
                     </div>
                     <div className="flex items-center gap-10">
                         <div className="hidden lg:flex items-center gap-10">
@@ -242,10 +242,10 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center font-black text-[#00D1FF] shadow-neon">OS</div>
-                        <span className="font-display font-black tracking-tighter text-3xl text-white">BRAND OS</span>
+                        <span className="font-display font-black tracking-tighter text-3xl text-white">WEB OS</span>
                     </div>
                     <div className="flex flex-col items-center gap-4">
-                         <p className="surgical-label">© 2026 BRAND OS · DIAGNOSTIC INTELLIGENCE UNIT</p>
+                         <p className="surgical-label">© 2026 WEB OS · DIAGNOSTIC INTELLIGENCE UNIT</p>
                          <p className="text-[9px] font-black text-white/10 uppercase tracking-[0.5em]">SYSTEM STATUS: NOMINAL</p>
                     </div>
                     <div className="flex gap-8">

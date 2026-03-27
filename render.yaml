@@ -6,7 +6,6 @@ services:
     region: oregon
     autoDeploy: true
     dockerfilePath: ./Dockerfile
-    startCommand: node server.js
     healthCheckPath: /api/health
 
     envVars:

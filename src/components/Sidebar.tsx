@@ -28,7 +28,7 @@ export default function Sidebar() {
                     <Command className="text-black" size={24} strokeWidth={3} />
                 </div>
                 <div className="flex flex-col">
-                    <span className="font-display font-black text-2xl tracking-tighter text-white leading-none">BRAND OS</span>
+                    <span className="font-display font-black text-2xl tracking-tighter text-white leading-none">WEB OS</span>
                     <span className="surgical-label !text-[8px] mt-1.5 !text-[#00D1FF]">INTEL UNIT v4.2</span>
                 </div>
             </div>

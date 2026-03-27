@@ -6,7 +6,7 @@ export async function getAiInsights(url: string, findings: any[]) {
 
     try {
         const prompt = `
-You are the "Brand OS v4.2 Diagnostic Core". 
+You are the "WEB OS v4.2 Diagnostic Core". 
 I have performed a deep-telemetry audit of ${url}.
 Findings: ${JSON.stringify(findings.slice(0, 30).map(f => ({ title: f.title, severity: f.severity })), null, 2)}
 
