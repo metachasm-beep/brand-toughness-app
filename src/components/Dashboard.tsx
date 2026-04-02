@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Globe, Loader2, Play, Activity, Users, Zap, Lock, Share, FileDown, EyeOff, CheckCircle, Shield
+    Globe, Loader2, Play, Activity, BarChart3, LayoutGrid, History, Settings, HelpCircle, Shield, Command, Lock, EyeOff, Check, Copy, Share, FileDown, CheckCircle, Users, Zap
 } from 'lucide-react';
 import MetricCard from '@/components/MetricCard';
 import LoadingBar from '@/components/LoadingBar';
@@ -425,33 +425,58 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        {/* Phase 5: Autonomous Growth Catalysts */}
-                        {result && (result as any).brandIntelligence?.growthCatalysts?.length > 0 && (
-                            <div className="mt-16 pt-16 border-t border-white/5">
+                        {/* v3.0: Generative Remediation Solutions */}
+                        {(result as any).remediationSolutions?.length > 0 && (
+                            <div className="mt-16 pt-16 border-t border-white/5 pb-20">
                                 <div className="flex items-center justify-between mb-10">
                                     <div>
-                                        <h3 className="text-3xl font-black font-display tracking-tight text-white uppercase">Growth Catalysts</h3>
-                                        <p className="surgical-label mt-2 text-[#00E28A]">Autonomous Differentiation Shards · Phase 5</p>
+                                        <h3 className="text-3xl font-black font-display tracking-tight text-white uppercase">Neural Solutions</h3>
+                                        <p className="surgical-label mt-2 !text-[#FF3D57]">Generative Remediation Terminal · v3.0 Next Frontier</p>
                                     </div>
-                                    <div className="bg-[#00E28A]/5 px-4 py-2 rounded-xl border border-[#00E28A]/20">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#00E28A]">Market Sync: Active</span>
+                                    <div className="bg-[#FF3D57]/5 px-5 py-2.5 rounded-2xl border border-[#FF3D57]/20 flex items-center gap-3">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#FF3D57] animate-pulse shadow-[0_0_8px_#FF3D57]" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#FF3D57]">Authority Healer: Active</span>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    {(result as any).brandIntelligence.growthCatalysts.map((catalyst: any, idx: number) => (
-                                        <div key={idx} className="liquid-glass p-8 rounded-3xl border-white/5 hover:border-[#00E28A]/30 transition-all duration-500 group">
-                                            <div className="flex items-center gap-4 mb-6">
-                                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] ${
-                                                    catalyst.type === 'OPPORTUNITY' ? 'bg-[#00E28A]/20 text-[#00E28A]' : 
-                                                    catalyst.type === 'THREAT' ? 'bg-[#FF3D57]/20 text-[#FF3D57]' : 'bg-white/10 text-white/40'
-                                                }`}>
-                                                    {catalyst.type}
-                                                </span>
-                                                <div className="h-px flex-1 bg-white/5" />
-                                                <span className="text-white/20 text-[9px] font-mono tracking-tighter">INTELLIGENCE_CONFID: {(catalyst.confidence * 100).toFixed(0)}%</span>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                    {(result as any).remediationSolutions.map((solution: any, idx: number) => (
+                                        <div key={idx} className="p-10 rounded-[32px] apple-glass border-white/5 relative overflow-hidden group hover:border-[#FF3D57]/30 transition-all duration-700">
+                                            <div className="absolute top-0 right-0 p-8">
+                                                <button 
+                                                    onClick={() => {
+                                                        const textToCopy = solution.codeSnippet || solution.solution;
+                                                        navigator.clipboard.writeText(textToCopy);
+                                                        // Fallback alert for immediate feedback in this proto
+                                                        alert(`[BrandOS v3.0] ${solution.type} Fix Copied to Clipboard`);
+                                                    }}
+                                                    className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#FF3D57] flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-neon"
+                                                >
+                                                    <Command size={16} className="text-white" />
+                                                </button>
                                             </div>
-                                            <h4 className="text-xl font-bold text-white mb-4 group-hover:text-[#00E28A] transition-colors">{catalyst.title}</h4>
-                                            <p className="text-white/50 text-sm leading-relaxed font-medium">{catalyst.description}</p>
+
+                                            <div className="flex items-center gap-5 mb-8">
+                                                <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest ${
+                                                    solution.type === 'COPY' ? 'bg-[#FF3D57]/20 text-[#FF3D57]' : 
+                                                    solution.type === 'CSS' ? 'bg-[#00D1FF]/20 text-[#00D1FF]' : 'bg-white/10 text-white/40'
+                                                }`}>
+                                                    {solution.type} REMEDIATION
+                                                </span>
+                                                <span className="surgical-label !text-white/10 tracking-[0.2em]">{solution.impact} IMPACT</span>
+                                            </div>
+
+                                            <h4 className="text-xl font-black text-white mb-4 tracking-tight leading-tight">{solution.problem}</h4>
+                                            
+                                            <div className="p-6 rounded-2xl bg-[#0B0F14]/60 border border-white/5 mb-6 group-hover:border-[#FF3D57]/10 transition-colors">
+                                                <p className="text-white/60 text-sm font-medium leading-relaxed italic">"{solution.solution}"</p>
+                                            </div>
+
+                                            {solution.codeSnippet && (
+                                                <div className="p-5 rounded-xl bg-black/40 border border-white/5 font-mono text-[11px] text-[#00D1FF]/80 overflow-x-auto relative group-hover:bg-black/60 transition-all">
+                                                    <div className="absolute top-2 right-4 text-[9px] text-white/10 font-bold uppercase tracking-widest">CSS_SOURCE</div>
+                                                    <code>{solution.codeSnippet}</code>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

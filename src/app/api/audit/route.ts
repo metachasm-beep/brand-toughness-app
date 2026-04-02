@@ -24,10 +24,10 @@ export async function POST(request: Request) {
         const userEmail = session?.user?.email || 'guest@turtlelabs.co';
 
         const json = await request.json();
-        const body = AuditRequestSchema.parse(json);
-        url = body.url;
-
-        const normalisedUrl = normaliseUrl(url);
+        // Loosen Zod validation to allow partials (normaliseUrl handles the rest)
+        const body = z.object({ url: z.string().min(3).max(2000) }).parse(json);
+        
+        const normalisedUrl = normaliseUrl(body.url);
 
         // 1. Core Brand Scan - Extracts H1s, CTAs, Hero, and about text
         const engine = new BrandEngine(normalisedUrl);
