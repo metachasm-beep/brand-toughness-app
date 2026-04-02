@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Globe, Loader2, Play, Activity, BarChart3, LayoutGrid, History, Settings, HelpCircle, Shield, Command, Lock, EyeOff, Check, Copy, Share, FileDown, CheckCircle, Users, Zap, Layers
+    Globe, Loader2, Play, Activity, BarChart3, LayoutGrid, History, Settings, HelpCircle, Shield, Command, Lock, EyeOff, Check, Copy, Share, FileDown, CheckCircle, Users, Zap, Layers, Monitor, Gauge, ShieldCheck, Search
 } from 'lucide-react';
 import MetricCard from '@/components/MetricCard';
 import LoadingBar from '@/components/LoadingBar';
@@ -440,8 +440,41 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                            <div className="relative space-y-8">
-                                <h5 className="surgical-label !text-white/20">Telemetry Shards</h5>
+                            {/* Technical Telemetry */}
+                            <div className="space-y-12">
+                                <h5 className="surgical-label !text-white/20">Technical Core Vitals</h5>
+                                <div className="grid grid-cols-2 gap-6">
+                                    {[
+                                        { l: 'PERFORMANCE', v: result.pageSpeed?.performance ?? 0, icon: Gauge, color: '#00D1FF' },
+                                        { l: 'ACCESSIBILITY', v: result.pageSpeed?.accessibility ?? 0, icon: Users, color: '#00E28A' },
+                                        { l: 'BEST PRACTICES', v: result.pageSpeed?.bestPractices ?? 0, icon: ShieldCheck, color: '#FFD600' },
+                                        { l: 'SEO OPTIMIZATION', v: result.pageSpeed?.seo ?? 0, icon: Search, color: '#FF3D57' },
+                                    ].map((n: any, i: number) => (
+                                        <SpotlightCard key={i} className="bg-white/[0.04] border border-white/5 p-7 rounded-[24px] hover:border-white/10 transition-all backdrop-blur-none spotlight-red">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="surgical-label text-[9px]">{n.l}</div>
+                                                <n.icon size={14} className="text-white/20" />
+                                            </div>
+                                            <div className="text-3xl font-black font-display text-white">
+                                                <CountUp value={n.v} fontSize={30} gap={1} />
+                                            </div>
+                                            <div className="w-full h-1.5 bg-white/5 rounded-full mt-5 overflow-hidden">
+                                                <motion.div
+                                                    className="h-full"
+                                                    style={{ backgroundColor: n.color }}
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${n.v}%` }}
+                                                    transition={{ duration: 1.5, delay: i * 0.1, ease: 'easeOut' as any }}
+                                                />
+                                            </div>
+                                        </SpotlightCard>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="relative space-y-8 pt-12 border-t border-white/5">
+                            <h5 className="surgical-label !text-white/20">Telemetry Shards</h5>
                                 <div className={`space-y-3 transition-all duration-1000 ${!pdfUnlocked ? 'blur-xl select-none pointer-events-none opacity-20' : ''}`}>
                                     {result.findings ? result.findings.map((f: any) => (
                                         <SpotlightCard key={f.code} className="flex justify-between items-center py-5 border-b border-white/[0.03] group transition-all hover:bg-white/[0.02] px-4 rounded-lg bg-transparent border-none">
@@ -482,7 +515,6 @@ export default function Dashboard() {
                                     </div>
                                 )}
                             </div>
-                        </div>
 
                         {/* v3.0: Generative Remediation Solutions */}
                         {(result as any).remediationSolutions?.length > 0 && (

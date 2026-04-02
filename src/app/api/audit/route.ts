@@ -7,6 +7,7 @@ import { BrandEngine } from '@/lib/audit/brandEngine';
 import { orchestrateBrandAudit } from '@/lib/agents/orchestrator';
 import { prisma } from '@/lib/db';
 import { normaliseUrl } from '@/utils/googleSheet';
+import { fetchPageSpeed } from '@/lib/audit/pageSpeed';
 
 import { z } from 'zod';
 
@@ -31,10 +32,21 @@ export async function POST(request: Request) {
 
         // 1. Core Brand Scan - Extracts H1s, CTAs, Hero, and about text
         const engine = new BrandEngine(normalisedUrl);
-        const brandData = await engine.scan();
+        const [brandData, pageSpeed] = await Promise.all([
+            engine.scan(),
+            fetchPageSpeed(normalisedUrl)
+        ]);
 
         // 2. v2.0 Agentic Orchestration with Continuous Intelligence
         const auditResult = await orchestrateBrandAudit(brandData, userEmail);
+
+        // 3. Mathematical Score Synthesis (60% Brand / 40% Technical)
+        const brandScore = auditResult.aggregate;
+        const techScore = pageSpeed ? 
+            (pageSpeed.performance + pageSpeed.accessibility + pageSpeed.bestPractices + pageSpeed.seo) / 4 : 
+            brandScore; // Fallback if PageSpeed fails
+        
+        const finalOverallScore = Math.round((brandScore * 0.6) + (techScore * 0.4));
 
         // 3. Persist to DB for SaaS History (Best Effort)
         let savedAudit = { uid: uuidv4() };
@@ -45,12 +57,12 @@ export async function POST(request: Request) {
                     uid: savedAudit.uid,
                     status: 'COMPLETED',
                     userEmail: userEmail,
-                    overallScore: auditResult.aggregate,
+                    overallScore: finalOverallScore,
                     clarityScore: auditResult.scores.clarity * 4,
                     consistencyScore: auditResult.scores.consistency * 4,
                     differentiationScore: auditResult.scores.differentiation * 4,
                     emotionalImpactScore: auditResult.scores.emotionalImpact * 4,
-                    meta: { ...brandData, ...auditResult } as any,
+                    meta: { ...brandData, ...auditResult, pageSpeed } as any,
                     brandIdentity: {
                         create: {
                             businessDesc: auditResult.brandIntelligence.positioning,
@@ -83,11 +95,12 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
             scores,
-            aggregate: (auditResult.aggregate / 10).toFixed(1),
+            aggregate: (finalOverallScore / 10).toFixed(1),
             rawData: brandData,
             findings: [], // Legacy compat
             uid: savedAudit.uid,
-            brandIntelligence: auditResult.brandIntelligence
+            brandIntelligence: auditResult.brandIntelligence,
+            pageSpeed
         });
 
     } catch (err: any) {
