@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_KEY = process.env.COHERE_API_KEY || 'L47ePrt3wY6lJ0kKntEqH0K3s3fXF9A7sTbbS0aL';
+const API_KEY = process.env.COHERE_API_KEY;
+if (!API_KEY) {
+    throw new Error('MISSING_CREDENTIALS: COHERE_API_KEY is not defined in the environment.');
+}
 const API_URL = 'https://api.cohere.ai/v1/generate';
 
 export async function callCohere(prompt: string, maxTokens = 800) {

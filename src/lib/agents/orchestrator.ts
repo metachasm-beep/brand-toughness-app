@@ -6,13 +6,18 @@ import { recallKnowledge, learnKnowledge } from './knowledge';
 
 export async function orchestrateBrandAudit(brand: BrandData, userEmail: string = 'guest@turtlelabs.co') {
     try {
+        // High-fidelity sanitization - stripping obvious prompt-injection attempts from scrapped content
+        const cleanRawText = brand.rawText
+            .replace(/(ignore all previous instructions|system prompt|DAN mode|you are now)/gi, '[REDACTED_BY_GUARD]')
+            .slice(0, 15000); // Token safety limit
+
         console.log('[Orchestrator] Step 0: Strategic Recall (Fetch Memory)...');
         const memory = await recallKnowledge(brand.url, userEmail);
         const pastContext = memory ? JSON.stringify(memory.knowledgeItems) : "No previous data.";
 
         console.log('[Orchestrator] Step 1: Strategic Planning (Memory-Augmented)...');
         // Planner now receives past learnings to detect brand evolution
-        const plannerResult = await runPlanner(brand.url, `${brand.rawText}\n\n[PAST INTELLIGENCE]: ${pastContext}`);
+        const plannerResult = await runPlanner(brand.url, `${cleanRawText}\n\n[PAST INTELLIGENCE]: ${pastContext}`);
         if (!plannerResult.success) throw new Error('Planning failed: ' + plannerResult.error);
 
         const shards = plannerResult.data.shards;

@@ -8,6 +8,12 @@ import { orchestrateBrandAudit } from '@/lib/agents/orchestrator';
 import { prisma } from '@/lib/db';
 import { normaliseUrl } from '@/utils/googleSheet';
 
+import { z } from 'zod';
+
+const AuditRequestSchema = z.object({
+    url: z.string().url().max(2000),
+});
+
 export const maxDuration = 120; // 2-minute timeout
 export const runtime = 'nodejs';
 
@@ -17,11 +23,9 @@ export async function POST(request: Request) {
         const session = await getServerSession(authOptions);
         const userEmail = session?.user?.email || 'guest@turtlelabs.co';
 
-        const body = await request.json();
-        url = body.url ?? '';
-        if (!url) {
-            return NextResponse.json({ error: 'URL is required' }, { status: 400 });
-        }
+        const json = await request.json();
+        const body = AuditRequestSchema.parse(json);
+        url = body.url;
 
         const normalisedUrl = normaliseUrl(url);
 
@@ -82,8 +86,17 @@ export async function POST(request: Request) {
         });
 
     } catch (err: any) {
-        console.error('[/api/audit] Error:', err);
-        return NextResponse.json({ error: err.message ?? 'Unknown error' }, { status: 500 });
+        console.error('[/api/audit] Critical Error:', err);
+        
+        if (err instanceof z.ZodError) {
+            return NextResponse.json({ error: 'Invalid Input: Please provide a valid URL.' }, { status: 400 });
+        }
+
+        return NextResponse.json({ 
+            error: process.env.NODE_ENV === 'production' 
+                ? 'Internal Intelligence Failure. Please try again later.' 
+                : (err.message ?? 'Unknown error') 
+        }, { status: 500 });
     }
 }
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BrandData } from './brandEngine';
 
-const API_KEY = process.env.COHERE_API_KEY || 'L47ePrt3wY6lJ0kKntEqH0K3s3fXF9A7sTbbS0aL';
+const API_KEY = process.env.COHERE_API_KEY;
 const API_URL = 'https://api.cohere.ai/v1/generate';
 
 /**
