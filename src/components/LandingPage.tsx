@@ -25,7 +25,7 @@ export default function LandingPage() {
     };
 
     return (
-        <div className="bg-[#000000] min-h-screen text-white font-sans selection:bg-[#B05CFF] selection:text-white overflow-x-hidden">
+        <div className="bg-[#000000] min-h-screen text-white font-sans selection:bg-[#FF3D57] selection:text-white overflow-x-hidden">
             {/* ── Grid Overlay ────────────────────────────────────────────────── */}
             <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" 
                  style={{ backgroundImage: 'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
@@ -35,9 +35,9 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-4 group cursor-pointer" onClick={login}>
                         <div className="relative w-10 h-10 flex items-center justify-center">
-                            <img src="/branding/brand-icon.png" alt="BrandOS Icon" className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]" />
+                            <img src="/branding/brand-icon.png" alt="BrandOS Icon" className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(255,61,87,0.3)]" />
                         </div>
-                        <img src="/branding/brand-logo.png" alt="BrandOS AI" className="h-7 object-contain" />
+                        <img src="/branding/brand-logo.png" alt="BrandOS AI" className="h-7 object-contain filter invert brightness-[2] grayscale-0" />
                     </div>
                     
                     <div className="hidden md:flex items-center gap-10">
@@ -46,7 +46,7 @@ export default function LandingPage() {
                         <a href="#tiers" className="surgical-label hover:text-white transition-colors">Tiers</a>
                     </div>
 
-                    <StarBorder thickness={1} speed="4s" color="#B05CFF" className="hover:scale-105 transition-transform">
+                    <StarBorder thickness={1} speed="4s" color="#FF3D57" className="hover:scale-105 transition-transform">
                         <button 
                             onClick={login}
                             className="bg-transparent text-white px-6 py-2.5 rounded text-[10px] font-black uppercase tracking-widest transition-all"
@@ -70,7 +70,7 @@ export default function LandingPage() {
                         className="opacity-40"
                     />
                 </div>
-                <SplashCursor />
+                <SplashCursor color="#FF3D57" />
 
                 <div className="max-w-7xl mx-auto text-center space-y-12 relative z-10 w-full">
                     <motion.div {...fadeIn} className="space-y-6">
@@ -115,7 +115,7 @@ export default function LandingPage() {
                         transition={{ delay: 0.4, duration: 1 }}
                         className="flex flex-col sm:flex-row items-center justify-center gap-6"
                     >
-                        <StarBorder thickness={2} speed="3s" color="#B05CFF" className="hover:scale-105 transition-transform">
+                        <StarBorder thickness={2} speed="3s" color="#FF3D57" className="hover:scale-105 transition-transform">
                             <button onClick={login} className="w-full sm:w-auto bg-transparent text-white px-10 py-5 font-black uppercase text-xs tracking-widest flex items-center justify-center gap-3">
                                 <DecryptedText text="Get Free Brand Snapshot" animateOn="hover" /> <ArrowRight size={16} />
                             </button>
@@ -136,9 +136,9 @@ export default function LandingPage() {
                     <motion.div {...fadeIn} className="space-y-8">
                         <h2 className="text-5xl md:text-6xl font-black font-display tracking-tight uppercase leading-none">
                             Most Brands Don’t Fail <br />
-                            <span className="text-[#B05CFF]">Because of Design.</span>
+                            <span className="text-[#FF3D57]">Because of Design.</span>
                         </h2>
-                        <div className="h-1 w-20 bg-[#B05CFF]" />
+                        <div className="h-1 w-20 bg-[#FF3D57]" />
                         <p className="text-3xl font-bold tracking-tight text-white/80">They Fail Because of Misalignment.</p>
                     </motion.div>
 
@@ -150,14 +150,14 @@ export default function LandingPage() {
                             { t: 'Structural Void', d: 'Marketing lacks long-term structural direction.' },
                         ].map((item, i) => (
                             <SpotlightCard key={i} className="p-8 border border-white/5 bg-white/[0.02] space-y-4 rounded-none h-full">
-                                <div className="w-2 h-2 rounded-full bg-[#B05CFF]" />
+                                <div className="w-2 h-2 rounded-full bg-[#FF3D57]" />
                                 <p className="text-sm font-bold text-white/90 leading-relaxed">{item.d}</p>
                             </SpotlightCard>
                         ))}
                     </div>
                 </div>
                 <div className="max-w-7xl mx-auto mt-20 text-center">
-                    <p className="text-xl font-black uppercase tracking-[0.2em] text-[#B05CFF]">BrandOS AI fixes that.</p>
+                    <p className="text-xl font-black uppercase tracking-[0.2em] text-[#FF3D57]">BrandOS AI fixes that.</p>
                 </div>
             </section>
 
@@ -187,14 +187,14 @@ export default function LandingPage() {
                                     'Prepares brands for scale'
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-4 text-sm font-bold text-white/40">
-                                        <CheckCircle size={14} className="text-[#B05CFF]" />
+                                        <CheckCircle size={14} className="text-[#FF3D57]" />
                                         <span>{item}</span>
                                     </div>
                                 ))}
                             </div>
                         </SpotlightCard>
                         <SpotlightCard className="bg-black p-12 flex flex-col justify-center items-center text-center space-y-8 relative overflow-hidden rounded-none border-none">
-                            <div className="absolute inset-0 bg-[#B05CFF]/5 pointer-events-none" />
+                            <div className="absolute inset-0 bg-[#FF3D57]/5 pointer-events-none" />
                             <h3 className="text-4xl font-black italic uppercase leading-none z-10">It doesn’t generate noise. <br /> It builds architecture.</h3>
                             <Brain size={80} className="text-white/10 absolute -bottom-10 -right-10 transform rotate-12" />
                         </SpotlightCard>
@@ -226,8 +226,8 @@ export default function LandingPage() {
                                 transition={{ delay: i * 0.2 }}
                                 className="relative space-y-8 pt-8"
                             >
-                                <SpotlightCard className="w-24 h-24 bg-black border border-white/10 flex items-center justify-center mx-auto relative z-10 transition-colors hover:border-[#B05CFF] rounded-none p-0">
-                                    <step.i size={32} className="text-[#B05CFF]" />
+                                <SpotlightCard className="w-24 h-24 bg-black border border-white/10 flex items-center justify-center mx-auto relative z-10 transition-colors hover:border-[#FF3D57] rounded-none p-0">
+                                    <step.i size={32} className="text-[#FF3D57]" />
                                     <div className="absolute -top-3 -right-3 text-[10px] font-black text-white/20">{step.s}</div>
                                 </SpotlightCard>
                                 <div className="text-center space-y-4">
@@ -258,7 +258,7 @@ export default function LandingPage() {
                             </div>
                             <ul className="space-y-4 border-t border-white/10 pt-8">
                                 {['Brand clarity audit', 'Positioning gap analysis', 'Brand OS AI Score', 'Opportunity insights', 'Summary report (PDF)'].map((f, i) => (
-                                    <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
+                                    <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#FF3D57] shrink-0" /> {f}</li>
                                 ))}
                             </ul>
                             <StarBorder thickness={1} speed="5s" color="rgba(255,255,255,0.2)" className="w-full">
@@ -269,19 +269,19 @@ export default function LandingPage() {
                         </SpotlightCard>
 
                         {/* Advanced Tier */}
-                        <SpotlightCard className="border-[3px] border-[#B05CFF] p-10 space-y-12 bg-white/[0.04] relative rounded-none spotlight-purple">
-                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#B05CFF] text-white px-4 py-1 text-[8px] font-black uppercase tracking-widest">Most Popular</div>
+                        <SpotlightCard className="border-[3px] border-[#FF3D57] p-10 space-y-12 bg-white/[0.04] relative rounded-none spotlight-red">
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#FF3D57] text-white px-4 py-1 text-[8px] font-black uppercase tracking-widest">Most Popular</div>
                             <div className="space-y-2">
-                                <div className="surgical-label !text-[#B05CFF] uppercase">Advanced</div>
+                                <div className="surgical-label !text-[#FF3D57] uppercase">Advanced</div>
                                 <h3 className="text-3xl font-black font-display uppercase italic">BrandOS AI Advanced</h3>
                                 <div className="text-5xl font-black font-display tracking-tighter">$297 <span className="text-xs text-white/20 uppercase font-black tracking-widest ml-2">One-Time</span></div>
                             </div>
                             <ul className="space-y-4 border-t border-white/10 pt-8">
                                 {['Brand positioning framework', 'Messaging architecture', 'Tone calibration', 'Persona mapping', 'Differentiation logic', 'Visual direction blueprint', '90-day marketing roadmap'].map((f, i) => (
-                                    <li key={i} className="flex gap-4 text-xs font-bold text-white/80"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
+                                    <li key={i} className="flex gap-4 text-xs font-bold text-white/80"><CheckCircle size={12} className="text-[#FF3D57] shrink-0" /> {f}</li>
                                 ))}
                             </ul>
-                            <StarBorder thickness={2} speed="3s" color="#B05CFF" className="w-full">
+                            <StarBorder thickness={2} speed="3s" color="#FF3D57" className="w-full">
                                 <button onClick={login} className="w-full bg-transparent text-white py-4 font-black uppercase text-[10px] tracking-widest transition-all">
                                     <DecryptedText text="Upgrade to Advanced" animateOn="hover" />
                                 </button>
@@ -297,7 +297,7 @@ export default function LandingPage() {
                             </div>
                             <ul className="space-y-4 border-t border-white/10 pt-8">
                                 {['Everything in Advanced', 'Competitive moat strategy', 'Authority positioning', 'Campaign theme development', 'Funnel messaging framework', 'Investor-ready summary deck'].map((f, i) => (
-                                    <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
+                                    <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#FF3D57] shrink-0" /> {f}</li>
                                 ))}
                             </ul>
                             <StarBorder thickness={1} speed="4s" color="rgba(255,255,255,0.4)" className="w-full">
@@ -318,7 +318,7 @@ export default function LandingPage() {
                         <div className="surgical-label">Human-Led Strategic Partnerships</div>
                         <h2 className="text-6xl font-black font-display tracking-tight uppercase leading-[0.9]">
                             Structure is Built. <br />
-                            <span className="text-[#B05CFF]">Now We Activate.</span>
+                            <span className="text-[#FF3D57]">Now We Activate.</span>
                         </h2>
                         <p className="text-xl text-white/40 leading-relaxed max-w-lg">
                             Once your brand architecture is defined, you can move into human-led strategic partnerships with Turtle Labs. BrandOS AI prepares the groundwork. Our team executes with precision.
@@ -336,7 +336,7 @@ export default function LandingPage() {
                     ].map((svc, i) => (
                         <div key={i} className="bg-black p-10 space-y-6 hover:bg-white/[0.02] transition-colors group">
                             <div className="space-y-2">
-                                <h4 className="text-lg font-black uppercase tracking-tight group-hover:text-[#B05CFF] transition-colors">{svc.t}</h4>
+                                <h4 className="text-lg font-black uppercase tracking-tight group-hover:text-[#FF3D57] transition-colors">{svc.t}</h4>
                                 <div className="text-xl font-bold tracking-tighter text-white/40">{svc.p} <span className="text-[8px] uppercase tracking-widest font-black ml-1">/ Month</span></div>
                             </div>
                             <p className="text-xs text-white/30 leading-relaxed font-medium">{svc.d}</p>
@@ -344,7 +344,7 @@ export default function LandingPage() {
                     ))}
                 </div>
                 <div className="max-w-7xl mx-auto mt-16 text-center">
-                    <button className="bg-white text-black px-12 py-5 font-black uppercase text-xs tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all">
+                    <button className="bg-white text-black px-12 py-5 font-black uppercase text-xs tracking-widest hover:bg-[#FF3D57] hover:text-white transition-all">
                         Request Strategic Consultation
                     </button>
                 </div>
@@ -373,19 +373,19 @@ export default function LandingPage() {
             {/* ── Final CTA ───────────────────────────────────────────────────── */}
             <section className="py-48 px-6 text-center relative overflow-hidden">
                 {/* Visual Accent */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-24 bg-gradient-to-b from-[#B05CFF] to-transparent" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-24 bg-gradient-to-b from-[#FF3D57] to-transparent" />
                 
                 <div className="max-w-4xl mx-auto space-y-12 relative z-10">
                     <motion.div {...fadeIn} className="space-y-6">
                         <h2 className="text-6xl md:text-8xl font-black font-display tracking-tighter uppercase leading-[0.85] italic">
                             Ready to Structure <br />
-                            <span className="text-[#B05CFF]">Your Brand?</span>
+                            <span className="text-[#FF3D57]">Your Brand?</span>
                         </h2>
                         <p className="text-2xl font-bold text-white/40 tracking-tight">Start with clarity. Scale with intelligence.</p>
                     </motion.div>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-                        <StarBorder thickness={2} speed="2.5s" color="#B05CFF" className="hover:scale-105 transition-transform">
+                        <StarBorder thickness={2} speed="2.5s" color="#FF3D57" className="hover:scale-105 transition-transform">
                             <button onClick={login} className="w-full sm:w-auto bg-transparent text-white px-12 py-6 font-black uppercase text-xs tracking-widest transition-all">
                                 <DecryptedText text="Get Free Brand Snapshot" animateOn="hover" />
                             </button>
@@ -404,7 +404,7 @@ export default function LandingPage() {
             <footer className="py-20 px-6 border-t border-white/10 bg-black">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
                     <div className="space-y-6">
-                        <img src="/branding/brand-full.png" alt="BrandOS AI Powered by Turtle Labs" className="h-10 object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                        <img src="/branding/brand-full.png" alt="BrandOS AI Powered by Turtle Labs" className="h-10 object-contain opacity-80 hover:opacity-100 transition-opacity filter invert brightness-[2] grayscale-0" />
                         <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] leading-relaxed">
                             © 2026 BrandOS AI • A Turtle Labs Intelligence System <br />
                             OPERATING STATUS: NOMINAL • SYSTEM VERSION: 5.0.1

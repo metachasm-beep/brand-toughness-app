@@ -67,7 +67,7 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
-                    <StarBorder thickness={2} speed="3s" color="#B05CFF" className="w-full">
+                    <StarBorder thickness={2} speed="3s" color="#FF3D57" className="w-full">
                         <button
                             onClick={handlePay}
                             className="w-full bg-transparent py-4 text-lg font-bold rounded-2xl flex items-center justify-center gap-3"
@@ -196,7 +196,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <h1 className="text-7xl xl:text-8xl font-black font-display tracking-tighter text-white leading-[0.85] text-gradient-pro">
-                        BRAND STRATEGY<br /><span className="text-[#B05CFF] neon-text-purple">COMMAND.</span>
+                        BRAND STRATEGY<br /><span className="text-[#FF3D57] neon-text-purple">COMMAND.</span>
                     </h1>
                     <p className="text-xl text-white/40 font-medium max-w-xl leading-relaxed">
                         Strategic brand intelligence for communication systems. Initialize clarity audits to analyze messaging alignment and market positioning.
@@ -219,7 +219,7 @@ export default function Dashboard() {
                         />
                         <button
                             type="submit" disabled={loading}
-                            className="apple-button-primary px-10 h-full flex items-center gap-3 shrink-0 rounded-[24px] !bg-[#B05CFF] hover:shadow-[0_0_20px_#B05CFF55]"
+                            className="apple-button-primary px-10 h-full flex items-center gap-3 shrink-0 rounded-[24px] !bg-[#FF3D57] hover:shadow-[0_0_20px_#FF3D5755]"
                         >
                             {loading ? <Loader2 className="animate-spin" size={22} /> : <Play size={20} fill="currentColor" />}
                             <span className="text-[12px] font-black uppercase tracking-widest">Run Brand Strategy Scan</span>
@@ -265,14 +265,14 @@ export default function Dashboard() {
                     <motion.section className="apple-card p-12 space-y-16 border-white/5" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}>
                         <div className="flex items-center justify-between border-b border-white/5 pb-10">
                             <div className="flex items-center gap-5">
-                                <div className="p-4 bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] rounded-[24px] shadow-neon">
+                                <div className="p-4 bg-gradient-to-br from-[#FF3D57] to-[#E31B23] rounded-[24px] shadow-neon">
                                     <Activity size={28} className="text-black" />
                                 </div>
                                 <div>
                                     <h3 className="text-4xl font-black font-display tracking-tighter text-white">
                                         <DecryptedText text="STRATEGIC PLAYBOOK" animateOn="view" revealDirection="center" />
                                     </h3>
-                                    <p className="surgical-label mt-1.5 !text-[#B05CFF] !opacity-100">LLM BRAND ARCHITECTURE READY</p>
+                                    <p className="surgical-label mt-1.5 !text-[#FF3D57] !opacity-100">LLM BRAND ARCHITECTURE READY</p>
                                 </div>
                             </div>
                             <div className="px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black tracking-[0.3em] text-white/40">
@@ -307,11 +307,11 @@ export default function Dashboard() {
                                 </ul>
                             </div>
                             <div className="space-y-6">
-                                <h4 className="surgical-label text-[#7B5CFF]">Core Corrections</h4>
+                                <h4 className="surgical-label text-[#FF3D57]">Core Corrections</h4>
                                 <ul className="space-y-3">
                                     {(ai.priorityFixes || []).slice(0, 6).map((item: string, i: number) => (
                                         <li key={i} className="flex gap-4 text-sm text-white/60 font-medium">
-                                            <span className="text-[#7B5CFF] font-black mt-0.5">•</span> {item}
+                                            <span className="text-[#FF3D57] font-black mt-0.5">•</span> {item}
                                         </li>
                                     ))}
                                 </ul>
@@ -340,8 +340,8 @@ export default function Dashboard() {
                                 <p className="surgical-label mt-3 !text-white/20">Messaging Node Persistence · BrandOS v1.0</p>
                             </div>
                             <div className="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-2xl border border-white/10 shadow-inner">
-                                <div className="w-2.5 h-2.5 rounded-full bg-[#B05CFF] animate-pulse shadow-[0_0_12px_#B05CFF]" />
-                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#B05CFF]">Intelligence Stable</span>
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#FF3D57] animate-pulse shadow-[0_0_12px_#FF3D57]" />
+                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#FF3D57]">Intelligence Stable</span>
                             </div>
                         </div>
 
@@ -357,14 +357,14 @@ export default function Dashboard() {
                                         { l: 'TAGLINE STRENGTH', v: result.scores.marketResonance },
                                         { l: 'CTA CLARITY', v: result.scores.ctaStrength },
                                     ].map((n: { l: string, v: number }, i: number) => (
-                                        <SpotlightCard key={i} className="bg-white/[0.04] border border-white/5 p-7 rounded-[24px] hover:border-white/10 transition-all backdrop-blur-none spotlight-purple">
+                                        <SpotlightCard key={i} className="bg-white/[0.04] border border-white/5 p-7 rounded-[24px] hover:border-white/10 transition-all backdrop-blur-none spotlight-red">
                                             <div className="surgical-label text-[9px] mb-2">{n.l}</div>
                                             <div className="text-3xl font-black font-display text-white">
                                                 <CountUp value={Number(n.v.toFixed(1))} fontSize={30} gap={1} />
                                             </div>
                                             <div className="w-full h-1.5 bg-white/5 rounded-full mt-5 overflow-hidden">
                                                 <motion.div
-                                                    className="h-full bg-gradient-to-r from-[#B05CFF] to-[#7B5CFF]"
+                                                    className="h-full bg-gradient-to-r from-[#FF3D57] to-[#E31B23]"
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${n.v * 10}%` }}
                                                     transition={{ duration: 1.5, delay: i * 0.1, ease: 'easeOut' as any }}
@@ -409,7 +409,7 @@ export default function Dashboard() {
                                             <p className="text-white font-black uppercase text-xl tracking-tighter">TELEMETRY LOCKED</p>
                                             <p className="text-white/30 text-sm font-medium max-w-[280px] mx-auto leading-relaxed">System requires L3 Diagnostic clearance to unlock mission-critical findings.</p>
                                         </div>
-                                        <StarBorder thickness={2} speed="3s" color="#B05CFF" className="hover:scale-105 transition-transform">
+                                        <StarBorder thickness={2} speed="3s" color="#FF3D57" className="hover:scale-105 transition-transform">
                                             <button onClick={() => setShowPaywall(true)} className="bg-transparent text-white px-12 py-5 flex items-center gap-3 font-black uppercase text-xs tracking-widest">
                                                 <Lock size={18} /> <DecryptedText text="INITIALIZE CLEARANCE" animateOn="hover" />
                                             </button>

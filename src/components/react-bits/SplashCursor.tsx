@@ -22,6 +22,7 @@ interface SplashCursorProps {
   COLOR_UPDATE_SPEED?: number;
   BACK_COLOR?: ColorRGB;
   TRANSPARENT?: boolean;
+  color?: string;
 }
 
 interface Pointer {
@@ -66,9 +67,21 @@ export default function SplashCursor({
   SHADING = true,
   COLOR_UPDATE_SPEED = 10,
   BACK_COLOR = { r: 0.5, g: 0, b: 0 },
-  TRANSPARENT = true
+  TRANSPARENT = true,
+  color
 }: SplashCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  function hexToRgb(hex: string): ColorRGB {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16) / 255,
+      g: parseInt(result[2], 16) / 255,
+      b: parseInt(result[3], 16) / 255
+    } : { r: 1, g: 1, b: 1 };
+  }
+
+  const staticColor = color ? hexToRgb(color) : null;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1053,31 +1066,25 @@ export default function SplashCursor({
       splat(pointer.texcoordX, pointer.texcoordY, dx, dy, color);
     }
 
-    function splat(x: number, y: number, dx: number, dy: number, color: ColorRGB) {
+    function splat(x: number, y: number, dx: number, dy: number, colorOverride?: ColorRGB) {
+      if (!gl) return;
       splatProgram.bind();
-      if (splatProgram.uniforms.uTarget) {
-        gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read.attach(0));
-      }
-      if (splatProgram.uniforms.aspectRatio) {
-        gl.uniform1f(splatProgram.uniforms.aspectRatio, canvas!.width / canvas!.height);
-      }
-      if (splatProgram.uniforms.point) {
-        gl.uniform2f(splatProgram.uniforms.point, x, y);
-      }
+      if (splatProgram.uniforms.uTarget) gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read.attach(0));
+      if (splatProgram.uniforms.aspectRatio) gl.uniform1f(splatProgram.uniforms.aspectRatio, canvas!.width / canvas!.height);
+      if (splatProgram.uniforms.point) gl.uniform2f(splatProgram.uniforms.point, x, y);
       if (splatProgram.uniforms.color) {
-        gl.uniform3f(splatProgram.uniforms.color, dx, dy, 0);
+        const c = colorOverride || (staticColor ? staticColor : generateColor());
+        gl.uniform3f(splatProgram.uniforms.color, c.r, c.g, c.b);
       }
-      if (splatProgram.uniforms.radius) {
+      if (splatProgram.uniforms.radius)
         gl.uniform1f(splatProgram.uniforms.radius, correctRadius(config.SPLAT_RADIUS / 100)!);
-      }
       blit(velocity.write);
       velocity.swap();
 
-      if (splatProgram.uniforms.uTarget) {
-        gl.uniform1i(splatProgram.uniforms.uTarget, dye.read.attach(0));
-      }
+      if (splatProgram.uniforms.uTarget) gl.uniform1i(splatProgram.uniforms.uTarget, dye.read.attach(0));
       if (splatProgram.uniforms.color) {
-        gl.uniform3f(splatProgram.uniforms.color, color.r, color.g, color.b);
+        const c = colorOverride || (staticColor ? staticColor : generateColor());
+        gl.uniform3f(splatProgram.uniforms.color, c.r, c.g, c.b);
       }
       blit(dye.write);
       dye.swap();

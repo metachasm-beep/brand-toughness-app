@@ -3,8 +3,8 @@
 @theme {
   --color-brand-bg: #0B0F14;
   --color-brand-panel: #121822;
-  --color-brand-accent: #B05CFF;
-  --color-brand-violet: #7B5CFF;
+  --color-brand-accent: #FF3D57;
+  --color-brand-violet: #E31B23;
   --color-brand-gold: #FFD700;
   --color-brand-red: #FF3D57;
   --color-brand-green: #00E28A;
@@ -13,7 +13,7 @@
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   
   --shadow-pro: 0 20px 50px rgba(0, 0, 0, 0.5);
-  --shadow-neon: 0 0 30px rgba(176, 92, 255, 0.3);
+  --shadow-neon: 0 0 30px rgba(255, 61, 87, 0.3);
 }
 
 :root {
@@ -49,7 +49,7 @@ h1, h2, h3, h4, .font-display {
 }
 
 .apple-button-primary {
-  @apply bg-[#B05CFF] text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.03] shadow-neon active:scale-[0.97] cursor-pointer;
+  @apply bg-[#FF3D57] text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.03] shadow-neon active:scale-[0.97] cursor-pointer;
 }
 
 .apple-button-outline {
@@ -60,8 +60,8 @@ h1, h2, h3, h4, .font-display {
 
 .neural-grid {
   background-image: 
-    linear-gradient(to right, rgba(176, 92, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(176, 92, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 61, 87, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 61, 87, 0.05) 1px, transparent 1px);
   background-size: 80px 80px;
   mask-image: radial-gradient(circle at center, black, transparent 80%);
 }
@@ -101,7 +101,7 @@ h1, h2, h3, h4, .font-display {
 }
 
 .neon-text-purple {
-  text-shadow: 0 0 25px rgba(176, 92, 255, 0.6);
+  text-shadow: 0 0 25px rgba(255, 61, 87, 0.6);
 }
 
 .neon-text-gold {

@@ -14,7 +14,7 @@ export default function AuthBar() {
         return (
             <button
                 onClick={() => signIn('google')}
-                className="flex items-center gap-3 px-5 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] bg-[#B05CFF] text-white rounded-xl hover:scale-[1.02] transition-all"
+                className="flex items-center gap-3 px-5 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] bg-[#FF3D57] text-white rounded-xl hover:scale-[1.02] transition-all shadow-neon"
             >
                 <LogIn size={14} />
                 AUTHORIZE ACCESS
