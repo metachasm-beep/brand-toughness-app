@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { BrandEngine } from '@/lib/audit/brandEngine';
-import { getBrandIntelligence } from '@/lib/audit/ai';
+import { orchestrateBrandAudit } from '@/lib/agents/orchestrator';
 import { prisma } from '@/lib/db';
 import { normaliseUrl } from '@/utils/googleSheet';
 
@@ -29,9 +29,8 @@ export async function POST(request: Request) {
         const engine = new BrandEngine(normalisedUrl);
         const brandData = await engine.scan();
 
-        // 2. Multi-step AI Intelligence (Extract -> Evaluate -> Score -> Generate)
-        const brandIntel = await getBrandIntelligence(brandData);
-        if (brandIntel.error) throw new Error(brandIntel.error);
+        // 2. v2.0 Agentic Orchestration (Planner -> Specialized Reviewers)
+        const auditResult = await orchestrateBrandAudit(brandData);
 
         // 3. Persist to DB for SaaS History
         const savedAudit = await prisma.audit.create({
@@ -40,20 +39,24 @@ export async function POST(request: Request) {
                 uid: uuidv4(),
                 status: 'COMPLETED',
                 userEmail: userEmail,
-                // Scale 0-25 scores to 0-100 for DB metrics
-                overallScore: brandIntel.scores.total,
-                clarityScore: brandIntel.scores.clarity * 4,
-                consistencyScore: brandIntel.scores.consistency * 4,
-                differentiationScore: brandIntel.scores.differentiation * 4,
-                emotionalImpactScore: brandIntel.scores.conversion * 4, // Mapping Conversion to 4th pillar
-                meta: { ...brandData, brandIntel } as any,
+                // Scale scores as needed (Orchestrator already provides aggregate)
+                overallScore: auditResult.aggregate,
+                clarityScore: auditResult.scores.clarity * 4,
+                consistencyScore: auditResult.scores.consistency * 4,
+                differentiationScore: auditResult.scores.differentiation * 4,
+                emotionalImpactScore: auditResult.scores.emotionalImpact * 4,
+                meta: { ...brandData, ...auditResult } as any,
                 brandIdentity: {
                     create: {
-                        businessDesc: brandIntel.summary,
-                        positioning: brandIntel.positioning,
-                        targetAudience: brandIntel.audience,
-                        toneOfVoice: brandIntel.toneOfVoice,
-                        playbook: brandIntel.playbook as any
+                        businessDesc: auditResult.brandIntelligence.positioning,
+                        positioning: auditResult.brandIntelligence.positioning,
+                        targetAudience: auditResult.brandIntelligence.audience,
+                        toneOfVoice: auditResult.brandIntelligence.toneOfVoice,
+                        playbook: {
+                            priorityFixes: auditResult.brandIntelligence.priorityFixes,
+                            quickWins: auditResult.brandIntelligence.quickWins,
+                            trustGaps: auditResult.brandIntelligence.trustGaps
+                        } as any
                     }
                 }
             }
@@ -61,21 +64,21 @@ export async function POST(request: Request) {
 
         // Map back to UI format (0-10 scale)
         const scores = {
-            clarity: brandIntel.scores.clarity / 2.5,
-            consistency: brandIntel.scores.consistency / 2.5,
-            differentiation: brandIntel.scores.differentiation / 2.5,
-            emotionalImpact: brandIntel.scores.conversion / 2.5, // UI still uses this prop name but receives Conversion data
-            marketResonance: 8.5, // Placeholder metric
-            ctaStrength: 7.8, // Placeholder metric
+            clarity: auditResult.scores.clarity / 2.5,
+            consistency: auditResult.scores.consistency / 2.5,
+            differentiation: auditResult.scores.differentiation / 2.5,
+            emotionalImpact: auditResult.scores.emotionalImpact / 2.5,
+            marketResonance: auditResult.scores.marketResonance / 2.5,
+            ctaStrength: auditResult.scores.ctaStrength / 2.5,
         };
 
         return NextResponse.json({
             scores,
-            aggregate: (brandIntel.scores.total / 10).toFixed(1),
+            aggregate: (auditResult.aggregate / 10).toFixed(1),
             rawData: brandData,
             findings: [], // Legacy compat
             uid: savedAudit.uid,
-            brandIntelligence: brandIntel
+            brandIntelligence: auditResult.brandIntelligence
         });
 
     } catch (err: any) {
