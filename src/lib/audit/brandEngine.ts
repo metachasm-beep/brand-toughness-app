@@ -15,8 +15,6 @@ export interface BrandData {
     meta: {
         title: string;
         description: string;
-        techStack?: string[];
-        publisher?: string;
     };
     rawText: string;
 }
@@ -31,12 +29,7 @@ export class BrandEngine {
     }
 
     async scan(): Promise<BrandData> {
-        let success = false;
-        let microlinkData: any = null;
-
-        // Tier 1: Direct Scrape with realistic headers
         try {
-            console.log(`[BrandEngine] Tier 1: Direct Scrape ${this.url}`);
             const response = await axios.get(this.url, {
                 timeout: 10000,
                 headers: { 
@@ -45,119 +38,34 @@ export class BrandEngine {
                     'Accept-Language': 'en-US,en;q=0.5'
                 },
             });
-            this.html = (response.data as string) || '';
-            // Basic check to see if we got an empty SPA body
-            if (this.html.length > 2000 && !this.html.includes('Enable JavaScript and cookies to continue')) {
-                success = true;
-            } else {
-                console.log(`[BrandEngine] Tier 1 Returned heavily restricted/empty HTML.`);
-                success = false;
-            }
-        } catch (e: any) {
-            console.log(`[BrandEngine] Tier 1 Failed: ${e.message}`);
+            this.html = typeof response.data === 'string' ? response.data : '';
+        } catch (error: any) {
+            console.log(`[BrandEngine] Direct scrape failed or blocked. Defurring to Cohere Web Search...`);
+            this.html = '';
         }
 
-        // Tier 2: AllOrigins Public Proxy Fallback
-        if (!success) {
-            try {
-                console.log(`[BrandEngine] Tier 2: AllOrigins Scrape ${this.url}`);
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(this.url)}`;
-                const response = await axios.get(proxyUrl, { timeout: 15000 });
-                if (response.data && (response.data as any).contents) {
-                    this.html = (response.data as any).contents;
-                    if (this.html.length > 2000 && !this.html.includes('Enable JavaScript and cookies to continue')) {
-                        success = true;
-                    }
-                }
-            } catch (e: any) {
-                console.log(`[BrandEngine] Tier 2 Failed: ${e.message}`);
-            }
-        }
-
-        // Tier 3: Microlink API Metadata API Extract
-        // Usually, Microlink is amazing for modern React SPAs or sites that block traditional DOM scraping.
-        if (!success) {
-            try {
-                console.log(`[BrandEngine] Tier 3: Microlink API Extractor ${this.url}`);
-                const mlUrl = `https://api.microlink.io?url=${encodeURIComponent(this.url)}`;
-                const response = await axios.get(mlUrl, { timeout: 10000 });
-                if (response.data && (response.data as any).data) {
-                    microlinkData = (response.data as any).data;
-                    success = true;
-                }
-            } catch (e: any) {
-                console.log(`[BrandEngine] Tier 3 Failed: ${e.message}`);
-            }
-        }
-
-        if (!success && !microlinkData && !this.html) {
-             throw new Error(`Domain actively blocking all intelligent analysis techniques.`);
-        }
-
-        // Tier 4: Public Infra/Tech API via HackerTarget
-        let techStack: string[] = [];
-        try {
-            const hUrl = `https://api.hackertarget.com/httpheaders/?q=${encodeURIComponent(this.url)}`;
-            const hRes = await axios.get(hUrl, { timeout: 8000 });
-            if (typeof hRes.data === 'string' && !hRes.data.includes('error')) {
-                const lines = hRes.data.split('\n');
-                lines.forEach(line => {
-                    const l = line.toLowerCase();
-                    if (l.startsWith('server:') || l.startsWith('x-powered-by:') || l.startsWith('x-framework:') || l.startsWith('cf-ray:')) {
-                        techStack.push(line.trim());
-                    }
-                });
-            }
-        } catch(e) {
-            console.log(`[BrandEngine] Tech stack analysis blocked.`);
-        }
-
-        // DOM parsing if HTML is intact
-        if (this.html && this.html.length > 1000) {
+        // Even if empty, we pass it forward. Cohere Command R+ natively browses anyway!
+        if (this.html.length > 2000 && !this.html.includes('Enable JavaScript and cookies to continue')) {
             this.$ = cheerio.load(this.html);
-            return {
-                url: this.url,
-                hero: this.extractHero() || { h1: microlinkData?.title || '', subtext: microlinkData?.description || '', cta: [] },
-                about: this.extractAbout() || microlinkData?.description || '',
-                services: this.extractServices(),
-                socialProof: this.extractSocialProof(),
-                meta: {
-                    title: microlinkData?.title || this.$('title').text().trim(),
-                    description: microlinkData?.description || (this.$('meta[name="description"]').attr('content') || '') as string,
-                    techStack,
-                    publisher: microlinkData?.publisher
-                },
-                rawText: this.extractMainText(),
-            };
-        } else if (microlinkData) {
-            // Revert back strictly to Microlink Metadata since DOM was denied
-            return {
-                url: this.url,
-                hero: {
-                    h1: microlinkData.title || '',
-                    subtext: microlinkData.description || '',
-                    cta: []
-                },
-                about: microlinkData.description || 'Target is a deep React/Next.js single page application masking its core text.',
-                services: [],
-                socialProof: [],
-                meta: {
-                    title: microlinkData.title || '',
-                    description: microlinkData.description || '',
-                    techStack,
-                    publisher: microlinkData.publisher
-                },
-                rawText: `${microlinkData.title} ${microlinkData.description} ${microlinkData.publisher || ''}`
-            };
         }
 
-        throw new Error('Unreachable completion state in BrandEngine');
+        return {
+            url: this.url,
+            hero: this.extractHero() || { h1: '', subtext: '', cta: [] },
+            about: this.extractAbout() || '',
+            services: this.extractServices() || [],
+            socialProof: this.extractSocialProof() || [],
+            meta: {
+                title: this.$ ? this.$('title').text().trim() : '',
+                description: this.$ ? (this.$('meta[name="description"]').attr('content') || '') as string : '',
+            },
+            rawText: this.extractMainText() || 'No explicit text extracted. Initiate Web Search mode.',
+        };
     }
 
     private extractHero() {
         if (!this.$) return null;
-        let h1 = this.$('h1').first().text().trim();
-        if (!h1) return null; // let caller fallback to microlink
+        const h1 = this.$('h1').first().text().trim();
         const subtext = this.$('h1').first().nextAll('p, div').first().text().trim();
         const cta: string[] = [];
         this.$('a, button').slice(0, 10).each((_: any, el: any) => {

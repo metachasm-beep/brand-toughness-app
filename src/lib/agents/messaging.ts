@@ -8,7 +8,9 @@ You are a Copywriting Strategist.
 TASK: Analyze the Messaging Clarity and Consistency of this brand.
 FOCUS: ${shard.focus}
 URL: ${url}
-CONTENT: ${rawText.slice(0, 1500)}
+EXTRACTED CONTEXT: ${rawText.slice(0, 1500)}
+
+CRITICAL: Use your active web search connector to lookup the brand site if the extracted context is insufficient.
 
 Analyze:
 1. Core Promise: Is it immediately clear?

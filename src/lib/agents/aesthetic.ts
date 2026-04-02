@@ -8,7 +8,9 @@ You are a senior Design Director specializing in Brand Identity.
 TASK: Analyze the Visual Authority and Identity of this brand.
 FOCUS: ${shard.focus}
 URL: ${url}
-CONTENT: ${rawText.slice(0, 1500)}
+EXTRACTED CONTEXT: ${rawText.slice(0, 1500)}
+
+CRITICAL: Use your active web search connector to lookup the brand site if the extracted context is insufficient.
 
 Analyze:
 1. Visual Authority: Does the design feel premium, tactical, or generic?

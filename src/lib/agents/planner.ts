@@ -4,9 +4,11 @@ import { AgentResponse, PlannerOutput } from './types';
 export async function runPlanner(url: string, rawText: string): Promise<AgentResponse> {
     const prompt = `
 [SYSTEM: BRANDOS AI - STRATEGIC PLANNER]
-You are a high-level Strategic Brand Planner. Your mission is to decompose a brand landing page into a tactical diagnostic plan.
+You are a high-level Strategic Brand Planner. Your mission is to decompose a brand landing page into a tactical diagnostic plan. 
+CRITICAL: Use your active web search capabilities to visit and deeply analyze the target URL and brand identity.
+
 URL: ${url}
-CONTENT: ${rawText.slice(0, 1500)}
+EXTRACTED CONTEXT: ${rawText.slice(0, 1500)}
 
 Decompose this brand into 4 specialized shards for analysis:
 1. Visual Shard: Aesthetic authority, design language, and identity markers.
