@@ -3,6 +3,8 @@ import { runAestheticReviewer } from './aesthetic';
 import { runMessagingAuditor } from './messaging';
 import { BrandData } from '../audit/brandEngine';
 import { recallKnowledge, learnKnowledge } from './knowledge';
+import { orchestrateAutonomousGrowth } from './growth';
+import { prisma } from '../db';
 
 export async function orchestrateBrandAudit(brand: BrandData, userEmail: string = 'guest@turtlelabs.co') {
     try {
@@ -71,14 +73,27 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
         };
 
         console.log('[Orchestrator] Step 3: Strategic Learn (Update Memory)...');
+        // Register this audit in the vault
+        const vault = await prisma.brandVault.findUnique({
+            where: { domain_userEmail: { domain: brand.url, userEmail } }
+        });
+
         await learnKnowledge(
             brand.url, 
             userEmail, 
             'STRATEGIC', 
-            `Domain Authority Score: ${synthesis.aggregate}. Identity detected as: ${synthesis.brandIntelligence.positioning}`, 
+            `Audit Complete. Core Authority: ${synthesis.aggregate}. Identity: ${synthesis.brandIntelligence.positioning}`, 
             { scores: synthesis.scores, aggregate: synthesis.aggregate },
             synthesis.extracted
         );
+
+        // Optional Step 4: Autonomous Growth Resonance
+        if (vault) {
+            console.log('[Orchestrator] Step 4: Autonomous Growth Shadows...');
+            const growth = await orchestrateAutonomousGrowth(vault.id);
+            (synthesis.scores as any).marketResonance = growth.resonanceScore;
+            (synthesis.brandIntelligence as any).growthCatalysts = growth.catalysts;
+        }
 
         return synthesis;
 

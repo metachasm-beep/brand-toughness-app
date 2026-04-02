@@ -424,6 +424,39 @@ export default function Dashboard() {
                                 )}
                             </div>
                         </div>
+
+                        {/* Phase 5: Autonomous Growth Catalysts */}
+                        {result && (result as any).brandIntelligence?.growthCatalysts?.length > 0 && (
+                            <div className="mt-16 pt-16 border-t border-white/5">
+                                <div className="flex items-center justify-between mb-10">
+                                    <div>
+                                        <h3 className="text-3xl font-black font-display tracking-tight text-white uppercase">Growth Catalysts</h3>
+                                        <p className="surgical-label mt-2 text-[#00E28A]">Autonomous Differentiation Shards · Phase 5</p>
+                                    </div>
+                                    <div className="bg-[#00E28A]/5 px-4 py-2 rounded-xl border border-[#00E28A]/20">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#00E28A]">Market Sync: Active</span>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {(result as any).brandIntelligence.growthCatalysts.map((catalyst: any, idx: number) => (
+                                        <div key={idx} className="liquid-glass p-8 rounded-3xl border-white/5 hover:border-[#00E28A]/30 transition-all duration-500 group">
+                                            <div className="flex items-center gap-4 mb-6">
+                                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] ${
+                                                    catalyst.type === 'OPPORTUNITY' ? 'bg-[#00E28A]/20 text-[#00E28A]' : 
+                                                    catalyst.type === 'THREAT' ? 'bg-[#FF3D57]/20 text-[#FF3D57]' : 'bg-white/10 text-white/40'
+                                                }`}>
+                                                    {catalyst.type}
+                                                </span>
+                                                <div className="h-px flex-1 bg-white/5" />
+                                                <span className="text-white/20 text-[9px] font-mono tracking-tighter">INTELLIGENCE_CONFID: {(catalyst.confidence * 100).toFixed(0)}%</span>
+                                            </div>
+                                            <h4 className="text-xl font-bold text-white mb-4 group-hover:text-[#00E28A] transition-colors">{catalyst.title}</h4>
+                                            <p className="text-white/50 text-sm leading-relaxed font-medium">{catalyst.description}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </motion.section>
                 )}
             </AnimatePresence>

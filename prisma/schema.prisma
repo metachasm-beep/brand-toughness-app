@@ -52,10 +52,32 @@ model BrandVault {
   totalAudits      Int             @default(0)
   evolvingContext  Json?           // Current best understanding of identity
   knowledgeItems   KnowledgeItem[]
+  competitors      Competitor[]
+  growthCatalysts  GrowthCatalyst[]
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
   @@unique([domain, userEmail])
+}
+
+model Competitor {
+  id           String     @id @default(cuid())
+  url          String
+  name         String?
+  lastScanned  DateTime?
+  vaultId      String
+  vault        BrandVault @relation(fields: [vaultId], references: [id])
+}
+
+model GrowthCatalyst {
+  id           String     @id @default(cuid())
+  vaultId      String
+  vault        BrandVault @relation(fields: [vaultId], references: [id])
+  type         String     // OPPORTUNITY, THREAT, DRIFT
+  title        String
+  description  String
+  confidence   Float      @default(0.8)
+  createdAt    DateTime   @default(now())
 }
 
 model KnowledgeItem {
