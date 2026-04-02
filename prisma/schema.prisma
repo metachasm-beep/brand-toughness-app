@@ -17,6 +17,7 @@ model User {
   image         String?
   tier          String    @default("FREE") // FREE, PRO, BUSINESS
   audits        Audit[]
+  brandVaults   BrandVault[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -41,6 +42,30 @@ model Audit {
   consistencyScore   Int?
   differentiationScore Int?
   emotionalImpactScore Int?
+}
+
+model BrandVault {
+  id               String          @id @default(cuid())
+  domain           String
+  userEmail        String
+  user             User?           @relation(fields: [userEmail], references: [email])
+  totalAudits      Int             @default(0)
+  evolvingContext  Json?           // Current best understanding of identity
+  knowledgeItems   KnowledgeItem[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@unique([domain, userEmail])
+}
+
+model KnowledgeItem {
+  id           String     @id @default(cuid())
+  vaultId      String
+  vault        BrandVault @relation(fields: [vaultId], references: [id])
+  type         String     // STRATEGIC, VISUAL, MESSAGING, UX
+  content      String
+  meta         Json?      // Scores or technical findings
+  createdAt    DateTime   @default(now())
 }
 
 model BrandIdentity {

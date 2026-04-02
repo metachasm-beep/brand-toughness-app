@@ -2,11 +2,17 @@ import { runPlanner } from './planner';
 import { runAestheticReviewer } from './aesthetic';
 import { runMessagingAuditor } from './messaging';
 import { BrandData } from '../audit/brandEngine';
+import { recallKnowledge, learnKnowledge } from './knowledge';
 
-export async function orchestrateBrandAudit(brand: BrandData) {
+export async function orchestrateBrandAudit(brand: BrandData, userEmail: string = 'guest@turtlelabs.co') {
     try {
-        console.log('[Orchestrator] Step 1: Strategic Planning...');
-        const plannerResult = await runPlanner(brand.url, brand.rawText);
+        console.log('[Orchestrator] Step 0: Strategic Recall (Fetch Memory)...');
+        const memory = await recallKnowledge(brand.url, userEmail);
+        const pastContext = memory ? JSON.stringify(memory.knowledgeItems) : "No previous data.";
+
+        console.log('[Orchestrator] Step 1: Strategic Planning (Memory-Augmented)...');
+        // Planner now receives past learnings to detect brand evolution
+        const plannerResult = await runPlanner(brand.url, `${brand.rawText}\n\n[PAST INTELLIGENCE]: ${pastContext}`);
         if (!plannerResult.success) throw new Error('Planning failed: ' + plannerResult.error);
 
         const shards = plannerResult.data.shards;
@@ -28,7 +34,7 @@ export async function orchestrateBrandAudit(brand: BrandData) {
         const messaging = messagingResult.data;
 
         // Synthesis phase: Mapping specialized results back to the unified Dashboard interface
-        return {
+        const synthesis = {
             extracted: {
                 coreOffering: messaging.corePromise,
                 targetAudience: messaging.audience || 'Unknown',
@@ -58,6 +64,18 @@ export async function orchestrateBrandAudit(brand: BrandData) {
             originalVisual: visual,
             originalMessaging: messaging
         };
+
+        console.log('[Orchestrator] Step 3: Strategic Learn (Update Memory)...');
+        await learnKnowledge(
+            brand.url, 
+            userEmail, 
+            'STRATEGIC', 
+            `Domain Authority Score: ${synthesis.aggregate}. Identity detected as: ${synthesis.brandIntelligence.positioning}`, 
+            { scores: synthesis.scores, aggregate: synthesis.aggregate },
+            synthesis.extracted
+        );
+
+        return synthesis;
 
     } catch (error: any) {
         console.error('[Orchestrator] Critical failure:', error.message);

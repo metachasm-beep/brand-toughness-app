@@ -29,8 +29,8 @@ export async function POST(request: Request) {
         const engine = new BrandEngine(normalisedUrl);
         const brandData = await engine.scan();
 
-        // 2. v2.0 Agentic Orchestration (Planner -> Specialized Reviewers)
-        const auditResult = await orchestrateBrandAudit(brandData);
+        // 2. v2.0 Agentic Orchestration with Continuous Intelligence
+        const auditResult = await orchestrateBrandAudit(brandData, userEmail);
 
         // 3. Persist to DB for SaaS History
         const savedAudit = await prisma.audit.create({
