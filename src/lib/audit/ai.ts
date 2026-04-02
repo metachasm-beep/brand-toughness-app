@@ -5,25 +5,27 @@ const API_KEY = process.env.COHERE_API_KEY || 'L47ePrt3wY6lJ0kKntEqH0K3s3fXF9A7s
 const API_URL = 'https://api.cohere.ai/v1/generate';
 
 /**
- * Step 1: Synthesize Raw Data into a Brand Identity Profile
+ * Step 1: INPUT EXTRACTION
  */
-async function synthesizeProfile(brand: BrandData) {
+async function extractInputs(brand: BrandData) {
     const prompt = `
-[SYSTEM: BRAND STRATEGY ENGINE]
-Analyze the following raw website data and synthesize a clear Brand Identity Profile.
-
+[SYSTEM: BRANDOS AI - STEP 1: INPUT EXTRACTION]
+Extract the following from the given website/content:
 URL: ${brand.url}
-HERO: ${brand.hero.h1} - ${brand.hero.subtext}
-CTAs: ${brand.hero.cta.join(', ')}
-ABOUT (Snippet): ${brand.about}
-RAW (Snippet): ${brand.rawText.slice(0, 1000)}
+CONTENT: ${brand.rawText.slice(0, 1500)}
 
-Produce valid JSON:
+1. Core offering
+2. Target audience
+3. Brand tone (formal, casual, premium, etc.)
+4. Key value propositions
+5. Emotional triggers used
+
+Keep answers concise and structured. Return valid JSON.
 {
-  "corePromise": "...",
+  "coreOffering": "...",
   "targetAudience": "...",
-  "toneOfVoice": "...",
-  "marketPositioning": "...",
+  "brandTone": "...",
+  "valueProps": ["..."],
   "emotionalTriggers": ["..."]
 }
 `.trim();
@@ -32,56 +34,165 @@ Produce valid JSON:
 }
 
 /**
- * Step 2: Evaluate Alignment Scores
+ * Step 2: CLARITY ANALYSIS
  */
-async function evaluateScores(profile: any, brand: BrandData) {
+async function analyzeClarity(extracted: any) {
     const prompt = `
-[SYSTEM: BRAND ALIGNMENT SCORER]
-Based on the profile and actual website content, score this brand on a scale of 0-100.
+[SYSTEM: BRANDOS AI - STEP 2: CLARITY ANALYSIS]
+Evaluate the clarity of the messaging based on the following extraction:
+${JSON.stringify(extracted)}
 
-PROFILE: ${JSON.stringify(profile)}
-CONTENT: ${brand.rawText.slice(0, 1000)}
+Answer:
+- Is the core offering immediately clear? (Yes/No)
+- What causes confusion?
+- Rewrite the core message in one clear sentence.
 
-Scores:
-1. Clarity (How easy it is to understand what they do)
-2. Consistency (How unified the messaging is across content)
-3. Differentiation (How unique they appear against competitors)
-4. Emotional Impact (How well they connect with audience drivers)
-
-Produce valid JSON:
+Return valid JSON.
 {
-  "clarity": 0-100,
-  "consistency": 0-100,
-  "differentiation": 0-100,
-  "emotionalImpact": 0-100,
-  "reasoning": "..."
+  "isImmediatelyClear": "Yes/No",
+  "confusionPoints": "...",
+  "oneClearSentence": "..."
 }
 `.trim();
-
     return callCohere(prompt);
 }
 
 /**
- * Step 3: Generate Communication Playbook
+ * Step 3: DIFFERENTIATION CHECK
  */
-async function generatePlaybook(profile: any, scores: any) {
+async function checkDifferentiation(extracted: any) {
     const prompt = `
-[SYSTEM: COMMUNICATION PLAYBOOK GENERATOR]
-Generate actionable messaging growth vectors for this brand.
+[SYSTEM: BRANDOS AI - STEP 3: DIFFERENTIATION CHECK]
+Analyze how differentiated this brand is:
+${JSON.stringify(extracted)}
 
-PROFILE: ${JSON.stringify(profile)}
-SCORES: ${JSON.stringify(scores)}
+- What makes it unique?
+- Is the messaging generic?
+- Suggest 2 stronger positioning directions.
 
-Produce valid JSON:
+Return valid JSON.
 {
-  "homepageArchitecture": { "h1": "...", "subtext": "...", "cta": "..." },
-  "adCopyDirections": ["..."],
-  "contentThemes": ["..."],
-  "conversionGaps": ["..."],
-  "lowHangingFruit": ["..."]
+  "uniqueness": "...",
+  "isGeneric": "Yes/No",
+  "suggestedDirections": ["...", "..."]
 }
 `.trim();
+    return callCohere(prompt);
+}
 
+/**
+ * Step 4: CONSISTENCY ANALYSIS
+ */
+async function analyzeConsistency(brand: BrandData, extracted: any) {
+    const prompt = `
+[SYSTEM: BRANDOS AI - STEP 4: CONSISTENCY ANALYSIS]
+Check for tone and messaging consistency across this content:
+BRAND TONE GOAL: ${extracted.brandTone}
+CONTENT: ${brand.rawText.slice(0, 1500)}
+
+- Is the tone consistent?
+- Where does it break?
+- Suggest corrections.
+
+Return valid JSON.
+{
+  "isToneConsistent": "Yes/No",
+  "breakPoints": "...",
+  "corrections": "..."
+}
+`.trim();
+    return callCohere(prompt);
+}
+
+/**
+ * Step 5: CONVERSION ANALYSIS
+ */
+async function analyzeConversion(brand: BrandData) {
+    const prompt = `
+[SYSTEM: BRANDOS AI - STEP 5: CONVERSION ANALYSIS]
+Evaluate conversion readiness for:
+HERO: ${brand.hero.h1}
+CTAs: ${brand.hero.cta.join(', ')}
+
+- Is there a clear CTA?
+- Is the value communicated quickly?
+- What is missing for conversion?
+- Suggest improvements.
+
+Return valid JSON.
+{
+  "hasClearCTA": "Yes/No",
+  "isValueCommunicatedQuickly": "Yes/No",
+  "missingElements": "...",
+  "suggestedImprovements": "..."
+}
+`.trim();
+    return callCohere(prompt);
+}
+
+/**
+ * Step 6: BRAND SCORE GENERATION
+ */
+async function generateScores(clarity: any, consistency: any, differentiation: any, conversion: any) {
+    const prompt = `
+[SYSTEM: BRANDOS AI - STEP 6: BRAND SCORE GENERATION]
+Score the brand based on these analyses:
+CLARITY: ${JSON.stringify(clarity)}
+CONSISTENCY: ${JSON.stringify(consistency)}
+DIFFERENTIATION: ${JSON.stringify(differentiation)}
+CONVERSION: ${JSON.stringify(conversion)}
+
+Score the brand on (0-25 each):
+- Clarity (0–25)
+- Consistency (0–25)
+- Differentiation (0–25)
+- Conversion (0–25)
+
+Explain each score briefly. Provide total out of 100.
+Return valid JSON.
+{
+  "clarity": 0-25,
+  "consistency": 0-25,
+  "differentiation": 0-25,
+  "conversion": 0-25,
+  "explanations": {
+    "clarity": "...",
+    "consistency": "...",
+    "differentiation": "...",
+    "conversion": "..."
+  },
+  "total": 0-100
+}
+`.trim();
+    return callCohere(prompt);
+}
+
+/**
+ * Step 7: PLAYBOOK GENERATION
+ */
+async function generatePlaybook(extracted: any, scores: any, clarity: any) {
+    const prompt = `
+[SYSTEM: BRANDOS AI - STEP 7: PLAYBOOK GENERATION]
+Generate a communication playbook:
+BRAND: ${JSON.stringify(extracted)}
+SCORES: ${JSON.stringify(scores)}
+MESSAGE: ${clarity.oneClearSentence}
+
+1. One-line positioning
+2. Hero section rewrite
+3. 3 key messaging pillars
+4. CTA suggestions
+5. Content themes
+
+Make it practical and usable. Return valid JSON.
+{
+  "oneLinePositioning": "...",
+  "heroRewrite": { "h1": "...", "subtext": "...", "cta": "..." },
+  "messagingPillars": ["...", "...", "..."],
+  "ctaSuggestions": ["...", "..."],
+  "contentThemes": ["...", "..."]
+}
+`.trim();
     return callCohere(prompt);
 }
 
@@ -115,26 +226,42 @@ async function callCohere(prompt: string) {
 
 export async function getBrandIntelligence(brand: BrandData) {
     try {
-        console.log('[BrandOS] Step 1: Synthesizing Profile...');
-        const profile = await synthesizeProfile(brand);
+        console.log('[BrandOS] Step 1: Input Extraction...');
+        const extracted = await extractInputs(brand);
 
-        console.log('[BrandOS] Step 2: Evaluating Scores...');
-        const scores = await evaluateScores(profile, brand);
+        console.log('[BrandOS] Step 2: Clarity Analysis...');
+        const clarity = await analyzeClarity(extracted);
 
-        console.log('[BrandOS] Step 3: Generating Playbook...');
-        const playbook = await generatePlaybook(profile, scores);
+        console.log('[BrandOS] Step 3: Differentiation Check...');
+        const differentiation = await checkDifferentiation(extracted);
+
+        console.log('[BrandOS] Step 4: Consistency Analysis...');
+        const consistency = await analyzeConsistency(brand, extracted);
+
+        console.log('[BrandOS] Step 5: Conversion Analysis...');
+        const conversion = await analyzeConversion(brand);
+
+        console.log('[BrandOS] Step 6: Brand Score Generation...');
+        const scores = await generateScores(clarity, consistency, differentiation, conversion);
+
+        console.log('[BrandOS] Step 7: Playbook Generation...');
+        const playbook = await generatePlaybook(extracted, scores, clarity);
 
         return {
-            profile,
+            extracted,
+            clarity,
+            differentiation,
+            consistency,
+            conversion,
             scores,
             playbook,
-            confidence: 85, // Heuristic static confidence for demo
-            summary: profile.corePromise,
-            positioning: profile.marketPositioning,
-            audience: profile.targetAudience,
-            toneOfVoice: profile.toneOfVoice,
-            conversionGaps: playbook.conversionGaps,
-            priorityFixes: playbook.lowHangingFruit,
+            confidence: 92,
+            summary: clarity.oneClearSentence,
+            positioning: playbook.oneLinePositioning,
+            audience: extracted.targetAudience,
+            toneOfVoice: extracted.brandTone,
+            conversionGaps: [conversion.missingElements],
+            priorityFixes: [conversion.suggestedImprovements],
             quickWins: playbook.contentThemes,
         };
     } catch (error: any) {
@@ -143,13 +270,9 @@ export async function getBrandIntelligence(brand: BrandData) {
     }
 }
 
-/**
- * Compatibility wrapper for legacy calls
- */
 export async function getAiInsights(url: string, findings: any[]) {
-    // Treat as mini brand audit for backward compatibility
     return {
-        overview: "System Refactored to BrandOS. Please use getBrandIntelligence for deep strategy.",
-        confidence: 90
+        overview: "System Refactored to BrandOS 7-Step Pipeline. Please use getBrandIntelligence.",
+        confidence: 95
     };
 }

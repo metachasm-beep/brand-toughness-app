@@ -3,164 +3,194 @@
 import { motion } from 'framer-motion';
 import { signIn } from 'next-auth/react';
 import {
-    Activity, Shield, Zap, Globe, ArrowRight, CheckCircle,
-    TrendingUp, BarChart3, Lock, Users, MousePointer2
+    ArrowRight, CheckCircle, Brain, Target, ShieldCheck, 
+    Layers, Zap, BarChart3, Users, MessageSquare, 
+    Play, Lock, Globe, Command, Info
 } from 'lucide-react';
 
 export default function LandingPage() {
     const login = () => signIn('google');
 
-    return (
-        <div className="bg-[#0B0F14] min-h-screen selection:bg-[#00D1FF] selection:text-black overflow-x-hidden relative">
-            {/* ── Background Layers ────────────────────────────────────────────────── */}
-            <div className="fixed inset-0 neural-grid opacity-40 pointer-events-none" />
-            <div className="fixed inset-0 glow-mesh pointer-events-none" />
+    const fadeIn = {
+        initial: { opacity: 0, y: 20 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true },
+        transition: { duration: 0.8, ease: "easeOut" }
+    };
 
-            {/* ── Navbar (UX PRO MAX Floating variant) ─────────────────────────────────── */}
-            <nav className="fixed top-8 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-7xl z-[100] transition-all duration-300">
-                <div className="apple-glass rounded-[28px] px-8 h-20 flex items-center justify-between border-white/10">
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#00D1FF] to-[#7B5CFF] rounded-xl flex items-center justify-center font-black text-black text-xs shadow-[0_0_25px_rgba(0,209,255,0.4)]">OS</div>
-                        <span className="font-display font-black tracking-tighter text-2xl text-white">BRAND OS</span>
-                    </div>
-                    <div className="flex items-center gap-10">
-                        <div className="hidden lg:flex items-center gap-10">
-                            <a href="#intelligence" className="surgical-label hover:text-[#00D1FF] transition-all hover:tracking-[0.45em]">Intelligence</a>
-                            <a href="#nodes" className="surgical-label hover:text-[#00D1FF] transition-all hover:tracking-[0.45em]">Nodes</a>
-                            <a href="#pricing" className="surgical-label hover:text-[#00D1FF] transition-all hover:tracking-[0.45em]">Access</a>
+    return (
+        <div className="bg-[#000000] min-h-screen text-white font-sans selection:bg-[#B05CFF] selection:text-white overflow-x-hidden">
+            {/* ── Grid Overlay ────────────────────────────────────────────────── */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.03]" 
+                 style={{ backgroundImage: 'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+
+            {/* ── Header / Nav ────────────────────────────────────────────────── */}
+            <nav className="fixed top-0 left-0 w-full z-[100] border-b border-white/10 bg-black/80 backdrop-blur-md">
+                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-white text-black flex items-center justify-center rounded font-black text-xs tracking-tighter">OS</div>
+                        <div className="flex flex-col leading-none">
+                            <span className="font-display font-black text-lg tracking-tighter uppercase italic">BrandOS AI™</span>
+                            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/40">By Turtle Labs</span>
                         </div>
-                        <button
-                            onClick={login}
-                            className="bg-white text-black px-7 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:scale-[1.05] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all active:scale-[0.95]"
-                        >
-                            COMMAND CENTER
-                        </button>
                     </div>
+                    
+                    <div className="hidden md:flex items-center gap-10">
+                        <a href="#system" className="surgical-label hover:text-white transition-colors">The System</a>
+                        <a href="#process" className="surgical-label hover:text-white transition-colors">Process</a>
+                        <a href="#tiers" className="surgical-label hover:text-white transition-colors">Tiers</a>
+                    </div>
+
+                    <button 
+                        onClick={login}
+                        className="bg-white text-black px-6 py-2.5 rounded text-[10px] font-black uppercase tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all active:scale-95"
+                    >
+                        Command Center
+                    </button>
                 </div>
             </nav>
 
-            {/* ── Hero Section ──────────────────────────────────────────────────── */}
-            <section className="relative pt-52 pb-32 px-10">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-                    <motion.div
-                        initial={{ opacity: 0, x: -40 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                        className="space-y-10"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#00D1FF] shadow-[0_0_15px_#00D1FF] animate-pulse" />
-                            <span className="surgical-label !text-[#00D1FF] !opacity-100">Neural Status: Synchronized</span>
+            {/* ── Hero Section ────────────────────────────────────────────────── */}
+            <section className="relative pt-48 pb-32 px-6 border-b border-white/10">
+                <div className="max-w-7xl mx-auto text-center space-y-12">
+                    <motion.div {...fadeIn} className="space-y-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 surgical-label !text-white/60">
+                            Structure before scale. Intelligence before execution.
                         </div>
-                        <h1 className="text-8xl xl:text-9xl font-black font-display tracking-tighter leading-[0.85] text-gradient-pro">
-                            YOUR BRAND<br />HAS A <span className="text-[#00D1FF] neon-text-blue">SCORE.</span>
+                        <h1 className="text-7xl md:text-[120px] font-black font-display tracking-tighter leading-[0.85] uppercase italic">
+                            The Operating System <br />
+                            <span className="text-white/20">for Modern Brands.</span>
                         </h1>
-                        <p className="text-xl text-white/50 font-medium max-w-lg leading-relaxed">
-                            The first Autonomous Brand Diagnostic Engine. Analyze technical health, trust authority, and market sentiment in 60 seconds.
+                        <p className="text-lg md:text-xl text-white/50 font-medium max-w-3xl mx-auto leading-relaxed">
+                            BrandOS AI™ is a technology-driven brand intelligence system curated by advertising professionals and technology experts to streamline branding, advertising, and marketing into one structured framework.
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-6 pt-6">
-                            <button
-                                onClick={login}
-                                className="apple-button-primary flex items-center justify-center gap-3 px-10 py-5 group"
-                            >
-                                START DIAGNOSTIC <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                            </button>
-                            <button className="apple-button-outline px-10 py-5 bg-white/5 border-white/5">
-                                VIEW CAPABILITIES
-                            </button>
-                        </div>
-                        <div className="flex items-center gap-4 py-2">
-                             <div className="flex -space-x-3">
-                                {[1,2,3,4].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0B0F14] bg-white/10" />)}
-                             </div>
-                             <p className="surgical-label !text-white/20">Authorized by 4,200+ Intelligence Units</p>
-                        </div>
                     </motion.div>
 
-                    {/* Floating Dashboard Mockup */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative hidden lg:block"
+                        transition={{ delay: 0.4, duration: 1 }}
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4"
                     >
-                        <div className="apple-card p-2 animate-float shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
-                            <div className="bg-[#0B0F14]/90 rounded-[28px] overflow-hidden border border-white/5 aspect-square xl:aspect-video relative">
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#00D1FF]/10 via-transparent to-[#7B5CFF]/10" />
-                                <div className="p-10 space-y-8 h-full flex flex-col justify-between">
-                                    <div className="flex justify-between items-start">
-                                        <div className="space-y-2">
-                                            <div className="surgical-label !text-white/60">INTEGRITY CORE</div>
-                                            <div className="text-6xl font-black font-display text-white">84.2</div>
-                                        </div>
-                                        <div className="bg-[#00E28A]/10 text-[#00E28A] px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-[#00E28A]/20">STABLE</div>
-                                    </div>
-                                    
-                                    <div className="flex-1 flex items-end gap-1.5 pb-2">
-                                        {[30, 60, 40, 80, 55, 95, 70, 50, 85, 45, 90, 65].map((h, i) => (
-                                            <motion.div 
-                                                key={i} 
-                                                initial={{ height: 0 }}
-                                                animate={{ height: `${h}%` }}
-                                                transition={{ duration: 1.5, delay: 0.5 + (i * 0.05) }}
-                                                className="flex-1 bg-gradient-to-t from-[#00D1FF]/20 to-[#00D1FF] rounded-t-lg" 
-                                            />
-                                        ))}
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div className="apple-glass rounded-2xl p-5 border-white/5">
-                                            <div className="surgical-label !text-white/20 mb-1">LATENCY</div>
-                                            <div className="text-2xl font-black text-white">142ms</div>
-                                        </div>
-                                        <div className="apple-glass rounded-2xl p-5 border-white/5">
-                                            <div className="surgical-label !text-white/20 mb-1">SECURITY</div>
-                                            <div className="text-2xl font-black text-[#00D1FF]">L3 SECURE</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Decorative Glow */}
-                        <div className="absolute -top-10 -right-10 w-64 h-64 bg-[#00D1FF]/10 blur-[100px] rounded-full pointer-events-none" />
-                        <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-[#7B5CFF]/10 blur-[100px] rounded-full pointer-events-none" />
+                        <button onClick={login} className="w-full sm:w-auto bg-white text-black px-10 py-5 font-black uppercase text-xs tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all flex items-center justify-center gap-3">
+                            Get Free Brand Snapshot <ArrowRight size={16} />
+                        </button>
+                        <button className="w-full sm:w-auto border border-white/20 px-10 py-5 font-black uppercase text-xs tracking-widest hover:bg-white/5 transition-all">
+                            Explore BrandOS AI
+                        </button>
                     </motion.div>
                 </div>
             </section>
 
-            {/* ── Intelligence Pillars ─────────────────────────────────────────── */}
-            <section id="intelligence" className="py-40 px-10 relative">
+            {/* ── Problem Section ─────────────────────────────────────────────── */}
+            <section className="py-32 px-6 border-b border-white/10 bg-[#0A0A0A]">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                    <motion.div {...fadeIn} className="space-y-8">
+                        <h2 className="text-5xl md:text-6xl font-black font-display tracking-tight uppercase leading-none">
+                            Most Brands Don’t Fail <br />
+                            <span className="text-[#B05CFF]">Because of Design.</span>
+                        </h2>
+                        <div className="h-1 w-20 bg-[#B05CFF]" />
+                        <p className="text-3xl font-bold tracking-tight text-white/80">They Fail Because of Misalignment.</p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {[
+                            { t: 'Vision Gap', d: 'Vision doesn’t translate into external communication.' },
+                            { t: 'Strategic Drift', d: 'Strategy doesn’t align with tactical execution.' },
+                            { t: 'Blind Advertising', d: 'Advertising runs without positioning clarity.' },
+                            { t: 'Structural Void', d: 'Marketing lacks long-term structural direction.' },
+                        ].map((item, i) => (
+                            <motion.div 
+                                key={i}
+                                initial={{ opacity: 0, x: 20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="p-8 border border-white/5 bg-white/[0.02] space-y-4"
+                            >
+                                <div className="w-2 h-2 rounded-full bg-[#B05CFF]" />
+                                <p className="text-sm font-bold text-white/90 leading-relaxed">{item.d}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+                <div className="max-w-7xl mx-auto mt-20 text-center">
+                    <p className="text-xl font-black uppercase tracking-[0.2em] text-[#B05CFF]">BrandOS AI fixes that.</p>
+                </div>
+            </section>
+
+            {/* ── What is BrandOS AI ───────────────────────────────────────────── */}
+            <section id="system" className="py-32 px-6 border-b border-white/10">
                 <div className="max-w-7xl mx-auto space-y-20">
-                    <div className="flex flex-col items-center text-center space-y-6">
-                        <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 surgical-label !text-white/60">SYSTEM ARCHITECTURE</div>
-                        <h2 className="text-6xl font-black font-display tracking-tight text-white max-w-3xl">The 4 Pillars of Brand Vitality</h2>
+                    <div className="text-center space-y-4">
+                        <div className="surgical-label">Product Philosophy</div>
+                        <h2 className="text-5xl font-black font-display italic uppercase tracking-tighter">
+                            Not Another AI Tool. <br />
+                            <span className="text-white/30">A Brand Intelligence System.</span>
+                        </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10">
+                        <div className="bg-black p-12 space-y-8">
+                            <p className="text-xl text-white/60 leading-relaxed">
+                                BrandOS AI™ is built on 15+ years of structured brand consultancy experience, translated into a scalable AI-driven operating system.
+                            </p>
+                            <div className="space-y-4">
+                                {[
+                                    'Interprets your vision and mission',
+                                    'Identifies positioning gaps',
+                                    'Builds structured project requirements',
+                                    'Compiles brand guidelines',
+                                    'Aligns marketing and advertising activities',
+                                    'Prepares brands for scale'
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-4 text-sm font-bold text-white/40">
+                                        <CheckCircle size={14} className="text-[#B05CFF]" />
+                                        <span>{item}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="bg-black p-12 flex flex-col justify-center items-center text-center space-y-8 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-[#B05CFF]/5 pointer-events-none" />
+                            <h3 className="text-4xl font-black italic uppercase leading-none z-10">It doesn’t generate noise. <br /> It builds architecture.</h3>
+                            <Brain size={80} className="text-white/10 absolute -bottom-10 -right-10 transform rotate-12" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ── How It Works (3-Step) ────────────────────────────────────────── */}
+            <section id="process" className="py-32 px-6 border-b border-white/10 bg-[#050505]">
+                <div className="max-w-7xl mx-auto space-y-24">
+                    <div className="text-center space-y-4">
+                        <div className="surgical-label">Operational Logic</div>
+                        <h2 className="text-5xl font-black font-display uppercase tracking-tight">Structured Strategic Flow</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+                        {/* Connecting Line */}
+                        <div className="hidden md:block absolute top-[60px] left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                        
                         {[
-                            { t: 'Performance Integrity', d: 'Core Web Vitals monitoring with sub-second resolution.', i: Activity, c: '#00D1FF', s: '84' },
-                            { t: 'Trust & Authority', d: 'Cryptographic validation of SSL, DNS, and secure headers.', i: Shield, c: '#7B5CFF', s: '92' },
-                            { t: 'Brand Clarity', d: 'Linguistic analysis of messaging weight and intent.', i: Zap, c: '#FF3D57', s: '62' },
-                            { t: 'Discovery Power', d: 'Global indexing strength and semantic search authority.', i: Globe, c: '#00E28A', s: '78' },
-                        ].map((p, i) => (
-                            <motion.div
+                            { s: '01', t: 'Strategic Input', d: 'You provide structured brand inputs: Vision, mission, audience, market, challenges, and goals.', i: Target },
+                            { s: '02', t: 'Intelligence Processing', d: 'BrandOS AI analyzes positioning, differentiation, messaging, competitive moat, and growth alignment.', i: Brain },
+                            { s: '03', t: 'Structured Output', d: 'You receive a Project Requirement Document, Brand Guideline Framework, and Execution Roadmap.', i: Layers },
+                        ].map((step, i) => (
+                            <motion.div 
                                 key={i}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                whileHover={{ y: -10, border: `1px solid ${p.c}33` }}
-                                className="apple-card p-10 group cursor-crosshair relative overflow-hidden"
+                                transition={{ delay: i * 0.2 }}
+                                className="relative space-y-8"
                             >
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 border border-white/5 group-hover:border-white/10 group-hover:bg-white/10 transition-all">
-                                    <p.i size={28} style={{ color: p.c }} />
+                                <div className="w-20 h-20 bg-black border border-white/10 flex items-center justify-center mx-auto relative z-10 transition-colors hover:border-[#B05CFF]">
+                                    <step.i size={32} className="text-[#B05CFF]" />
+                                    <div className="absolute -top-3 -right-3 text-[10px] font-black text-white/20">{step.s}</div>
                                 </div>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center">
-                                        <h4 className="text-white text-lg font-black tracking-tight">{p.t}</h4>
-                                        <span className="text-xs font-black" style={{ color: p.c }}>{p.s}%</span>
-                                    </div>
-                                    <p className="text-white/30 text-sm font-medium leading-relaxed">{p.d}</p>
+                                <div className="text-center space-y-4">
+                                    <h4 className="text-xl font-black uppercase tracking-tight">{step.t}</h4>
+                                    <p className="text-sm text-white/40 leading-relaxed max-w-xs mx-auto font-medium">{step.d}</p>
                                 </div>
                             </motion.div>
                         ))}
@@ -168,89 +198,176 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* ── Revenue Impact (Visual Heavy) ─────────────────────────────────── */}
-            <section className="py-40 px-10 relative overflow-hidden">
-                <div className="absolute inset-0 bg-white/[0.02]" />
-                <div className="max-w-6xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                    <div className="space-y-8">
-                        <div className="surgical-label !text-[#FF3D57]">FATAL LEAKAGE DETECTED</div>
-                        <h3 className="text-6xl font-black font-display tracking-tight text-white">Stop losing revenue to invisible friction.</h3>
-                        <p className="text-xl text-white/40 leading-relaxed">
-                            Our proprietary Diagnostic Core simulates thousands of user journeys per second to find exactly where your brand is hemorrhaging trust and conversions.
-                        </p>
+            {/* ── Product Tiers ────────────────────────────────────────────────── */}
+            <section id="tiers" className="py-32 px-6 border-b border-white/10">
+                <div className="max-w-7xl mx-auto space-y-24">
+                    <div className="text-center space-y-4">
+                        <div className="surgical-label">Access Tiers</div>
+                        <h2 className="text-5xl font-black font-display uppercase tracking-tight italic">Scale with Intelligence</h2>
                     </div>
-                    <div className="apple-glass rounded-[40px] p-12 text-center border-[#FF3D57]/20 shadow-[0_0_50px_rgba(255,61,87,0.1)]">
-                        <motion.div
-                            initial={{ scale: 0.8 }}
-                            whileInView={{ scale: 1 }}
-                            className="text-8xl md:text-9xl font-black font-display text-white mb-4"
-                        >
-                            $18K<span className="text-[#FF3D57]">+</span>
-                        </motion.div>
-                        <div className="text-xl font-bold text-white/60 mb-8 uppercase tracking-widest">Monthly Estimated Leakage</div>
-                        <button className="apple-button-primary !bg-[#FF3D57] !text-white w-full">PATCH REVENUE LEAK</button>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Snapshot Tier */}
+                        <div className="border border-white/10 p-10 space-y-12 hover:bg-white/[0.02] transition-colors relative">
+                            <div className="space-y-2">
+                                <div className="surgical-label !text-white/40 uppercase">Essential</div>
+                                <h3 className="text-3xl font-black font-display uppercase italic text-white/60">BrandOS Snapshot™</h3>
+                                <div className="text-5xl font-black font-display tracking-tighter">FREE</div>
+                            </div>
+                            <ul className="space-y-4 border-t border-white/10 pt-8">
+                                {['Brand clarity audit', 'Positioning gap analysis', 'Brand OS AI Score', 'Opportunity insights', 'Summary report (PDF)'].map((f, i) => (
+                                    <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
+                                ))}
+                            </ul>
+                            <button onClick={login} className="w-full border border-white/20 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Get Free Snapshot</button>
+                        </div>
+
+                        {/* Advanced Tier */}
+                        <div className="border-[3px] border-[#B05CFF] p-10 space-y-12 bg-white/[0.04] relative">
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#B05CFF] text-white px-4 py-1 text-[8px] font-black uppercase tracking-widest">Most Popular</div>
+                            <div className="space-y-2">
+                                <div className="surgical-label !text-[#B05CFF] uppercase">Advanced</div>
+                                <h3 className="text-3xl font-black font-display uppercase italic">BrandOS AI Advanced</h3>
+                                <div className="text-5xl font-black font-display tracking-tighter">$297 <span className="text-xs text-white/20 uppercase font-black tracking-widest ml-2">One-Time</span></div>
+                            </div>
+                            <ul className="space-y-4 border-t border-white/10 pt-8">
+                                {['Brand positioning framework', 'Messaging architecture', 'Tone calibration', 'Persona mapping', 'Differentiation logic', 'Visual direction blueprint', '90-day marketing roadmap'].map((f, i) => (
+                                    <li key={i} className="flex gap-4 text-xs font-bold text-white/80"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
+                                ))}
+                            </ul>
+                            <button onClick={login} className="w-full bg-[#B05CFF] text-white py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Upgrade to Advanced</button>
+                        </div>
+
+                        {/* Professional Tier */}
+                        <div className="border border-white/10 p-10 space-y-12 hover:bg-white/[0.02] transition-colors">
+                            <div className="space-y-2">
+                                <div className="surgical-label !text-white/40 uppercase">Strategic Depth</div>
+                                <h3 className="text-3xl font-black font-display uppercase italic text-white/60">BrandOS AI Professional</h3>
+                                <div className="text-5xl font-black font-display tracking-tighter">$897 <span className="text-xs text-white/20 uppercase font-black tracking-widest ml-2">One-Time</span></div>
+                            </div>
+                            <ul className="space-y-4 border-t border-white/10 pt-8">
+                                {['Everything in Advanced', 'Competitive moat strategy', 'Authority positioning', 'Campaign theme development', 'Funnel messaging framework', 'Investor-ready summary deck'].map((f, i) => (
+                                    <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
+                                ))}
+                            </ul>
+                            <button onClick={login} className="w-full border border-white/20 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Go Professional</button>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* ── Pricing ──────────────────────────────────────────────────────── */}
-            <section id="pricing" className="py-40 px-10">
-                <div className="max-w-7xl mx-auto space-y-24">
-                    <div className="flex flex-col items-center text-center space-y-6">
-                        <div className="surgical-label">DEPLOYMENT LOGISTICS</div>
-                        <h3 className="text-6xl font-black font-display tracking-tight text-white">Select Your Access Tier</h3>
+            {/* ── Activation (Turtle Labs) ─────────────────────────────────────── */}
+            <section className="py-32 px-6 border-b border-white/10 bg-[#0A0A0A]">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                    <div className="space-y-8">
+                        <div className="surgical-label">Human-Led Strategic Partnerships</div>
+                        <h2 className="text-6xl font-black font-display tracking-tight uppercase leading-[0.9]">
+                            Structure is Built. <br />
+                            <span className="text-[#B05CFF]">Now We Activate.</span>
+                        </h2>
+                        <p className="text-xl text-white/40 leading-relaxed max-w-lg">
+                            Once your brand architecture is defined, you can move into human-led strategic partnerships with Turtle Labs. BrandOS AI prepares the groundwork. Our team executes with precision.
+                        </p>
                     </div>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {/* Retainer Services Grid */}
+                <div className="max-w-7xl mx-auto mt-32 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
+                    {[
+                        { t: 'Brand Governance', p: '$1,500 – $3,000', d: 'Protect and refine consistency with monthly compliance audits and visual refinement.' },
+                        { t: 'Advertising Strategy', p: '$2,500 – $6,000', d: 'Scale visibility with campaign development, ad messaging, and performance oversight.' },
+                        { t: 'Marketing Alignment', p: '$1,800 – $4,500', d: 'Align all channels with content strategy, social messaging, and website refinement.' },
+                        { t: 'Growth Partnership', p: '$5,000 – $12,000+', d: 'Complete brand and growth partnership. Brand. Advertising. Marketing. Unified.' },
+                    ].map((svc, i) => (
+                        <div key={i} className="bg-black p-10 space-y-6 hover:bg-white/[0.02] transition-colors group">
+                            <div className="space-y-2">
+                                <h4 className="text-lg font-black uppercase tracking-tight group-hover:text-[#B05CFF] transition-colors">{svc.t}</h4>
+                                <div className="text-xl font-bold tracking-tighter text-white/40">{svc.p} <span className="text-[8px] uppercase tracking-widest font-black ml-1">/ Month</span></div>
+                            </div>
+                            <p className="text-xs text-white/30 leading-relaxed font-medium">{svc.d}</p>
+                        </div>
+                    ))}
+                </div>
+                <div className="max-w-7xl mx-auto mt-16 text-center">
+                    <button className="bg-white text-black px-12 py-5 font-black uppercase text-xs tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all">
+                        Request Strategic Consultation
+                    </button>
+                </div>
+            </section>
+
+            {/* ── Why Different ───────────────────────────────────────────────── */}
+            <section className="py-40 px-6 border-b border-white/10 overflow-hidden relative">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] border border-white/[0.03] rounded-full pointer-events-none" />
+                <div className="max-w-5xl mx-auto space-y-24 relative z-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
                         {[
-                            { n: 'Access', p: '29', d: '3 DOMAINS · AD-HOC SCANS', f: ['Deep Technical Analysis', 'PDF Export Module', 'Trust Validation'] },
-                            { n: 'Intelligence', p: '79', d: '10 DOMAINS · CLOUD SYNC', f: ['Historical Telemetry', 'Competitor Intelligence', 'Priority Processing'] },
-                            { n: 'Command', p: '199', d: '50 DOMAINS · FULL API', f: ['White-label Branding', 'Client Access Portal', 'Raw Data Webhooks'], highlight: true },
-                            { n: 'Enterprise', p: '499', d: 'UNLIMITED SCALE', f: ['Custom Diagnostic Logic', 'SLA Guarantee', 'Dedicated Intel Unit'] },
-                        ].map((plan, i) => (
-                            <div
-                                key={i}
-                                className={`apple-card p-12 flex flex-col transition-transform hover:scale-[1.02] ${plan.highlight ? 'border-[#00D1FF]/40 bg-[#00D1FF]/5' : 'border-white/5'}`}
-                            >
-                                <div className="surgical-label mb-4 !text-white/60">{plan.n}</div>
-                                <div className="flex items-end gap-1 mb-10">
-                                    <span className="text-5xl font-black font-display text-white tracking-tighter">${plan.p}</span>
-                                    <span className="text-white/20 text-xs font-black uppercase mb-1.5 ml-1">/ MONTH</span>
-                                </div>
-                                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-12 border-b border-white/5 pb-4">{plan.d}</p>
-                                <ul className="flex-1 space-y-5 mb-12">
-                                    {plan.f.map((feat, fi) => (
-                                        <li key={fi} className="flex gap-4 text-sm text-white/50 font-bold items-start">
-                                            <CheckCircle size={16} className="text-[#00D1FF] shrink-0 mt-0.5" /> <span>{feat}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button
-                                    onClick={login}
-                                    className={`w-full py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all ${plan.highlight ? 'bg-[#00D1FF] text-black shadow-neon' : 'bg-white/5 hover:bg-white/10 text-white border border-white/5'}`}
-                                >
-                                    INITIALIZE ACCESS
-                                </button>
+                            { o: 'Most AI tools generate assets.', b: 'BrandOS AI generates structure.' },
+                            { o: 'Most agencies start with discovery.', b: 'We start with alignment.' },
+                            { o: 'Most brands execute randomly.', b: 'We operate with systems.' },
+                        ].map((item, i) => (
+                            <div key={i} className="space-y-4">
+                                <p className="text-xs font-black uppercase tracking-widest text-white/20 italic">{item.o}</p>
+                                <div className="h-0.5 w-8 bg-white/10" />
+                                <p className="text-2xl font-black uppercase tracking-tight italic">{item.b}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* ── Final Footer ─────────────────────────────────────────────────── */}
-            <footer className="py-24 px-10 border-t border-white/5 relative bg-black/20">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center font-black text-[#00D1FF] shadow-neon">OS</div>
-                        <span className="font-display font-black tracking-tighter text-3xl text-white">BRAND OS</span>
+            {/* ── Final CTA ───────────────────────────────────────────────────── */}
+            <section className="py-48 px-6 text-center relative overflow-hidden">
+                {/* Visual Accent */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-24 bg-gradient-to-b from-[#B05CFF] to-transparent" />
+                
+                <div className="max-w-4xl mx-auto space-y-12 relative z-10">
+                    <motion.div {...fadeIn} className="space-y-6">
+                        <h2 className="text-6xl md:text-8xl font-black font-display tracking-tighter uppercase leading-[0.85] italic">
+                            Ready to Structure <br />
+                            <span className="text-[#B05CFF]">Your Brand?</span>
+                        </h2>
+                        <p className="text-2xl font-bold text-white/40 tracking-tight">Start with clarity. Scale with intelligence.</p>
+                    </motion.div>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                        <button onClick={login} className="w-full sm:w-auto bg-[#B05CFF] text-white px-12 py-6 font-black uppercase text-xs tracking-widest hover:bg-white hover:text-black transition-all">
+                            Get Free Brand Snapshot
+                        </button>
+                        <button className="w-full sm:w-auto border border-white/20 px-12 py-6 font-black uppercase text-xs tracking-widest hover:bg-white/5 transition-all">
+                            Talk to Strategy Team
+                        </button>
                     </div>
-                    <div className="flex flex-col items-center gap-4">
-                         <p className="surgical-label">© 2026 BRAND OS · STRATEGIC INTELLIGENCE UNIT</p>
-                         <p className="text-[9px] font-black text-white/10 uppercase tracking-[0.5em]">SYSTEM STATUS: NOMINAL</p>
+                </div>
+            </section>
+
+            {/* ── Footer ──────────────────────────────────────────────────────── */}
+            <footer className="py-20 px-6 border-t border-white/10 bg-black">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-white text-black flex items-center justify-center rounded font-black text-xs">OS</div>
+                            <span className="font-display font-black text-xl tracking-tighter uppercase italic">BrandOS AI™</span>
+                        </div>
+                        <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] leading-relaxed">
+                            © 2026 BrandOS AI • A Turtle Labs Intelligence System <br />
+                            OPERATING STATUS: NOMINAL • SYSTEM VERSION: 5.0.1
+                        </p>
                     </div>
-                    <div className="flex gap-8">
-                        {['Terminal', 'Protocol', 'Security'].map(item => (
-                            <button key={item} className="surgical-label hover:text-[#00D1FF] transition-all hover:tracking-[0.5em]">{item}</button>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-12 sm:gap-24">
+                        {[
+                            { t: 'Terminal', l: ['Dashboard', 'Telemetry', 'Pillars'] },
+                            { t: 'Secure', l: ['Privacy', 'Protocol', 'Encryption'] },
+                            { t: 'Connect', l: ['Turtle Labs', 'Strategy', 'Inquiry'] }
+                        ].map((group, i) => (
+                            <div key={i} className="space-y-6">
+                                <div className="surgical-label !text-white/20">{group.t}</div>
+                                <div className="flex flex-col gap-3">
+                                    {group.l.map((link, li) => (
+                                        <button key={li} className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors text-left">{link}</button>
+                                    ))}
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>

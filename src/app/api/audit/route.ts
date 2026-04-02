@@ -37,14 +37,15 @@ export async function POST(request: Request) {
         const savedAudit = await prisma.audit.create({
             data: {
                 url: normalisedUrl,
-                uid: uuidv4(), // Need to import this or just use static/prev
+                uid: uuidv4(),
                 status: 'COMPLETED',
                 userEmail: userEmail,
-                overallScore: Math.round((brandIntel.scores.clarity + brandIntel.scores.consistency + brandIntel.scores.differentiation + brandIntel.scores.emotionalImpact) / 4),
-                clarityScore: brandIntel.scores.clarity,
-                consistencyScore: brandIntel.scores.consistency,
-                differentiationScore: brandIntel.scores.differentiation,
-                emotionalImpactScore: brandIntel.scores.emotionalImpact,
+                // Scale 0-25 scores to 0-100 for DB metrics
+                overallScore: brandIntel.scores.total,
+                clarityScore: brandIntel.scores.clarity * 4,
+                consistencyScore: brandIntel.scores.consistency * 4,
+                differentiationScore: brandIntel.scores.differentiation * 4,
+                emotionalImpactScore: brandIntel.scores.conversion * 4, // Mapping Conversion to 4th pillar
                 meta: { ...brandData, brandIntel } as any,
                 brandIdentity: {
                     create: {
@@ -58,19 +59,19 @@ export async function POST(request: Request) {
             }
         });
 
-        // Map back to UI format
+        // Map back to UI format (0-10 scale)
         const scores = {
-            clarity: brandIntel.scores.clarity / 10,
-            consistency: brandIntel.scores.consistency / 10,
-            differentiation: brandIntel.scores.differentiation / 10,
-            emotionalImpact: brandIntel.scores.emotionalImpact / 10,
+            clarity: brandIntel.scores.clarity / 2.5,
+            consistency: brandIntel.scores.consistency / 2.5,
+            differentiation: brandIntel.scores.differentiation / 2.5,
+            emotionalImpact: brandIntel.scores.conversion / 2.5, // UI still uses this prop name but receives Conversion data
             marketResonance: 8.5, // Placeholder metric
             ctaStrength: 7.8, // Placeholder metric
         };
 
         return NextResponse.json({
             scores,
-            aggregate: ((savedAudit.overallScore || 0) / 10).toFixed(1),
+            aggregate: (brandIntel.scores.total / 10).toFixed(1),
             rawData: brandData,
             findings: [], // Legacy compat
             uid: savedAudit.uid,
