@@ -201,7 +201,7 @@ async function callCohere(prompt: string) {
         const response: any = await axios.post(
             API_URL,
             {
-                model: 'command',
+                model: 'command-r7b',
                 prompt: prompt,
                 max_tokens: 800,
                 temperature: 0.3,

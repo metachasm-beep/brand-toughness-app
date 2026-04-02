@@ -11,7 +11,7 @@ export async function callCohere(prompt: string, maxTokens = 800) {
         const response: any = await axios.post(
             API_URL,
             {
-                model: 'command-r-plus',
+                model: 'command-r7b',
                 message: prompt,
                 connectors: [{ id: "web-search" }],
                 temperature: 0.3,
