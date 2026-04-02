@@ -9,10 +9,7 @@ import SpotlightCard from './react-bits/SpotlightCard';
 import DecryptedText from './react-bits/DecryptedText';
 import StarBorder from './react-bits/StarBorder';
 import BlurText from './react-bits/BlurText';
-import SplashCursor from './react-bits/SplashCursor';
-import GridDistortion from './react-bits/GridDistortion';
 import TrueFocus from './react-bits/TrueFocus';
-import VariableProximity from './react-bits/VariableProximity';
 
 export default function LandingPage() {
     const login = () => signIn('google');
@@ -60,36 +57,13 @@ export default function LandingPage() {
 
             {/* ── Hero Section ────────────────────────────────────────────────── */}
             <section ref={containerRef} className="relative pt-48 pb-32 px-6 border-b border-white/10 overflow-hidden min-h-[90vh] flex items-center">
-                {/* Visual Interactivity Layer */}
-                <div className="absolute inset-0 z-0">
-                    <GridDistortion 
-                        imageSrc="/branding/neural-bg.png"
-                        grid={15}
-                        mouse={0.1}
-                        strength={0.15}
-                        relaxation={0.92}
-                        className="opacity-40"
-                    />
-                </div>
-                <SplashCursor 
-                    color="#FF3D57" 
-                    DYE_RESOLUTION={512} 
-                    SIM_RESOLUTION={64}
-                    SPLAT_RADIUS={0.15}
-                />
+                {/* Visual Interactivity Layer - REFACTORED FOR STABILITY */}
+                <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#FF3D57]/5 to-transparent" />
 
                 <div className="max-w-7xl mx-auto text-center space-y-12 relative z-10 w-full">
                     <motion.div {...fadeIn} className="space-y-6">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 surgical-label">
-                           <VariableProximity
-                                label="Structure before scale. Intelligence before execution."
-                                fromFontVariationSettings="'wght' 400"
-                                toFontVariationSettings="'wght' 900"
-                                containerRef={containerRef}
-                                radius={100}
-                                falloff="exponential"
-                                className="!text-white/60"
-                           />
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 surgical-label text-white/60">
+                            Structure before scale. Intelligence before execution.
                         </div>
                         
                         <div className="md:h-[200px] w-full flex items-center justify-center">
