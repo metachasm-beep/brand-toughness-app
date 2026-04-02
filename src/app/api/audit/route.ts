@@ -30,15 +30,16 @@ export async function POST(request: Request) {
         
         const normalisedUrl = normaliseUrl(body.url);
 
-        // 1. Core Brand Scan - Extracts H1s, CTAs, Hero, and about text
+        // 1. Core Brand Scan - Extracts H1s, CTAs, Hero, and about text (Quick Proxy Probe)
         const engine = new BrandEngine(normalisedUrl);
-        const [brandData, pageSpeed] = await Promise.all([
-            engine.scan(),
+        const brandData = await engine.scan();
+
+        // 2. High-Performance Parallelization: AI Intelligence + Technical PageSpeed
+        // PageSpeed and Orchestration run concurrently to avoid Render 30s Gateway Timeouts.
+        const [auditResult, pageSpeed] = await Promise.all([
+            orchestrateBrandAudit(brandData, userEmail),
             fetchPageSpeed(normalisedUrl)
         ]);
-
-        // 2. v2.0 Agentic Orchestration with Continuous Intelligence
-        const auditResult = await orchestrateBrandAudit(brandData, userEmail);
 
         // 3. Mathematical Score Synthesis (60% Brand / 40% Technical)
         const brandScore = auditResult.aggregate;

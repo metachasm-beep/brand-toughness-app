@@ -30,7 +30,11 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
             const plannerResult = await runPlanner(brand.url, `${cleanRawText}\n\n[PAST INTELLIGENCE]: ${pastContext}`);
             if (!plannerResult.success) throw new Error('Planning failed: ' + plannerResult.error);
 
-            const shards = plannerResult.data.shards;
+            const shards = plannerResult.data?.shards;
+            if (!shards || !Array.isArray(shards)) {
+                throw new Error('Strategic Triage Failed: Model failed to generate analysis shards.');
+            }
+
             const visualShard = shards.find((s: any) => s.id === 'visual') || shards[0];
             const messagingShard = shards.find((s: any) => s.id === 'messaging') || shards[1];
 
@@ -45,6 +49,10 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
 
             const visual = visualResult.data;
             const messaging = messagingResult.data;
+
+            if (!visual || !messaging) {
+                throw new Error('Agent Synthesis Failed: Shard analysis returned empty data.');
+            }
 
             // Synthesis phase: Mapping specialized results back to the unified Dashboard interface
             const synthesis: any = {

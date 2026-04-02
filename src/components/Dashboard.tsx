@@ -134,8 +134,21 @@ export default function Dashboard() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url }),
             });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Audit failed');
+
+            const errorText = await response.text();
+
+            if (!response.ok) {
+                if (response.status === 504) throw new Error('Render Gateway Timeout: The deep audit took longer than 30s. Please try again.');
+                let errorData;
+                try {
+                    errorData = JSON.parse(errorText);
+                } catch (e) {
+                    throw new Error(`Technical Failure (${response.status}). The server returned an invalid response.`);
+                }
+                throw new Error(errorData.error || 'Audit failed');
+            }
+
+            const data = JSON.parse(errorText);
             setResult(data);
             if (typeof window !== 'undefined') {
                 localStorage.setItem('brandos_active_audit', JSON.stringify(data));

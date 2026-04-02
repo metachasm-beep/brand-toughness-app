@@ -27,7 +27,14 @@ export async function callCohere(prompt: string, maxTokens = 800) {
 
         const text = response.data.text;
         const jsonMatch = text.match(/\{[\s\S]*\}/);
-        return jsonMatch ? JSON.parse(jsonMatch[0]) : { error: 'Invalid JSON', raw: text };
+        if (!jsonMatch) return { error: 'No JSON found', raw: text };
+        
+        try {
+            return JSON.parse(jsonMatch[0]);
+        } catch (e) {
+            console.error('[Cohere] JSON Parse Failed:', e);
+            return { error: 'Invalid JSON Structure', raw: text };
+        }
     } catch (e: any) {
         console.error('Cohere call failed:', e.response?.data || e.message);
         return { error: 'API Error' };
