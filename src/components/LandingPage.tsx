@@ -11,6 +11,7 @@ import StarBorder from './react-bits/StarBorder';
 import BlurText from './react-bits/BlurText';
 import SplashCursor from './react-bits/SplashCursor';
 import GridDistortion from './react-bits/GridDistortion';
+import TrueFocus from './react-bits/TrueFocus';
 import VariableProximity from './react-bits/VariableProximity';
 
 export default function LandingPage() {
@@ -91,14 +92,15 @@ export default function LandingPage() {
                            />
                         </div>
                         
-                        <div className="h-[200px] md:h-[300px] w-full flex items-center justify-center">
-                            <TextPressure 
-                                text="BrandOS AI" 
-                                flex={true} 
-                                scale={true} 
-                                textColor="#FFFFFF" 
-                                minFontSize={80}
-                                className="font-black font-display italic tracking-tighter leading-[0.85] uppercase"
+                        <div className="md:h-[200px] w-full flex items-center justify-center">
+                            <TrueFocus 
+                                sentence="BrandOS AI" 
+                                manualMode={false} 
+                                blurAmount={8} 
+                                borderColor="#FF3D57" 
+                                glowColor="rgba(255, 61, 87, 0.6)" 
+                                animationDuration={0.5} 
+                                pauseBetweenAnimations={1} 
                             />
                         </div>
 
