@@ -8,6 +8,8 @@ import {
 import MetricCard from '@/components/MetricCard';
 import LoadingBar from '@/components/LoadingBar';
 import DiagnosticOrbit from '@/components/DiagnosticOrbit';
+import CountUp from './react-bits/CountUp';
+import SpotlightCard from './react-bits/SpotlightCard';
 
 // ─── Paywall modal ───────────────────────────────────────────────────────────
 function PaywallModal({ onClose }: { onClose: () => void }) {
@@ -349,18 +351,20 @@ export default function Dashboard() {
                                         { l: 'TAGLINE STRENGTH', v: result.scores.marketResonance },
                                         { l: 'CTA CLARITY', v: result.scores.ctaStrength },
                                     ].map((n: { l: string, v: number }, i: number) => (
-                                        <div key={i} className="bg-white/[0.04] border border-white/5 p-7 rounded-[24px] hover:border-white/10 transition-all">
+                                        <SpotlightCard key={i} className="bg-white/[0.04] border border-white/5 p-7 rounded-[24px] hover:border-white/10 transition-all backdrop-blur-none spotlight-purple">
                                             <div className="surgical-label text-[9px] mb-2">{n.l}</div>
-                                            <div className="text-3xl font-black font-display text-white">{n.v.toFixed(1)}</div>
+                                            <div className="text-3xl font-black font-display text-white">
+                                                <CountUp value={Number(n.v.toFixed(1))} fontSize={30} gap={1} />
+                                            </div>
                                             <div className="w-full h-1.5 bg-white/5 rounded-full mt-5 overflow-hidden">
                                                 <motion.div
                                                     className="h-full bg-gradient-to-r from-[#B05CFF] to-[#7B5CFF]"
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${n.v * 10}%` }}
-                                                    transition={{ duration: 1.5, delay: i * 0.1, ease: "easeOut" }}
+                                                    transition={{ duration: 1.5, delay: i * 0.1, ease: 'easeOut' as any }}
                                                 />
                                             </div>
-                                        </div>
+                                        </SpotlightCard>
                                     ))}
                                 </div>
                             </div>
@@ -369,7 +373,7 @@ export default function Dashboard() {
                                 <h5 className="surgical-label !text-white/20">Telemetry Shards</h5>
                                 <div className={`space-y-3 transition-all duration-1000 ${!pdfUnlocked ? 'blur-xl select-none pointer-events-none opacity-20' : ''}`}>
                                     {result.findings ? result.findings.map((f: any) => (
-                                        <div key={f.code} className="flex justify-between items-center py-5 border-b border-white/[0.03] group transition-all hover:bg-white/[0.02] px-2 rounded-lg">
+                                        <SpotlightCard key={f.code} className="flex justify-between items-center py-5 border-b border-white/[0.03] group transition-all hover:bg-white/[0.02] px-4 rounded-lg bg-transparent border-none">
                                             <div className="flex flex-col">
                                                 <span className="text-white/90 font-black text-base tracking-tight">{f.title}</span>
                                                 <div className="flex items-center gap-3 mt-2">
@@ -384,7 +388,7 @@ export default function Dashboard() {
                                                 <span className="text-white/80 font-black text-xs">{f.impact}</span>
                                                 <span className="surgical-label text-[8px] tracking-[0.2em] !text-white/20">Effect Range</span>
                                             </div>
-                                        </div>
+                                        </SpotlightCard>
                                     )) : (
                                         <div className="text-white/20 font-bold italic py-10">Telemetry feed unavailable.</div>
                                     )}

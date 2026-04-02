@@ -2,11 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { signIn } from 'next-auth/react';
-import {
-    ArrowRight, CheckCircle, Brain, Target, ShieldCheck, 
-    Layers, Zap, BarChart3, Users, MessageSquare, 
-    Play, Lock, Globe, Command, Info
-} from 'lucide-react';
+import { ArrowRight, CheckCircle, Brain, Target, Layers, Zap, Command, Info } from 'lucide-react';
+import TextPressure from './react-bits/TextPressure';
+import SpotlightCard from './react-bits/SpotlightCard';
+import Magnet from './react-bits/Magnet';
 
 export default function LandingPage() {
     const login = () => signIn('google');
@@ -15,13 +14,13 @@ export default function LandingPage() {
         initial: { opacity: 0, y: 20 },
         whileInView: { opacity: 1, y: 0 },
         viewport: { once: true },
-        transition: { duration: 0.8, ease: "easeOut" }
+        transition: { duration: 0.8, ease: [0.33, 1, 0.68, 1] as any }
     };
 
     return (
         <div className="bg-[#000000] min-h-screen text-white font-sans selection:bg-[#B05CFF] selection:text-white overflow-x-hidden">
             {/* ── Grid Overlay ────────────────────────────────────────────────── */}
-            <div className="fixed inset-0 pointer-events-none opacity-[0.03]" 
+            <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" 
                  style={{ backgroundImage: 'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
             {/* ── Header / Nav ────────────────────────────────────────────────── */}
@@ -41,27 +40,41 @@ export default function LandingPage() {
                         <a href="#tiers" className="surgical-label hover:text-white transition-colors">Tiers</a>
                     </div>
 
-                    <button 
-                        onClick={login}
-                        className="bg-white text-black px-6 py-2.5 rounded text-[10px] font-black uppercase tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all active:scale-95"
-                    >
-                        Command Center
-                    </button>
+                    <Magnet padding={50} magnetStrength={3}>
+                        <button 
+                            onClick={login}
+                            className="bg-white text-black px-6 py-2.5 rounded text-[10px] font-black uppercase tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all active:scale-95"
+                        >
+                            Command Center
+                        </button>
+                    </Magnet>
                 </div>
             </nav>
 
             {/* ── Hero Section ────────────────────────────────────────────────── */}
-            <section className="relative pt-48 pb-32 px-6 border-b border-white/10">
-                <div className="max-w-7xl mx-auto text-center space-y-12">
+            <section className="relative pt-48 pb-32 px-6 border-b border-white/10 overflow-hidden">
+                <div className="max-w-7xl mx-auto text-center space-y-12 relative z-10">
                     <motion.div {...fadeIn} className="space-y-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 surgical-label !text-white/60">
                             Structure before scale. Intelligence before execution.
                         </div>
-                        <h1 className="text-7xl md:text-[120px] font-black font-display tracking-tighter leading-[0.85] uppercase italic">
-                            The Operating System <br />
-                            <span className="text-white/20">for Modern Brands.</span>
-                        </h1>
-                        <p className="text-lg md:text-xl text-white/50 font-medium max-w-3xl mx-auto leading-relaxed">
+                        
+                        <div className="h-[200px] md:h-[300px] w-full flex items-center justify-center">
+                            <TextPressure 
+                                text="BrandOS AI" 
+                                flex={true} 
+                                scale={true} 
+                                textColor="#FFFFFF" 
+                                minFontSize={80}
+                                className="font-black font-display italic tracking-tighter leading-[0.85] uppercase"
+                            />
+                        </div>
+
+                        <h2 className="text-3xl md:text-5xl font-black font-display tracking-tighter uppercase italic text-white/20 -mt-10">
+                            The Operating System for Modern Brands.
+                        </h2>
+                        
+                        <p className="text-lg md:text-xl text-white/50 font-medium max-w-3xl mx-auto leading-relaxed pt-8">
                             BrandOS AI™ is a technology-driven brand intelligence system curated by advertising professionals and technology experts to streamline branding, advertising, and marketing into one structured framework.
                         </p>
                     </motion.div>
@@ -72,12 +85,17 @@ export default function LandingPage() {
                         transition={{ delay: 0.4, duration: 1 }}
                         className="flex flex-col sm:flex-row items-center justify-center gap-4"
                     >
-                        <button onClick={login} className="w-full sm:w-auto bg-white text-black px-10 py-5 font-black uppercase text-xs tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all flex items-center justify-center gap-3">
-                            Get Free Brand Snapshot <ArrowRight size={16} />
-                        </button>
-                        <button className="w-full sm:w-auto border border-white/20 px-10 py-5 font-black uppercase text-xs tracking-widest hover:bg-white/5 transition-all">
-                            Explore BrandOS AI
-                        </button>
+                        <Magnet padding={80} magnetStrength={5}>
+                            <button onClick={login} className="w-full sm:w-auto bg-white text-black px-10 py-5 font-black uppercase text-xs tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all flex items-center justify-center gap-3">
+                                Get Free Brand Snapshot <ArrowRight size={16} />
+                            </button>
+                        </Magnet>
+                        
+                        <Magnet padding={80} magnetStrength={5}>
+                            <button className="w-full sm:w-auto border border-white/20 px-10 py-5 font-black uppercase text-xs tracking-widest hover:bg-white/5 transition-all">
+                                Explore BrandOS AI
+                            </button>
+                        </Magnet>
                     </motion.div>
                 </div>
             </section>
@@ -101,16 +119,10 @@ export default function LandingPage() {
                             { t: 'Blind Advertising', d: 'Advertising runs without positioning clarity.' },
                             { t: 'Structural Void', d: 'Marketing lacks long-term structural direction.' },
                         ].map((item, i) => (
-                            <motion.div 
-                                key={i}
-                                initial={{ opacity: 0, x: 20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                className="p-8 border border-white/5 bg-white/[0.02] space-y-4"
-                            >
+                            <SpotlightCard key={i} className="p-8 border border-white/5 bg-white/[0.02] space-y-4 rounded-none h-full">
                                 <div className="w-2 h-2 rounded-full bg-[#B05CFF]" />
                                 <p className="text-sm font-bold text-white/90 leading-relaxed">{item.d}</p>
-                            </motion.div>
+                            </SpotlightCard>
                         ))}
                     </div>
                 </div>
@@ -131,7 +143,7 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10">
-                        <div className="bg-black p-12 space-y-8">
+                        <SpotlightCard className="bg-black p-12 space-y-8 rounded-none border-none">
                             <p className="text-xl text-white/60 leading-relaxed">
                                 BrandOS AI™ is built on 15+ years of structured brand consultancy experience, translated into a scalable AI-driven operating system.
                             </p>
@@ -150,12 +162,12 @@ export default function LandingPage() {
                                     </div>
                                 ))}
                             </div>
-                        </div>
-                        <div className="bg-black p-12 flex flex-col justify-center items-center text-center space-y-8 relative overflow-hidden">
+                        </SpotlightCard>
+                        <SpotlightCard className="bg-black p-12 flex flex-col justify-center items-center text-center space-y-8 relative overflow-hidden rounded-none border-none">
                             <div className="absolute inset-0 bg-[#B05CFF]/5 pointer-events-none" />
                             <h3 className="text-4xl font-black italic uppercase leading-none z-10">It doesn’t generate noise. <br /> It builds architecture.</h3>
                             <Brain size={80} className="text-white/10 absolute -bottom-10 -right-10 transform rotate-12" />
-                        </div>
+                        </SpotlightCard>
                     </div>
                 </div>
             </section>
@@ -182,12 +194,12 @@ export default function LandingPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.2 }}
-                                className="relative space-y-8"
+                                className="relative space-y-8 pt-8"
                             >
-                                <div className="w-20 h-20 bg-black border border-white/10 flex items-center justify-center mx-auto relative z-10 transition-colors hover:border-[#B05CFF]">
+                                <SpotlightCard className="w-24 h-24 bg-black border border-white/10 flex items-center justify-center mx-auto relative z-10 transition-colors hover:border-[#B05CFF] rounded-none p-0">
                                     <step.i size={32} className="text-[#B05CFF]" />
                                     <div className="absolute -top-3 -right-3 text-[10px] font-black text-white/20">{step.s}</div>
-                                </div>
+                                </SpotlightCard>
                                 <div className="text-center space-y-4">
                                     <h4 className="text-xl font-black uppercase tracking-tight">{step.t}</h4>
                                     <p className="text-sm text-white/40 leading-relaxed max-w-xs mx-auto font-medium">{step.d}</p>
@@ -208,7 +220,7 @@ export default function LandingPage() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Snapshot Tier */}
-                        <div className="border border-white/10 p-10 space-y-12 hover:bg-white/[0.02] transition-colors relative">
+                        <SpotlightCard className="border border-white/10 p-10 space-y-12 hover:bg-white/[0.02] transition-colors relative rounded-none backdrop-blur-none bg-black">
                             <div className="space-y-2">
                                 <div className="surgical-label !text-white/40 uppercase">Essential</div>
                                 <h3 className="text-3xl font-black font-display uppercase italic text-white/60">BrandOS Snapshot™</h3>
@@ -219,11 +231,13 @@ export default function LandingPage() {
                                     <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
                                 ))}
                             </ul>
-                            <button onClick={login} className="w-full border border-white/20 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Get Free Snapshot</button>
-                        </div>
+                            <Magnet padding={40} magnetStrength={3} wrapperClassName="w-full">
+                                <button onClick={login} className="w-full border border-white/20 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Get Free Snapshot</button>
+                            </Magnet>
+                        </SpotlightCard>
 
                         {/* Advanced Tier */}
-                        <div className="border-[3px] border-[#B05CFF] p-10 space-y-12 bg-white/[0.04] relative">
+                        <SpotlightCard className="border-[3px] border-[#B05CFF] p-10 space-y-12 bg-white/[0.04] relative rounded-none spotlight-purple">
                             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#B05CFF] text-white px-4 py-1 text-[8px] font-black uppercase tracking-widest">Most Popular</div>
                             <div className="space-y-2">
                                 <div className="surgical-label !text-[#B05CFF] uppercase">Advanced</div>
@@ -235,11 +249,13 @@ export default function LandingPage() {
                                     <li key={i} className="flex gap-4 text-xs font-bold text-white/80"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
                                 ))}
                             </ul>
-                            <button onClick={login} className="w-full bg-[#B05CFF] text-white py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Upgrade to Advanced</button>
-                        </div>
+                            <Magnet padding={40} magnetStrength={3} wrapperClassName="w-full">
+                                <button onClick={login} className="w-full bg-[#B05CFF] text-white py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Upgrade to Advanced</button>
+                            </Magnet>
+                        </SpotlightCard>
 
                         {/* Professional Tier */}
-                        <div className="border border-white/10 p-10 space-y-12 hover:bg-white/[0.02] transition-colors">
+                        <SpotlightCard className="border border-white/10 p-10 space-y-12 hover:bg-white/[0.02] transition-colors rounded-none backdrop-blur-none bg-black">
                             <div className="space-y-2">
                                 <div className="surgical-label !text-white/40 uppercase">Strategic Depth</div>
                                 <h3 className="text-3xl font-black font-display uppercase italic text-white/60">BrandOS AI Professional</h3>
@@ -250,11 +266,14 @@ export default function LandingPage() {
                                     <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
                                 ))}
                             </ul>
-                            <button onClick={login} className="w-full border border-white/20 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Go Professional</button>
-                        </div>
+                            <Magnet padding={40} magnetStrength={3} wrapperClassName="w-full">
+                                <button onClick={login} className="w-full border border-white/20 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Go Professional</button>
+                            </Magnet>
+                        </SpotlightCard>
                     </div>
                 </div>
             </section>
+
 
             {/* ── Activation (Turtle Labs) ─────────────────────────────────────── */}
             <section className="py-32 px-6 border-b border-white/10 bg-[#0A0A0A]">
