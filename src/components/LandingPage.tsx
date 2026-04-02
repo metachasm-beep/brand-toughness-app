@@ -63,14 +63,19 @@ export default function LandingPage() {
                 <div className="absolute inset-0 z-0">
                     <GridDistortion 
                         imageSrc="/branding/neural-bg.png"
-                        grid={20}
-                        mouse={0.15}
-                        strength={0.2}
+                        grid={15}
+                        mouse={0.1}
+                        strength={0.15}
                         relaxation={0.92}
                         className="opacity-40"
                     />
                 </div>
-                <SplashCursor color="#FF3D57" />
+                <SplashCursor 
+                    color="#FF3D57" 
+                    DYE_RESOLUTION={512} 
+                    SIM_RESOLUTION={64}
+                    SPLAT_RADIUS={0.15}
+                />
 
                 <div className="max-w-7xl mx-auto text-center space-y-12 relative z-10 w-full">
                     <motion.div {...fadeIn} className="space-y-6">
