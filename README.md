@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BrandOS AI v2.0 — Autonomous Intelligence System
 
-## Getting Started
+BrandOS AI is a high-fidelity, agentic Operating System for modern brand authority. Version 2.0 introduces a stateful intelligence layer, multi-agent orchestration, and autonomous market-shadowing to transform static audits into a continuous growth engine.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ⚡ Core Architecture (v2.0)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. Agentic Orchestration Engine
+The v2.0 engine utilizes a **Parallel Multi-Agent Pipeline** coordinated by a central Orchestrator. Every brand audit is decomposed into tactical shards:
+- **Strategic Planner**: Analyzes scrapped telemetry to direct specialized reviewer agents.
+- **Aesthetic Reviewer**: Audits visual identity, design tokens, and refractive authority.
+- **Messaging Auditor**: Evaluates clarity, value-proposition resonance, and emotional tone.
+- **Growth Orchestrator**: Proactively shadows competitors to identify differentiation gaps.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Continuous Intelligence (Knowledge Store)
+We've moved beyond "Single-Pass" audits. The **Brand Vault** provides persistent memory:
+- **Strategic Recall**: AI remembers past findings to track brand evolution over time.
+- **Neural Learning**: Every audit pass updates the vault with "Knowledge Items" (Strategic Intelligence Shards).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Tactical UI: Liquid Glass
+A premium design system built on **Refractive Glass Principles**:
+- **Design Tokens**: Standardized blur, refraction, and "Strategic Red" tints.
+- **Structural Primitives**: Optimized Framer Motion components (`LiquidFrame`) for 60FPS fluid interactions.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Prerequisites
+- **Node.js 18+**
+- **Supabase/PostgreSQL** (Managed persistence layer)
+- **Cohere AI API Key** (Orchestration brain)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Installation
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/metachasm-beep/brand-toughness-app.git
+    ```
+2.  Install high-fidelity dependencies:
+    ```bash
+    npm install
+    ```
+3.  Initialize the Knowledge Store:
+    ```bash
+    npx prisma generate
+    npx prisma db push
+    ```
+4.  Launch the Intelligence Stream:
+    ```bash
+    npm run dev
+    ```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛡️ Stability & Security
+- **Infinite Resilience**: Implemented silent stateless fallbacks ensuring 100% audit uptime, even during infrastructure failure.
+- **AgentShield**: Sanity-checked prompt injection guards to neutralize malicious scrapper content.
+- **Production Hardened**: All sensitive credentials isolated via environment variables.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📊 Roadmap Achievements
+- [x] **v1.0**: Monolithic Audit Engine
+- [x] **v2.0 Phase 1**: Agentic Transformation
+- [x] **v2.0 Phase 2**: Tactical Visual Identity
+- [x] **v2.0 Phase 3**: Continuous Intelligence loop
+- [x] **v2.0 Phase 4**: Security & Resilience Hardening
+- [x] **v2.0 Phase 5**: Autonomous Growth Shadows
+
+---
+
+## 📜 Documentation Reference
+- **Engine Logic**: `src/lib/agents/orchestrator.ts`
+- **Branding Primitives**: `src/components/LiquidFrame.tsx`
+- **Schema Reference**: `prisma/schema.prisma`
+
+**© 2026 Turtle Labs | BrandOS AI v2.0 Official Launch**

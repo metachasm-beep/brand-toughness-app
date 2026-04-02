@@ -343,11 +343,11 @@ export default function Dashboard() {
                         <div className="flex justify-between items-end border-b border-white/5 pb-10">
                             <div>
                                 <h3 className="text-5xl font-black font-display tracking-tighter uppercase leading-none text-white">Brand Telemetry</h3>
-                                <p className="surgical-label mt-3 !text-white/20">Messaging Node Persistence · BrandOS v1.0</p>
+                                <p className="surgical-label mt-3 !text-white/20">Messaging Node Persistence · BrandOS v2.0</p>
                             </div>
-                            <div className="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-2xl border border-white/10 shadow-inner">
+                            <div className="flex items-center gap-4 bg-[#FF3D57]/5 px-6 py-3 rounded-2xl border border-[#FF3D57]/20 shadow-inner">
                                 <div className="w-2.5 h-2.5 rounded-full bg-[#FF3D57] animate-pulse shadow-[0_0_12px_#FF3D57]" />
-                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#FF3D57]">Intelligence Stable</span>
+                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#FF3D57]">Autonomous Intelligence v2.0</span>
                             </div>
                         </div>
 

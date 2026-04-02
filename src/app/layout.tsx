@@ -3,8 +3,8 @@ import { ReactNode } from 'react';
 import Providers from '@/components/Providers';
 
 export const metadata = {
-  title: 'BrandOS AI | Strategic Intelligence System',
-  description: 'The Operating System for Modern Brands. Strategic Brand Communication & Clarity Intelligence.',
+  title: 'BrandOS AI v2.0 | Autonomous Intelligence System',
+  description: 'The Operating System for Modern Brand Authority. High-Fidelity Agentic Orchestration, Continuous Intelligence, and Autonomous Growth.',
   icons: {
     icon: '/branding/brand-icon.png',
   },
