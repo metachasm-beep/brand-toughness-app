@@ -1,30 +1,22 @@
 @import "tailwindcss";
 
-@theme {
-  --color-brand-bg: #0B0F14;
-  --color-brand-panel: #121822;
-  --color-brand-accent: #FF3D57;
-  --color-brand-violet: #E31B23;
-  --color-brand-gold: #FFD700;
-  --color-brand-red: #FF3D57;
-  --color-brand-green: #00E28A;
-  
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  
-  --shadow-pro: 0 20px 50px rgba(0, 0, 0, 0.5);
-  --shadow-neon: 0 0 30px rgba(255, 61, 87, 0.3);
-}
-
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 11, 15, 20;
   --background-end-rgb: 11, 15, 20;
+  
+  --brand-bg: #0B0F14;
+  --brand-accent: #FF3D57;
+  --brand-red: #FF3D57;
+  --brand-green: #00E28A;
+  
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #0B0F14;
+  background: var(--brand-bg);
   font-family: var(--font-sans);
   letter-spacing: -0.01em;
 }
@@ -36,24 +28,30 @@ h1, h2, h3, h4, .font-display {
 
 /* ── UI UTILITIES ───────────────────────────────────────────────────────── */
 
-.surgical-label {
-  @apply text-[10px] font-black uppercase tracking-[0.35em] text-white/40;
-}
+/* 
+ * Standardizing on native Tailwind and standard CSS for build resilience.
+ * We avoid @apply in this build to prevent PostCSS/Webpack parsing conflicts.
+ */
 
-.apple-glass {
-  @apply bg-white/[0.04] border border-white/10 backdrop-blur-2xl shadow-pro;
+.liquid-glass {
+  position: relative;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-image: radial-gradient(circle at 0% 0%, rgba(255, 61, 87, 0.05) 0%, transparent 50%);
 }
 
 .apple-card {
-  @apply bg-[#121822]/40 border border-white/5 rounded-[32px] transition-all duration-500 backdrop-blur-xl hover:bg-[#121822]/60 hover:border-white/10;
+  border-radius: 32px;
+  transition: all 0.5s ease;
+  cursor: pointer;
 }
 
-.apple-button-primary {
-  @apply bg-[#FF3D57] text-white font-black px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.03] shadow-neon active:scale-[0.97] cursor-pointer;
-}
-
-.apple-button-outline {
-  @apply border border-white/10 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 hover:bg-white/5 hover:border-white/20 cursor-pointer;
+.apple-card:hover {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* ── ANIMATIONS ─────────────────────────────────────────────────────────── */
@@ -66,19 +64,9 @@ h1, h2, h3, h4, .font-display {
   mask-image: radial-gradient(circle at center, black, transparent 80%);
 }
 
-.glow-mesh {
-  background: radial-gradient(circle at 50% 50%, rgba(0, 209, 255, 0.1) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(123, 92, 255, 0.08) 0%, transparent 40%);
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+@keyframes shine {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 200%; }
 }
 
 .glass-scrollbar::-webkit-scrollbar {
@@ -90,20 +78,4 @@ h1, h2, h3, h4, .font-display {
 .glass-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-}
-
-.text-gradient-pro {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/40;
-}
-
-.neon-text-blue {
-  text-shadow: 0 0 20px rgba(0, 209, 255, 0.5);
-}
-
-.neon-text-purple {
-  text-shadow: 0 0 25px rgba(255, 61, 87, 0.6);
-}
-
-.neon-text-gold {
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }

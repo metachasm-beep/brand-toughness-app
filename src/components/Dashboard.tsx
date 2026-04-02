@@ -12,6 +12,7 @@ import CountUp from './react-bits/CountUp';
 import SpotlightCard from './react-bits/SpotlightCard';
 import DecryptedText from './react-bits/DecryptedText';
 import StarBorder from './react-bits/StarBorder';
+import LiquidFrame from './LiquidFrame';
 
 // ─── Paywall modal ───────────────────────────────────────────────────────────
 function PaywallModal({ onClose }: { onClose: () => void }) {
@@ -45,9 +46,9 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-xl"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         >
-            <motion.div
-                className="relative w-full max-w-md apple-glass rounded-[40px] p-12"
-                initial={{ scale: 0.9, y: 30 }} animate={{ scale: 1, y: 0 }}
+            <LiquidFrame
+                className="relative w-full max-w-md rounded-[40px] p-12 overflow-visible"
+                showShimmer={true}
             >
                 <div className="text-center space-y-4 mb-10">
                     <div className="text-5xl">📊</div>
@@ -82,7 +83,7 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
                         Cancel Protocol
                     </button>
                 </div>
-            </motion.div>
+            </LiquidFrame>
         </motion.div>
     );
 }
@@ -204,27 +205,32 @@ export default function Dashboard() {
                 </div>
 
                 <div className="w-full lg:w-auto flex flex-col items-end gap-6">
-                    <form
-                        onSubmit={handleAudit}
-                        className="flex bg-white/[0.03] border border-white/10 rounded-[30px] p-2 pl-8 hover:bg-white/[0.05] focus-within:bg-white/[0.08] focus-within:border-[#00D1FF]/30 transition-all shadow-pro w-full lg:w-[500px] group"
-                    >
-                        <Globe className="my-auto mr-4 text-white/20 group-focus-within:text-[#00D1FF] transition-colors shrink-0" size={22} />
-                        <input
-                            type="url" required
-                            placeholder="brand-identity.io"
-                            className="bg-transparent border-none outline-none flex-1 py-5 text-lg font-black tracking-tight text-white placeholder:text-white/10"
-                            value={url}
-                            onChange={(e) => setUrl(e.target.value)}
-                            disabled={loading}
-                        />
-                        <button
-                            type="submit" disabled={loading}
-                            className="apple-button-primary px-10 h-full flex items-center gap-3 shrink-0 rounded-[24px] !bg-[#FF3D57] hover:shadow-[0_0_20px_#FF3D5755]"
-                        >
-                            {loading ? <Loader2 className="animate-spin" size={22} /> : <Play size={20} fill="currentColor" />}
-                            <span className="text-[12px] font-black uppercase tracking-widest">Run Brand Strategy Scan</span>
-                        </button>
-                    </form>
+                    <div className="max-w-4xl mx-auto space-y-12 relative z-10 px-6">
+                        <LiquidFrame className="p-8 rounded-[40px]" showShimmer={!result}>
+                            <div className="space-y-6">
+                                <div className="flex flex-col md:flex-row items-center gap-6">
+                                    <div className="flex-1 relative w-full">
+                                        <Globe className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={20} />
+                                        <input
+                                            type="text"
+                                            placeholder="Enter Corporate Domain (e.g. apple.com)"
+                                            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 py-5 outline-none focus:border-[#FF3D57]/40 text-sm font-medium transition-all text-white"
+                                            value={url}
+                                            onChange={(e) => setUrl(e.target.value)}
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={handleAudit}
+                                        disabled={loading}
+                                        className="w-full md:w-auto bg-[#FF3D57] hover:bg-[#FF3D57]/90 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-neon active:scale-95"
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" size={20} /> : <Play size={18} fill="currentColor" />}
+                                        Initiate Audit
+                                    </button>
+                                </div>
+                            </div>
+                        </LiquidFrame>
+                    </div>
 
                     <AnimatePresence>
                         {generating && (
