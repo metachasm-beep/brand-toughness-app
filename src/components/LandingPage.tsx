@@ -1,14 +1,21 @@
 'use client';
 
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { signIn } from 'next-auth/react';
 import { ArrowRight, CheckCircle, Brain, Target, Layers, Zap, Command, Info } from 'lucide-react';
 import TextPressure from './react-bits/TextPressure';
 import SpotlightCard from './react-bits/SpotlightCard';
-import Magnet from './react-bits/Magnet';
+import DecryptedText from './react-bits/DecryptedText';
+import StarBorder from './react-bits/StarBorder';
+import BlurText from './react-bits/BlurText';
+import SplashCursor from './react-bits/SplashCursor';
+import GridDistortion from './react-bits/GridDistortion';
+import VariableProximity from './react-bits/VariableProximity';
 
 export default function LandingPage() {
     const login = () => signIn('google');
+    const containerRef = useRef(null);
 
     const fadeIn = {
         initial: { opacity: 0, y: 20 },
@@ -39,23 +46,44 @@ export default function LandingPage() {
                         <a href="#tiers" className="surgical-label hover:text-white transition-colors">Tiers</a>
                     </div>
 
-                    <Magnet padding={50} magnetStrength={3}>
+                    <StarBorder thickness={1} speed="4s" color="#B05CFF" className="hover:scale-105 transition-transform">
                         <button 
                             onClick={login}
-                            className="bg-white text-black px-6 py-2.5 rounded text-[10px] font-black uppercase tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all active:scale-95"
+                            className="bg-transparent text-white px-6 py-2.5 rounded text-[10px] font-black uppercase tracking-widest transition-all"
                         >
-                            Command Center
+                            <DecryptedText text="Command Center" animateOn="hover" />
                         </button>
-                    </Magnet>
+                    </StarBorder>
                 </div>
             </nav>
 
             {/* ── Hero Section ────────────────────────────────────────────────── */}
-            <section className="relative pt-48 pb-32 px-6 border-b border-white/10 overflow-hidden">
-                <div className="max-w-7xl mx-auto text-center space-y-12 relative z-10">
+            <section ref={containerRef} className="relative pt-48 pb-32 px-6 border-b border-white/10 overflow-hidden min-h-[90vh] flex items-center">
+                {/* Visual Interactivity Layer */}
+                <div className="absolute inset-0 z-0">
+                    <GridDistortion 
+                        imageSrc="/branding/neural-bg.png"
+                        grid={20}
+                        mouse={0.15}
+                        strength={0.2}
+                        relaxation={0.92}
+                        className="opacity-40"
+                    />
+                </div>
+                <SplashCursor />
+
+                <div className="max-w-7xl mx-auto text-center space-y-12 relative z-10 w-full">
                     <motion.div {...fadeIn} className="space-y-6">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 surgical-label !text-white/60">
-                            Structure before scale. Intelligence before execution.
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 surgical-label">
+                           <VariableProximity
+                                label="Structure before scale. Intelligence before execution."
+                                fromFontVariationSettings="'wght' 400"
+                                toFontVariationSettings="'wght' 900"
+                                containerRef={containerRef}
+                                radius={100}
+                                falloff="exponential"
+                                className="!text-white/60"
+                           />
                         </div>
                         
                         <div className="h-[200px] md:h-[300px] w-full flex items-center justify-center">
@@ -69,9 +97,12 @@ export default function LandingPage() {
                             />
                         </div>
 
-                        <h2 className="text-3xl md:text-5xl font-black font-display tracking-tighter uppercase italic text-white/20 -mt-10">
-                            The Operating System for Modern Brands.
-                        </h2>
+                        <BlurText 
+                            text="The Operating System for Modern Brands."
+                            className="text-3xl md:text-5xl font-black font-display tracking-tighter uppercase italic text-white/30 -mt-10 justify-center"
+                            animateBy="words"
+                            delay={100}
+                        />
                         
                         <p className="text-lg md:text-xl text-white/50 font-medium max-w-3xl mx-auto leading-relaxed pt-8">
                             BrandOS AI™ is a technology-driven brand intelligence system curated by advertising professionals and technology experts to streamline branding, advertising, and marketing into one structured framework.
@@ -82,19 +113,19 @@ export default function LandingPage() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.4, duration: 1 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                        className="flex flex-col sm:flex-row items-center justify-center gap-6"
                     >
-                        <Magnet padding={80} magnetStrength={5}>
-                            <button onClick={login} className="w-full sm:w-auto bg-white text-black px-10 py-5 font-black uppercase text-xs tracking-widest hover:bg-[#B05CFF] hover:text-white transition-all flex items-center justify-center gap-3">
-                                Get Free Brand Snapshot <ArrowRight size={16} />
+                        <StarBorder thickness={2} speed="3s" color="#B05CFF" className="hover:scale-105 transition-transform">
+                            <button onClick={login} className="w-full sm:w-auto bg-transparent text-white px-10 py-5 font-black uppercase text-xs tracking-widest flex items-center justify-center gap-3">
+                                <DecryptedText text="Get Free Brand Snapshot" animateOn="hover" /> <ArrowRight size={16} />
                             </button>
-                        </Magnet>
+                        </StarBorder>
                         
-                        <Magnet padding={80} magnetStrength={5}>
-                            <button className="w-full sm:w-auto border border-white/20 px-10 py-5 font-black uppercase text-xs tracking-widest hover:bg-white/5 transition-all">
-                                Explore BrandOS AI
+                        <StarBorder thickness={1} speed="6s" color="rgba(255,255,255,0.2)" className="hover:scale-105 transition-transform opacity-60 hover:opacity-100">
+                             <button className="w-full sm:w-auto bg-transparent text-white px-10 py-5 font-black uppercase text-xs tracking-widest transition-all">
+                                <DecryptedText text="Explore BrandOS AI" animateOn="hover" />
                             </button>
-                        </Magnet>
+                        </StarBorder>
                     </motion.div>
                 </div>
             </section>
@@ -230,9 +261,11 @@ export default function LandingPage() {
                                     <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
                                 ))}
                             </ul>
-                            <Magnet padding={40} magnetStrength={3} wrapperClassName="w-full">
-                                <button onClick={login} className="w-full border border-white/20 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Get Free Snapshot</button>
-                            </Magnet>
+                            <StarBorder thickness={1} speed="5s" color="rgba(255,255,255,0.2)" className="w-full">
+                                <button onClick={login} className="w-full bg-transparent py-4 font-black uppercase text-[10px] tracking-widest transition-all">
+                                    <DecryptedText text="Get Free Snapshot" animateOn="hover" />
+                                </button>
+                            </StarBorder>
                         </SpotlightCard>
 
                         {/* Advanced Tier */}
@@ -248,9 +281,11 @@ export default function LandingPage() {
                                     <li key={i} className="flex gap-4 text-xs font-bold text-white/80"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
                                 ))}
                             </ul>
-                            <Magnet padding={40} magnetStrength={3} wrapperClassName="w-full">
-                                <button onClick={login} className="w-full bg-[#B05CFF] text-white py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Upgrade to Advanced</button>
-                            </Magnet>
+                            <StarBorder thickness={2} speed="3s" color="#B05CFF" className="w-full">
+                                <button onClick={login} className="w-full bg-transparent text-white py-4 font-black uppercase text-[10px] tracking-widest transition-all">
+                                    <DecryptedText text="Upgrade to Advanced" animateOn="hover" />
+                                </button>
+                            </StarBorder>
                         </SpotlightCard>
 
                         {/* Professional Tier */}
@@ -265,9 +300,11 @@ export default function LandingPage() {
                                     <li key={i} className="flex gap-4 text-xs font-bold text-white/40"><CheckCircle size={12} className="text-[#B05CFF] shrink-0" /> {f}</li>
                                 ))}
                             </ul>
-                            <Magnet padding={40} magnetStrength={3} wrapperClassName="w-full">
-                                <button onClick={login} className="w-full border border-white/20 py-4 font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Go Professional</button>
-                            </Magnet>
+                            <StarBorder thickness={1} speed="4s" color="rgba(255,255,255,0.4)" className="w-full">
+                                <button onClick={login} className="w-full bg-transparent py-4 font-black uppercase text-[10px] tracking-widest transition-all">
+                                    <DecryptedText text="Go Professional" animateOn="hover" />
+                                </button>
+                            </StarBorder>
                         </SpotlightCard>
                     </div>
                 </div>
@@ -347,13 +384,18 @@ export default function LandingPage() {
                         <p className="text-2xl font-bold text-white/40 tracking-tight">Start with clarity. Scale with intelligence.</p>
                     </motion.div>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                        <button onClick={login} className="w-full sm:w-auto bg-[#B05CFF] text-white px-12 py-6 font-black uppercase text-xs tracking-widest hover:bg-white hover:text-black transition-all">
-                            Get Free Brand Snapshot
-                        </button>
-                        <button className="w-full sm:w-auto border border-white/20 px-12 py-6 font-black uppercase text-xs tracking-widest hover:bg-white/5 transition-all">
-                            Talk to Strategy Team
-                        </button>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
+                        <StarBorder thickness={2} speed="2.5s" color="#B05CFF" className="hover:scale-105 transition-transform">
+                            <button onClick={login} className="w-full sm:w-auto bg-transparent text-white px-12 py-6 font-black uppercase text-xs tracking-widest transition-all">
+                                <DecryptedText text="Get Free Brand Snapshot" animateOn="hover" />
+                            </button>
+                        </StarBorder>
+                        
+                        <StarBorder thickness={1} speed="6s" color="rgba(255,255,255,0.2)" className="hover:scale-105 transition-transform opacity-60">
+                            <button className="w-full sm:w-auto bg-transparent text-white px-12 py-6 font-black uppercase text-xs tracking-widest transition-all">
+                                <DecryptedText text="Talk to Strategy Team" animateOn="hover" />
+                            </button>
+                        </StarBorder>
                     </div>
                 </div>
             </section>

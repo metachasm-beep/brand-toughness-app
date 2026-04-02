@@ -10,6 +10,8 @@ import LoadingBar from '@/components/LoadingBar';
 import DiagnosticOrbit from '@/components/DiagnosticOrbit';
 import CountUp from './react-bits/CountUp';
 import SpotlightCard from './react-bits/SpotlightCard';
+import DecryptedText from './react-bits/DecryptedText';
+import StarBorder from './react-bits/StarBorder';
 
 // ─── Paywall modal ───────────────────────────────────────────────────────────
 function PaywallModal({ onClose }: { onClose: () => void }) {
@@ -65,12 +67,14 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
-                    <button
-                        onClick={handlePay}
-                        className="w-full apple-button-primary py-4 text-lg font-bold rounded-2xl flex items-center justify-center gap-3"
-                    >
-                        <Lock size={20} /> Authorize Payment & Download
-                    </button>
+                    <StarBorder thickness={2} speed="3s" color="#B05CFF" className="w-full">
+                        <button
+                            onClick={handlePay}
+                            className="w-full bg-transparent py-4 text-lg font-bold rounded-2xl flex items-center justify-center gap-3"
+                        >
+                            <Lock size={20} /> <DecryptedText text="Authorize & Download" animateOn="hover" />
+                        </button>
+                    </StarBorder>
                     <button
                         onClick={onClose}
                         className="w-full text-white/30 text-sm font-semibold mt-2 hover:text-white transition-colors cursor-pointer"
@@ -265,7 +269,9 @@ export default function Dashboard() {
                                     <Activity size={28} className="text-black" />
                                 </div>
                                 <div>
-                                    <h3 className="text-4xl font-black font-display tracking-tighter text-white">STRATEGIC PLAYBOOK</h3>
+                                    <h3 className="text-4xl font-black font-display tracking-tighter text-white">
+                                        <DecryptedText text="STRATEGIC PLAYBOOK" animateOn="view" revealDirection="center" />
+                                    </h3>
                                     <p className="surgical-label mt-1.5 !text-[#B05CFF] !opacity-100">LLM BRAND ARCHITECTURE READY</p>
                                 </div>
                             </div>
@@ -403,9 +409,11 @@ export default function Dashboard() {
                                             <p className="text-white font-black uppercase text-xl tracking-tighter">TELEMETRY LOCKED</p>
                                             <p className="text-white/30 text-sm font-medium max-w-[280px] mx-auto leading-relaxed">System requires L3 Diagnostic clearance to unlock mission-critical findings.</p>
                                         </div>
-                                        <button onClick={() => setShowPaywall(true)} className="apple-button-primary !px-12 !py-5 flex items-center gap-3 shadow-neon">
-                                            <Lock size={18} /> INITIALIZE CLEARANCE
-                                        </button>
+                                        <StarBorder thickness={2} speed="3s" color="#B05CFF" className="hover:scale-105 transition-transform">
+                                            <button onClick={() => setShowPaywall(true)} className="bg-transparent text-white px-12 py-5 flex items-center gap-3 font-black uppercase text-xs tracking-widest">
+                                                <Lock size={18} /> <DecryptedText text="INITIALIZE CLEARANCE" animateOn="hover" />
+                                            </button>
+                                        </StarBorder>
                                     </div>
                                 )}
                             </div>
