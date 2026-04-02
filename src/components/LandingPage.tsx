@@ -10,6 +10,7 @@ import DecryptedText from './react-bits/DecryptedText';
 import StarBorder from './react-bits/StarBorder';
 import BlurText from './react-bits/BlurText';
 import TrueFocus from './react-bits/TrueFocus';
+import GridDistortion from './react-bits/GridDistortion';
 
 export default function LandingPage() {
     const login = () => signIn('google');
@@ -60,8 +61,17 @@ export default function LandingPage() {
 
             {/* ── Hero Section ────────────────────────────────────────────────── */}
             <section ref={containerRef} className="relative pt-48 pb-32 px-6 border-b border-white/10 overflow-hidden min-h-[90vh] flex items-center">
-                {/* Visual Interactivity Layer - REFACTORED FOR STABILITY */}
-                <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#FF3D57]/5 to-transparent" />
+                {/* Visual Interactivity Layer - OPTIMIZED NEURAL MESH */}
+                <div className="absolute inset-0 z-0 opacity-40">
+                    <GridDistortion 
+                        imageSrc="/branding/neural-bg.png"
+                        grid={15}
+                        mouse={0.1}
+                        strength={0.15}
+                        relaxation={0.92}
+                    />
+                </div>
+                <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#FF3D57]/5 to-transparent pointer-events-none" />
 
                 <div className="max-w-7xl mx-auto text-center space-y-12 relative z-10 w-full">
                     <motion.div {...fadeIn} className="space-y-6">
