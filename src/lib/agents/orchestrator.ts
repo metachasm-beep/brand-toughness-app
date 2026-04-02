@@ -27,7 +27,7 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
         console.log('[Orchestrator] Step 1: Neural Diagnostics (v3.0 Resilient Pipeline)...');
         try {
             // High-fidelity parallel agent execution
-            const plannerResult = await runPlanner(brand.url, `${cleanRawText}\n\n[PAST INTELLIGENCE]: ${pastContext}`);
+            const plannerResult = await runPlanner(brand.url, `[TECH FRAMEWORK]: ${brand.meta.techStack?.join(', ') || 'Standard/Unknown'}\n\n${cleanRawText}\n\n[PAST INTELLIGENCE]: ${pastContext}`);
             if (!plannerResult.success) throw new Error('Planning failed: ' + plannerResult.error);
 
             const shards = plannerResult.data.shards;
