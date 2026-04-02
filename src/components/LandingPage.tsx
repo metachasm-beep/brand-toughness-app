@@ -26,12 +26,11 @@ export default function LandingPage() {
             {/* ── Header / Nav ────────────────────────────────────────────────── */}
             <nav className="fixed top-0 left-0 w-full z-[100] border-b border-white/10 bg-black/80 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-white text-black flex items-center justify-center rounded font-black text-xs tracking-tighter">OS</div>
-                        <div className="flex flex-col leading-none">
-                            <span className="font-display font-black text-lg tracking-tighter uppercase italic">BrandOS AI™</span>
-                            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/40">By Turtle Labs</span>
+                    <div className="flex items-center gap-4 group cursor-pointer" onClick={login}>
+                        <div className="relative w-10 h-10 flex items-center justify-center">
+                            <img src="/branding/brand-icon.png" alt="BrandOS Icon" className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]" />
                         </div>
+                        <img src="/branding/brand-logo.png" alt="BrandOS AI" className="h-7 object-contain" />
                     </div>
                     
                     <div className="hidden md:flex items-center gap-10">
@@ -363,10 +362,7 @@ export default function LandingPage() {
             <footer className="py-20 px-6 border-t border-white/10 bg-black">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
                     <div className="space-y-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-white text-black flex items-center justify-center rounded font-black text-xs">OS</div>
-                            <span className="font-display font-black text-xl tracking-tighter uppercase italic">BrandOS AI™</span>
-                        </div>
+                        <img src="/branding/brand-full.png" alt="BrandOS AI Powered by Turtle Labs" className="h-10 object-contain opacity-80 hover:opacity-100 transition-opacity" />
                         <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] leading-relaxed">
                             © 2026 BrandOS AI • A Turtle Labs Intelligence System <br />
                             OPERATING STATUS: NOMINAL • SYSTEM VERSION: 5.0.1

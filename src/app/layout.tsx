@@ -1,14 +1,13 @@
 import './globals.css';
 import { ReactNode } from 'react';
 import Providers from '@/components/Providers';
-import Sidebar from '@/components/Sidebar';
-import Header from '@/components/Header';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 
 export const metadata = {
-  title: 'BRAND OS | Strategic Intelligence',
-  description: 'Strategic Brand Communication & Clarity Intelligence System',
+  title: 'BrandOS AI | Strategic Intelligence System',
+  description: 'The Operating System for Modern Brands. Strategic Brand Communication & Clarity Intelligence.',
+  icons: {
+    icon: '/branding/brand-icon.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

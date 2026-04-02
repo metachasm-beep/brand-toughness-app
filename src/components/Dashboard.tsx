@@ -186,8 +186,8 @@ export default function Dashboard() {
             <section className="flex flex-col lg:flex-row justify-between items-end gap-10 page-transition">
                 <div className="flex-1 space-y-6">
                     <div className="flex items-center gap-3">
-                        <div className="px-3 py-1 rounded-full bg-[#00D1FF]/10 border border-[#00D1FF]/20 flex items-center gap-2">
-                            <Activity size={12} className="text-[#00D1FF]" />
+                        <div className="px-3 py-1 rounded-full bg-[#00D1FF]/10 border border-[#00D1FF]/20 flex items-center gap-2 pr-4">
+                            <img src="/branding/brand-icon.png" alt="" className="w-5 h-5 object-contain opacity-70" />
                             <span className="surgical-label !text-[#00D1FF] !opacity-100 !tracking-[0.2em]">TELEMETRY ACTIVE · L3 AUTHORIZED</span>
                         </div>
                     </div>
