@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Globe, Loader2, Play, Activity, BarChart3, LayoutGrid, History, Settings, HelpCircle, Shield, Command, Lock, EyeOff, Check, Copy, Share, FileDown, CheckCircle, Users, Zap
+    Globe, Loader2, Play, Activity, BarChart3, LayoutGrid, History, Settings, HelpCircle, Shield, Command, Lock, EyeOff, Check, Copy, Share, FileDown, CheckCircle, Users, Zap, Layers
 } from 'lucide-react';
 import MetricCard from '@/components/MetricCard';
 import LoadingBar from '@/components/LoadingBar';
@@ -177,12 +177,12 @@ export default function Dashboard() {
     };
 
     const scoreValues = result?.scores ? [
-        result.scores.clarity,
-        result.scores.consistency,
-        result.scores.differentiation,
-        result.scores.emotionalImpact,
-        result.scores.marketResonance,
-        result.scores.ctaStrength,
+        result.scores.clarity ?? 0,
+        result.scores.consistency ?? 0,
+        result.scores.differentiation ?? 0,
+        result.scores.emotionalImpact ?? 0,
+        result.scores.marketResonance ?? 0,
+        result.scores.ctaStrength ?? 0,
     ] : [8.8, 7.2, 9.4, 6.5, 8.1, 8.9];
 
     const aggregateScore = result ? result.aggregate : '8.4';

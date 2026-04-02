@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useMemo } from 'react';
 
 /**
@@ -88,4 +88,3 @@ export default function BrandAura({ scores, aggregate }: BrandAuraProps) {
     );
 }
 
-import { AnimatePresence } from 'framer-motion';
