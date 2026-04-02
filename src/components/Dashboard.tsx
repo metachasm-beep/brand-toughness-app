@@ -471,9 +471,18 @@ export default function Dashboard() {
                                                 <p className="text-white/60 text-sm font-medium leading-relaxed italic">"{solution.solution}"</p>
                                             </div>
 
+                                            {solution.rationale && (
+                                                <div className="mb-6 px-2">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#FF3D57]/60 mb-2">Strategic Intent</p>
+                                                    <p className="text-white/30 text-xs font-medium leading-relaxed">{solution.rationale}</p>
+                                                </div>
+                                            )}
+
                                             {solution.codeSnippet && (
                                                 <div className="p-5 rounded-xl bg-black/40 border border-white/5 font-mono text-[11px] text-[#00D1FF]/80 overflow-x-auto relative group-hover:bg-black/60 transition-all">
-                                                    <div className="absolute top-2 right-4 text-[9px] text-white/10 font-bold uppercase tracking-widest">CSS_SOURCE</div>
+                                                    <div className="absolute top-2 right-4 text-[9px] text-white/10 font-bold uppercase tracking-widest">
+                                                        {solution.type === 'CSS' ? 'TAILWIND_UTILITIES' : 'SOURCE_RESOURCES'}
+                                                    </div>
                                                     <code>{solution.codeSnippet}</code>
                                                 </div>
                                             )}

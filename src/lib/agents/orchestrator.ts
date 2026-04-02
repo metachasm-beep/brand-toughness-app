@@ -107,7 +107,13 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
                 const remediation = await runRemediator(
                     visual.visualGaps, 
                     messaging.communicationGaps, 
-                    brand.url
+                    brand.url,
+                    {
+                        tone: messaging.toneOfVoice,
+                        promise: messaging.corePromise,
+                        audience: messaging.audience || 'Market Broad',
+                        positioning: visual.styleAnalysis
+                    }
                 );
 
                 if (remediation.success) {

@@ -20,6 +20,7 @@ export interface RemediationShard {
     type: 'COPY' | 'CSS' | 'UX' | 'STRATEGY';
     problem: string;
     solution: string;
+    rationale?: string;
     codeSnippet?: string;
     impact: 'CRITICAL' | 'HIGH' | 'MEDIUM';
 }
