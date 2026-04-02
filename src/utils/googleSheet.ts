@@ -20,12 +20,26 @@ function sleep(ms: number) {
 // ─── URL normalisation ────────────────────────────────────────────────────────
 // Accepts: "turtlelabs.co.in" | "www.turtlelabs.co.in" | "https://turtlelabs.co.in"
 export function normaliseUrl(raw: string): string {
-    let url = raw.trim();
+    let url = raw.trim().toLowerCase();
     if (!url) throw new Error('URL cannot be empty');
-    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-    // Validate by parsing
-    try { new URL(url); } catch { throw new Error('Invalid URL: ' + raw); }
-    return url;
+    
+    // 1. Remove trailing slashes
+    url = url.replace(/\/+$/, '');
+
+    // 2. Add protocol if missing (handle naked domains)
+    if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+    }
+
+    // 3. Validation
+    try { 
+        const parsed = new URL(url); 
+        // Ensure it has a dot (simple domain check)
+        if (!parsed.hostname.includes('.')) throw new Error();
+        return url;
+    } catch { 
+        throw new Error(`Invalid URL: "${raw}". Please provide a valid domain.`); 
+    }
 }
 
 // ─── CSV helpers ──────────────────────────────────────────────────────────────

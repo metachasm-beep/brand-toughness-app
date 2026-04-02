@@ -14,11 +14,15 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
             .slice(0, 15000); // Token safety limit
 
         console.log('[Orchestrator] Step 0: Strategic Recall (Fetch Memory)...');
-        const memory = await recallKnowledge(brand.url, userEmail);
+        let memory = null;
+        try {
+            memory = await recallKnowledge(brand.url, userEmail);
+        } catch (e) {
+            console.warn('[Orchestrator] Persistence recalled failed (Stateless Mode Active).');
+        }
         const pastContext = memory ? JSON.stringify(memory.knowledgeItems) : "No previous data.";
 
         console.log('[Orchestrator] Step 1: Strategic Planning (Memory-Augmented)...');
-        // Planner now receives past learnings to detect brand evolution
         const plannerResult = await runPlanner(brand.url, `${cleanRawText}\n\n[PAST INTELLIGENCE]: ${pastContext}`);
         if (!plannerResult.success) throw new Error('Planning failed: ' + plannerResult.error);
 
@@ -27,7 +31,6 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
         const messagingShard = shards.find((s: any) => s.id === 'messaging') || shards[1];
 
         console.log('[Orchestrator] Step 2: Parallel Diagnostics (Aesthetic + Messaging)...');
-        // Execute specialized agents in parallel for maximum throughput
         const [visualResult, messagingResult] = await Promise.all([
             runAestheticReviewer(visualShard, brand.url, brand.rawText),
             runMessagingAuditor(messagingShard, brand.url, brand.rawText)
@@ -54,8 +57,8 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
                 consistency: messaging.consistencyScore,
                 differentiation: visual.identityScore,
                 emotionalImpact: visual.visualAuthority,
-                marketResonance: 20, // To be implemented by MarketReviewer later
-                ctaStrength: 22,    // To be implemented by UXReviewer later
+                marketResonance: 20, 
+                ctaStrength: 22,    
             },
             brandIntelligence: {
                 confidence: plannerResult.data.totalConfidence,
@@ -73,26 +76,30 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
         };
 
         console.log('[Orchestrator] Step 3: Strategic Learn (Update Memory)...');
-        // Register this audit in the vault
-        const vault = await prisma.brandVault.findUnique({
-            where: { domain_userEmail: { domain: brand.url, userEmail } }
-        });
+        try {
+            // Register this audit in the vault (best effort)
+            const vault = await prisma.brandVault.findUnique({
+                where: { domain_userEmail: { domain: brand.url, userEmail } }
+            });
 
-        await learnKnowledge(
-            brand.url, 
-            userEmail, 
-            'STRATEGIC', 
-            `Audit Complete. Core Authority: ${synthesis.aggregate}. Identity: ${synthesis.brandIntelligence.positioning}`, 
-            { scores: synthesis.scores, aggregate: synthesis.aggregate },
-            synthesis.extracted
-        );
+            await learnKnowledge(
+                brand.url, 
+                userEmail, 
+                'STRATEGIC', 
+                `Audit Complete. Core Authority: ${synthesis.aggregate}. Identity: ${synthesis.brandIntelligence.positioning}`, 
+                { scores: synthesis.scores, aggregate: synthesis.aggregate },
+                synthesis.extracted
+            );
 
-        // Optional Step 4: Autonomous Growth Resonance
-        if (vault) {
-            console.log('[Orchestrator] Step 4: Autonomous Growth Shadows...');
-            const growth = await orchestrateAutonomousGrowth(vault.id);
-            (synthesis.scores as any).marketResonance = growth.resonanceScore;
-            (synthesis.brandIntelligence as any).growthCatalysts = growth.catalysts;
+            // Optional Step 4: Autonomous Growth Resonance (only possible if DB is up)
+            if (vault) {
+                console.log('[Orchestrator] Step 4: Autonomous Growth Shadows...');
+                const growth = await orchestrateAutonomousGrowth(vault.id);
+                (synthesis.scores as any).marketResonance = growth.resonanceScore;
+                (synthesis.brandIntelligence as any).growthCatalysts = growth.catalysts;
+            }
+        } catch (e) {
+            console.error('[Orchestrator] Persistence/Growth failed. Audit result maintained (Stateless).');
         }
 
         return synthesis;

@@ -24,12 +24,13 @@ export default function Sidebar() {
         <aside className="w-full h-screen flex flex-col p-8 border-r border-white/5 select-none bg-[#0B0F14]/50 backdrop-blur-3xl relative z-40">
             {/* Brand logo */}
             <div className="flex items-center gap-4 mb-14 px-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#FF3D57] to-[#E31B23] rounded-[14px] flex items-center justify-center shadow-neon">
-                    <img src="/branding/brand-icon.png" alt="" className="w-7 h-7 object-contain filter invert brightness-[2] grayscale-0" />
+                <div className="w-12 h-12 bg-gradient-to-br from-[#FF3D57] to-[#BA122B] rounded-[14px] flex items-center justify-center shadow-[0_0_20px_rgba(255,61,87,0.3)] border border-white/10 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.4)_100%)]" />
+                    <Command size={24} className="text-white relative z-10" strokeWidth={3} />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm font-black font-display tracking-tighter text-white">COMMAND</span>
-                    <span className="surgical-label !text-[8px] mt-1.5 !text-[#FF3D57]">STRATEGIC INTEL v5.0</span>
+                    <span className="text-sm font-black font-display tracking-tight text-white">BRANDOS</span>
+                    <span className="surgical-label !text-[8px] mt-1 !text-[#FF3D57] tracking-[0.2em]">AUTONOMOUS INTEL</span>
                 </div>
             </div>
 

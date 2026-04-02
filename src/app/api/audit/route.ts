@@ -36,35 +36,40 @@ export async function POST(request: Request) {
         // 2. v2.0 Agentic Orchestration with Continuous Intelligence
         const auditResult = await orchestrateBrandAudit(brandData, userEmail);
 
-        // 3. Persist to DB for SaaS History
-        const savedAudit = await prisma.audit.create({
-            data: {
-                url: normalisedUrl,
-                uid: uuidv4(),
-                status: 'COMPLETED',
-                userEmail: userEmail,
-                // Scale scores as needed (Orchestrator already provides aggregate)
-                overallScore: auditResult.aggregate,
-                clarityScore: auditResult.scores.clarity * 4,
-                consistencyScore: auditResult.scores.consistency * 4,
-                differentiationScore: auditResult.scores.differentiation * 4,
-                emotionalImpactScore: auditResult.scores.emotionalImpact * 4,
-                meta: { ...brandData, ...auditResult } as any,
-                brandIdentity: {
-                    create: {
-                        businessDesc: auditResult.brandIntelligence.positioning,
-                        positioning: auditResult.brandIntelligence.positioning,
-                        targetAudience: auditResult.brandIntelligence.audience,
-                        toneOfVoice: auditResult.brandIntelligence.toneOfVoice,
-                        playbook: {
-                            priorityFixes: auditResult.brandIntelligence.priorityFixes,
-                            quickWins: auditResult.brandIntelligence.quickWins,
-                            trustGaps: auditResult.brandIntelligence.trustGaps
-                        } as any
+        // 3. Persist to DB for SaaS History (Best Effort)
+        let savedAudit = { uid: uuidv4() };
+        try {
+            const persisted = await prisma.audit.create({
+                data: {
+                    url: normalisedUrl,
+                    uid: savedAudit.uid,
+                    status: 'COMPLETED',
+                    userEmail: userEmail,
+                    overallScore: auditResult.aggregate,
+                    clarityScore: auditResult.scores.clarity * 4,
+                    consistencyScore: auditResult.scores.consistency * 4,
+                    differentiationScore: auditResult.scores.differentiation * 4,
+                    emotionalImpactScore: auditResult.scores.emotionalImpact * 4,
+                    meta: { ...brandData, ...auditResult } as any,
+                    brandIdentity: {
+                        create: {
+                            businessDesc: auditResult.brandIntelligence.positioning,
+                            positioning: auditResult.brandIntelligence.positioning,
+                            targetAudience: auditResult.brandIntelligence.audience,
+                            toneOfVoice: auditResult.brandIntelligence.toneOfVoice,
+                            playbook: {
+                                priorityFixes: auditResult.brandIntelligence.priorityFixes,
+                                quickWins: auditResult.brandIntelligence.quickWins,
+                                trustGaps: auditResult.brandIntelligence.trustGaps
+                            } as any
+                        }
                     }
                 }
-            }
-        });
+            });
+            savedAudit.uid = persisted.uid;
+        } catch (e) {
+            console.error('[/api/audit] Persistence failed (Stateless Mode).', e);
+        }
 
         // Map back to UI format (0-10 scale)
         const scores = {
