@@ -10,11 +10,11 @@ interface DiagnosticOrbitProps {
 }
 
 export default function DiagnosticOrbit({ scores, labels, overallScore }: DiagnosticOrbitProps) {
-    const defaultLabels = ['Market', 'Technical', 'Security', 'Innovation', 'Customer', 'Content'];
+    const defaultLabels = ['Clarity', 'Consistency', 'Differentiation', 'Emotional', 'Resonance', 'CTA Strength'];
     const displayLabels = labels || defaultLabels;
 
     const getColor = (s: number) => {
-        if (s >= 80) return '#00D1FF';
+        if (s >= 80) return '#B05CFF';
         if (s >= 60) return '#7B5CFF';
         return '#FF3D57';
     };
@@ -69,8 +69,8 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
             <svg viewBox="-1.2 -1.2 2.4 2.4" className="absolute inset-0 w-full h-full drop-shadow-[0_0_50px_rgba(0,209,255,0.15)] overflow-visible">
                 <path
                     d={`M ${points[0].x} ${points[0].y} ${points.map(p => `L ${p.x} ${p.y}`).join(' ')} Z`}
-                    fill="rgba(0, 209, 255, 0.08)"
-                    stroke="rgba(0, 209, 255, 0.5)"
+                    fill="rgba(176, 92, 255, 0.08)"
+                    stroke="rgba(176, 92, 255, 0.5)"
                     strokeWidth="0.015"
                     className="transition-all duration-1000 ease-out"
                 />
@@ -90,11 +90,11 @@ export default function DiagnosticOrbit({ scores, labels, overallScore }: Diagno
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="text-8xl xl:text-[10rem] font-black font-display tracking-tighter text-white neon-text-blue"
+                    className="text-8xl xl:text-[10rem] font-black font-display tracking-tighter text-white neon-text-purple"
                 >
                     {overallScore}
                 </motion.div>
-                <div className="surgical-label !text-[#00D1FF] !opacity-100 !tracking-[0.4em] mt-2 group-hover:scale-110 transition-transform">AGGREGATE PERSISTENCE</div>
+                <div className="surgical-label !text-[#B05CFF] !opacity-100 !tracking-[0.4em] mt-2 group-hover:scale-110 transition-transform">BRAND AUTHORITY</div>
             </div>
 
             {/* Floating Labels */}

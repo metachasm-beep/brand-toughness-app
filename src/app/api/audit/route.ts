@@ -2,8 +2,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { AuditEngine } from '@/lib/audit/engine';
-import { getAiInsights } from '@/lib/audit/ai';
+import { v4 as uuidv4 } from 'uuid';
+import { BrandEngine } from '@/lib/audit/brandEngine';
+import { getBrandIntelligence } from '@/lib/audit/ai';
 import { prisma } from '@/lib/db';
 import { normaliseUrl } from '@/utils/googleSheet';
 
@@ -24,58 +25,56 @@ export async function POST(request: Request) {
 
         const normalisedUrl = normaliseUrl(url);
 
-        // 1. Core Audit - Ported from Python health checks + PageSpeed API
-        const engine = new AuditEngine(normalisedUrl);
-        const auditData = await engine.run();
+        // 1. Core Brand Scan - Extracts H1s, CTAs, Hero, and about text
+        const engine = new BrandEngine(normalisedUrl);
+        const brandData = await engine.scan();
 
-        // 2. Generate AI Overview using Cohere
-        const aiSummary = await getAiInsights(normalisedUrl, auditData.findings);
-        auditData.meta.aiSummary = aiSummary;
+        // 2. Multi-step AI Intelligence (Extract -> Evaluate -> Score -> Generate)
+        const brandIntel = await getBrandIntelligence(brandData);
+        if (brandIntel.error) throw new Error(brandIntel.error);
 
         // 3. Persist to DB for SaaS History
         const savedAudit = await prisma.audit.create({
             data: {
                 url: normalisedUrl,
-                uid: auditData.uid,
+                uid: uuidv4(), // Need to import this or just use static/prev
                 status: 'COMPLETED',
                 userEmail: userEmail,
-                overallScore: auditData.overallScore,
-                categories: auditData.categories as any,
-                meta: auditData.meta as any,
-                findings: {
-                    create: auditData.findings.map(f => ({
-                        code: f.code,
-                        title: f.title,
-                        category: f.category,
-                        severity: f.severity,
-                        confidence: f.confidence,
-                        recommendation: f.recommendation,
-                        effort: f.effort,
-                        impact: f.impact,
-                        evidence: f.evidence || null
-                    }))
+                overallScore: Math.round((brandIntel.scores.clarity + brandIntel.scores.consistency + brandIntel.scores.differentiation + brandIntel.scores.emotionalImpact) / 4),
+                clarityScore: brandIntel.scores.clarity,
+                consistencyScore: brandIntel.scores.consistency,
+                differentiationScore: brandIntel.scores.differentiation,
+                emotionalImpactScore: brandIntel.scores.emotionalImpact,
+                meta: { ...brandData, brandIntel } as any,
+                brandIdentity: {
+                    create: {
+                        businessDesc: brandIntel.summary,
+                        positioning: brandIntel.positioning,
+                        targetAudience: brandIntel.audience,
+                        toneOfVoice: brandIntel.toneOfVoice,
+                        playbook: brandIntel.playbook as any
+                    }
                 }
-            },
-            include: { findings: true }
+            }
         });
 
         // Map back to UI format
         const scores = {
-            marketPresence: auditData.categories['SEO']?.score || 0,
-            technicalHealth: auditData.categories['Performance']?.score || 0,
-            security: auditData.categories['Security']?.score || 0,
-            innovation: auditData.categories['UX']?.score || 0,
-            customerExperience: auditData.categories['Accessibility']?.score || 0,
-            contentQuality: 8.5 // Placeholder or aggregate content metric
+            clarity: brandIntel.scores.clarity / 10,
+            consistency: brandIntel.scores.consistency / 10,
+            differentiation: brandIntel.scores.differentiation / 10,
+            emotionalImpact: brandIntel.scores.emotionalImpact / 10,
+            marketResonance: 8.5, // Placeholder metric
+            ctaStrength: 7.8, // Placeholder metric
         };
 
         return NextResponse.json({
             scores,
-            aggregate: (auditData.overallScore / 10).toFixed(1), // UI expects 0-10 scale
-            rawData: auditData.meta,
-            findings: savedAudit.findings,
-            uid: auditData.uid,
-            aiSummary
+            aggregate: ((savedAudit.overallScore || 0) / 10).toFixed(1),
+            rawData: brandData,
+            findings: [], // Legacy compat
+            uid: savedAudit.uid,
+            brandIntelligence: brandIntel
         });
 
     } catch (err: any) {

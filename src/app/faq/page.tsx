@@ -6,8 +6,8 @@ import { ArrowLeft, MessageSquare, ShieldCheck, Database, Zap, HelpCircle } from
 
 const faqs = [
     {
-        q: "What is WEB OS?",
-        a: "WEB OS is a diagnostic intelligence unit designed to analyze the technical and strategic integrity of a website. It scans over 150 metrics in 60 seconds to provide a comprehensive 'Toughness Score'."
+        q: "What is BRAND OS?",
+        a: "BRAND OS is a strategic intelligence unit designed to analyze brand clarity, consistency, and market differentiation. It provides a comprehensive 'Brand Authority Score' using advanced neural synthesis."
     },
     {
         q: "How does the 'Revenue Leakage' calculation work?",
@@ -15,7 +15,7 @@ const faqs = [
     },
     {
         q: "Is my data secure?",
-        a: "Yes. WEB OS uses end-to-end encryption for all diagnostic data. We only scan publicly accessible infrastructure and do not require administrative access to your servers."
+        a: "Yes. BRAND OS uses end-to-end encryption for all strategic data. We prioritize the security of your brand metrics and operational data."
     },
     {
         q: "What is Google L3 Authorization?",

@@ -34,6 +34,30 @@ model Audit {
   createdAt     DateTime       @default(now())
   finishedAt    DateTime?
   meta          Json?          // Stores extra meta like PageSpeed data, headers, etc.
+  
+  // BrandOS specific fields
+  brandIdentity BrandIdentity?
+  clarityScore       Int?
+  consistencyScore   Int?
+  differentiationScore Int?
+  emotionalImpactScore Int?
+}
+
+model BrandIdentity {
+  id               String   @id @default(cuid())
+  auditId          String   @unique
+  audit            Audit    @relation(fields: [auditId], references: [id])
+  businessDesc     String?
+  vision           String?
+  mission          String?
+  targetAudience   String?
+  positioning      String?
+  toneOfVoice      String?
+  messagingPillars Json?    // Array of key messaging points
+  taglineDirects   Json?
+  playbook         Json?    // Stores the Communication Playbook data
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model AuditFinding {

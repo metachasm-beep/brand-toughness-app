@@ -139,20 +139,42 @@ export default function Dashboard() {
 
     const handleDownloadPDF = async () => {
         if (!pdfUnlocked) { setShowPaywall(true); return; }
-        alert('PDF generation is currently undergoing maintenance. Please try again later.');
+        if (!result?.uid) return;
+
+        try {
+            const res = await fetch('/api/pdf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: result.uid }),
+            });
+
+            if (!res.ok) throw new Error('PDF generation failed');
+
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BrandOS_Strategy_${result.uid}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } catch (err) {
+            console.error('Download error:', err);
+            alert('Failed to generate PDF. Strategy module under heavy load.');
+        }
     };
 
     const scoreValues = result ? [
-        result.scores.marketPresence,
-        result.scores.technicalHealth,
-        result.scores.security,
-        result.scores.innovation,
-        result.scores.customerExperience,
-        result.scores.contentQuality,
+        result.scores.clarity,
+        result.scores.consistency,
+        result.scores.differentiation,
+        result.scores.emotionalImpact,
+        result.scores.marketResonance,
+        result.scores.ctaStrength,
     ] : [8.8, 7.2, 9.4, 6.5, 8.1, 8.9];
 
     const aggregateScore = result ? result.aggregate : '8.4';
-    const ai = result?.aiSummary;
+    const ai = result?.brandIntelligence;
 
     return (
         <div className="space-y-16 max-w-[1400px] mx-auto pt-10 pb-24 relative z-10">
@@ -168,10 +190,10 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <h1 className="text-7xl xl:text-8xl font-black font-display tracking-tighter text-white leading-[0.85] text-gradient-pro">
-                        DIAGNOSTIC<br /><span className="text-[#00D1FF] neon-text-blue">COMMAND.</span>
+                        BRAND STRATEGY<br /><span className="text-[#B05CFF] neon-text-purple">COMMAND.</span>
                     </h1>
                     <p className="text-xl text-white/40 font-medium max-w-xl leading-relaxed">
-                        Precision monitoring for digital brand infrastructure. Initialize deep-scans to analyze performance nodes and security perimeters.
+                        Strategic brand intelligence for communication systems. Initialize clarity audits to analyze messaging alignment and market positioning.
                     </p>
                 </div>
 
@@ -191,10 +213,10 @@ export default function Dashboard() {
                         />
                         <button
                             type="submit" disabled={loading}
-                            className="apple-button-primary px-10 h-full flex items-center gap-3 shrink-0 rounded-[24px]"
+                            className="apple-button-primary px-10 h-full flex items-center gap-3 shrink-0 rounded-[24px] !bg-[#B05CFF] hover:shadow-[0_0_20px_#B05CFF55]"
                         >
                             {loading ? <Loader2 className="animate-spin" size={22} /> : <Play size={20} fill="currentColor" />}
-                            <span className="text-[12px] font-black uppercase tracking-widest">Run Scan</span>
+                            <span className="text-[12px] font-black uppercase tracking-widest">Run Brand Strategy Scan</span>
                         </button>
                     </form>
 
@@ -225,10 +247,10 @@ export default function Dashboard() {
                 </div>
 
                 <div className="space-y-8 h-full flex flex-col">
-                    <MetricCard title="Market Presence" value={result ? result.scores.marketPresence.toFixed(1) : '8.8'} trend="+4.2%" trendDirection="up" status="optimal" icon={Activity} />
-                    <MetricCard title="Technical Health" value={result ? result.scores.technicalHealth.toFixed(1) : '7.2'} trend="+1.5%" trendDirection="up" status="stable" icon={Users} />
-                    <MetricCard title="Security Profile" value={result ? result.scores.security.toFixed(1) : '9.4'} trend="+0.8%" trendDirection="up" status="optimal" icon={Shield} />
-                    <MetricCard title="Innovation Rate" value={result ? result.scores.innovation.toFixed(1) : '6.5'} trend="-2.1%" trendDirection="down" status="critical" icon={Zap} />
+                    <MetricCard title="Brand Clarity" value={result ? result.scores.clarity.toFixed(1) : '8.8'} trend="+4.2%" trendDirection="up" status="optimal" icon={Activity} />
+                    <MetricCard title="Tone Consistency" value={result ? result.scores.consistency.toFixed(1) : '7.2'} trend="+1.5%" trendDirection="up" status="stable" icon={Users} />
+                    <MetricCard title="Market Differentiation" value={result ? result.scores.differentiation.toFixed(1) : '9.4'} trend="+0.8%" trendDirection="up" status="optimal" icon={Shield} />
+                    <MetricCard title="Emotional Impact" value={result ? result.scores.emotionalImpact.toFixed(1) : '6.5'} trend="-2.1%" trendDirection="down" status="critical" icon={Zap} />
                 </div>
             </div>
 
@@ -241,27 +263,27 @@ export default function Dashboard() {
                                     <Activity size={28} className="text-black" />
                                 </div>
                                 <div>
-                                    <h3 className="text-4xl font-black font-display tracking-tighter text-white">INTELLIGENCE FEED</h3>
-                                    <p className="surgical-label mt-1.5 !text-[#00D1FF] !opacity-100">AI STRATEGIC DECODING READY</p>
+                                    <h3 className="text-4xl font-black font-display tracking-tighter text-white">STRATEGIC PLAYBOOK</h3>
+                                    <p className="surgical-label mt-1.5 !text-[#B05CFF] !opacity-100">LLM BRAND ARCHITECTURE READY</p>
                                 </div>
                             </div>
                             <div className="px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black tracking-[0.3em] text-white/40">
-                                CONFIDENCE: <span className="text-white">{ai.confidence || 72}%</span>
+                                STRATEGIC CONFIDENCE: <span className="text-white">{ai.confidence || 72}%</span>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
                             <div className="space-y-6">
-                                <h4 className="surgical-label">Executive Protocol</h4>
-                                <p className="text-white/50 text-base leading-relaxed font-medium">{ai.overview || 'Analyzing mission parameters...'}</p>
+                                <h4 className="surgical-label">Brand Positioning</h4>
+                                <p className="text-white/50 text-base leading-relaxed font-medium">{ai.positioning || 'Calculating strategic coordinates...'}</p>
                             </div>
                             <div className="space-y-6">
-                                <h4 className="surgical-label">Positioning Vector</h4>
-                                <p className="text-white/50 text-base leading-relaxed font-medium">{ai.positioning || 'Calculating market coordinates...'}</p>
+                                <h4 className="surgical-label">Tone of Voice</h4>
+                                <p className="text-white/50 text-base leading-relaxed font-medium">{ai.toneOfVoice || 'Analyzing linguistic patterns...'}</p>
                             </div>
                             <div className="space-y-6">
                                 <h4 className="surgical-label">Target Resonance</h4>
-                                <p className="text-white/50 text-base leading-relaxed font-medium">{ai.audience || 'Scanning target segments...'}</p>
+                                <p className="text-white/50 text-base leading-relaxed font-medium">{ai.audience || 'Scanning resonance frequency...'}</p>
                             </div>
                         </div>
 
@@ -306,12 +328,12 @@ export default function Dashboard() {
                     <motion.section className="apple-card p-12 space-y-12 border-white/5" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}>
                         <div className="flex justify-between items-end border-b border-white/5 pb-10">
                             <div>
-                                <h3 className="text-5xl font-black font-display tracking-tighter uppercase leading-none text-white">Telemetry Feed</h3>
-                                <p className="surgical-label mt-3 !text-white/20">System Node Persistence · V4.2</p>
+                                <h3 className="text-5xl font-black font-display tracking-tighter uppercase leading-none text-white">Brand Telemetry</h3>
+                                <p className="surgical-label mt-3 !text-white/20">Messaging Node Persistence · BrandOS v1.0</p>
                             </div>
                             <div className="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-2xl border border-white/10 shadow-inner">
-                                <div className="w-2.5 h-2.5 rounded-full bg-[#00E28A] animate-pulse shadow-[0_0_12px_#00E28A]" />
-                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#00E28A]">Link Stable</span>
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#B05CFF] animate-pulse shadow-[0_0_12px_#B05CFF]" />
+                                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#B05CFF]">Intelligence Stable</span>
                             </div>
                         </div>
 
@@ -320,19 +342,19 @@ export default function Dashboard() {
                                 <h5 className="surgical-label !text-white/20">Neural Pillars</h5>
                                 <div className="grid grid-cols-2 gap-6">
                                     {[
-                                        { l: 'SEO NODE', v: result.scores.marketPresence },
-                                        { l: 'NETWORK LATENCY', v: result.scores.technicalHealth },
-                                        { l: 'SECURITY PERIMETER', v: result.scores.security },
-                                        { l: 'UX INTERACTION', v: result.scores.innovation },
-                                        { l: 'ACCESS VECTOR', v: result.scores.customerExperience },
-                                        { l: 'SEMANTIC WEIGHT', v: result.scores.contentQuality },
+                                        { l: 'CORE PROMISE', v: result.scores.clarity },
+                                        { l: 'TONE CONSISTENCY', v: result.scores.consistency },
+                                        { l: 'MESSAGING PILLARS', v: result.scores.differentiation },
+                                        { l: 'AUDIENCE RESONANCE', v: result.scores.emotionalImpact },
+                                        { l: 'TAGLINE STRENGTH', v: result.scores.marketResonance },
+                                        { l: 'CTA CLARITY', v: result.scores.ctaStrength },
                                     ].map((n: { l: string, v: number }, i: number) => (
                                         <div key={i} className="bg-white/[0.04] border border-white/5 p-7 rounded-[24px] hover:border-white/10 transition-all">
                                             <div className="surgical-label text-[9px] mb-2">{n.l}</div>
                                             <div className="text-3xl font-black font-display text-white">{n.v.toFixed(1)}</div>
                                             <div className="w-full h-1.5 bg-white/5 rounded-full mt-5 overflow-hidden">
                                                 <motion.div
-                                                    className="h-full bg-gradient-to-r from-[#00D1FF] to-[#7B5CFF]"
+                                                    className="h-full bg-gradient-to-r from-[#B05CFF] to-[#7B5CFF]"
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${n.v * 10}%` }}
                                                     transition={{ duration: 1.5, delay: i * 0.1, ease: "easeOut" }}

@@ -14,7 +14,7 @@ export default function Home() {
   const [diagnosticStep, setDiagnosticStep] = useState(0);
 
   const diagnosticStages = [
-    "Initializing WEB OS...",
+    "Initializing BRAND OS...",
     "Syncing Web Identity...",
     "Stabilizing Telemetry Nodes..."
   ];
