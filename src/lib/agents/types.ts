@@ -22,6 +22,7 @@ export interface RemediationShard {
     solution: string;
     rationale?: string;
     codeSnippet?: string;
+    previewMarkup?: string;
     impact: 'CRITICAL' | 'HIGH' | 'MEDIUM';
 }
 

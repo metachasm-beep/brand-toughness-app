@@ -8,6 +8,7 @@ import {
 import MetricCard from '@/components/MetricCard';
 import LoadingBar from '@/components/LoadingBar';
 import DiagnosticOrbit from '@/components/DiagnosticOrbit';
+import NeuralCanvas from '@/components/NeuralCanvas';
 import CountUp from './react-bits/CountUp';
 import SpotlightCard from './react-bits/SpotlightCard';
 import DecryptedText from './react-bits/DecryptedText';
@@ -97,6 +98,7 @@ export default function Dashboard() {
     const [error, setError] = useState('');
     const [showPaywall, setShowPaywall] = useState(false);
     const [pdfUnlocked, setPdfUnlocked] = useState(false);
+    const [activeView, setActiveView] = useState<'LOGIC' | 'VISUAL'>('LOGIC');
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {

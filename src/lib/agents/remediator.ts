@@ -63,6 +63,7 @@ Return valid JSON:
       "solution": "The actual fix text or primary recommendation",
       "rationale": "Strategic reasoning for the fix",
       "codeSnippet": "Tailwind utility classes logic",
+      "previewMarkup": "<div class='...'>\${solution.solution}</div>",
       "impact": "CRITICAL | HIGH | MEDIUM"
     }
   ],
