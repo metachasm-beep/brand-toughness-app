@@ -33,9 +33,12 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-4 group cursor-pointer" onClick={login}>
                         <div className="relative w-10 h-10 flex items-center justify-center">
-                            <img src="/branding/brand-icon.png" alt="BrandOS Icon" className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(255,61,87,0.3)]" />
+                            <img src="/branding/brand-icon.png" alt="BrandOS Icon" className="w-[120%] h-[120%] object-contain filter drop-shadow-[0_0_12px_rgba(255,61,87,0.5)]" />
                         </div>
-                        <img src="/branding/brand-logo.png" alt="BrandOS AI" className="h-7 object-contain filter invert brightness-[2] grayscale-0" />
+                        <div className="flex flex-col -space-y-1">
+                            <span className="text-xl font-black font-display tracking-tighter text-white uppercase italic">BrandOS</span>
+                            <span className="surgical-label !text-[8px] !text-[#FF3D57] !opacity-100 tracking-[0.4em] translate-x-0.5">STRATEGIC AI</span>
+                        </div>
                     </div>
                     
                     <div className="hidden md:flex items-center gap-10">
