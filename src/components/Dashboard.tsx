@@ -137,6 +137,9 @@ export default function Dashboard() {
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Audit failed');
             setResult(data);
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('brandos_active_audit', JSON.stringify(data));
+            }
             setProgress(100);
         } catch (err: any) {
             setError(err.message);

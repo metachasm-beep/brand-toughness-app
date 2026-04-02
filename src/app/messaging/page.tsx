@@ -1,11 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LayoutGrid, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useAuditSession } from '@/lib/hooks/useAuditSession';
 
 export default function MessagingShard() {
+    const { auditData, loading } = useAuditSession();
+
+    if (loading) {
+        return <div className="min-h-screen bg-[#0B0F14] text-white flex items-center justify-center">Loading...</div>;
+    }
+
     return (
         <div className="min-h-screen p-12 bg-[#0B0F14] text-white">
             <div className="max-w-6xl mx-auto">
@@ -25,13 +31,29 @@ export default function MessagingShard() {
                 </div>
 
                 <div className="apple-card p-12 bg-white/[0.02] border-white/5">
-                    <div className="flex flex-col items-center justify-center py-32 space-y-8 text-center">
-                        <div className="w-16 h-16 rounded-full border-2 border-dashed border-white/10 animate-spin" />
-                        <div>
-                            <h3 className="text-2xl font-black uppercase tracking-tighter mb-2">Analyzing Brand Intelligence</h3>
-                            <p className="text-white/20 text-sm font-medium uppercase tracking-widest">No active messaging audit detected in current session.</p>
+                    {auditData ? (
+                        <div className="space-y-8">
+                            <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 text-[#FF3D57]">Clarity Score: {auditData?.scores?.clarity?.toFixed(1) || 'N/A'}</h3>
+                            <p className="text-white/60">Tone of Voice: {auditData?.brandIntelligence?.toneOfVoice}</p>
+                            <p className="text-white/60">Core Promise: {auditData?.extracted?.coreOffering}</p>
+                            <div className="space-y-4 pt-4 border-t border-white/5">
+                                <h4 className="text-xl font-bold">Communication Gaps</h4>
+                                <ul className="list-disc pl-5 text-white/50 space-y-2">
+                                    {(auditData?.brandIntelligence?.conversionGaps || []).map((gap: string, i: number) => (
+                                        <li key={i}>{gap}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-32 space-y-8 text-center">
+                            <div className="w-16 h-16 rounded-full border-2 border-dashed border-white/10 animate-spin" />
+                            <div>
+                                <h3 className="text-2xl font-black uppercase tracking-tighter mb-2">Analyzing Brand Intelligence</h3>
+                                <p className="text-white/20 text-sm font-medium uppercase tracking-widest">No active messaging audit detected in current session.</p>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

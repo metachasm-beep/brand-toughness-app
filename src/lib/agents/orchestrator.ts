@@ -5,6 +5,7 @@ import { BrandData } from '../audit/brandEngine';
 import { recallKnowledge, learnKnowledge } from './knowledge';
 import { orchestrateAutonomousGrowth } from './growth';
 import { runRemediator } from './remediator';
+import { runOmnichannelAuditor } from './omnichannel';
 import { prisma } from '../db';
 
 export async function orchestrateBrandAudit(brand: BrandData, userEmail: string = 'guest@turtlelabs.co') {
@@ -76,7 +77,8 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
                 aggregate: (messaging.clarityScore + messaging.consistencyScore + visual.identityScore + visual.visualAuthority) / 4 * 4,
                 originalVisual: visual,
                 originalMessaging: messaging,
-                remediationSolutions: []
+                remediationSolutions: [],
+                omnichannel: null
             };
 
             // v3.0: Strategic Learn & Heal (Best Effort)
@@ -121,8 +123,22 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
                     synthesis.scores.healFactor = remediation.data.overallAuthorityHeal;
                 }
 
+                // Phase 6: Step 6: Omnichannel Scaling
+                console.log('[Orchestrator] Step 6: Omnichannel Authority Scaling...');
+                const omnichannelResult = await runOmnichannelAuditor(
+                    brand.url,
+                    brand.rawText,
+                    visual.styleAnalysis
+                );
+
+                if (omnichannelResult.success) {
+                    synthesis.omnichannel = omnichannelResult.data;
+                    // Dynamically update resonance score based on omnichannel scale
+                    synthesis.scores.marketResonance = Math.max(synthesis.scores.marketResonance, omnichannelResult.data.resonanceScore);
+                }
+
             } catch (e) {
-                console.warn('[Orchestrator] Secondary synthesis (Learn/Heal) degraded silently.');
+                console.warn('[Orchestrator] Secondary synthesis (Learn/Heal/Scale) degraded silently.');
             }
 
             return synthesis;
@@ -135,7 +151,8 @@ export async function orchestrateBrandAudit(brand: BrandData, userEmail: string 
                 scores: { clarity: 1, consistency: 1, differentiation: 1, emotionalImpact: 1, marketResonance: 0 },
                 brandIntelligence: { positioning: 'Intelligence Stream Interrupted', priorityFixes: ['Retry connectivity'], trustGaps: [], conversionGaps: [] },
                 aggregate: 0,
-                remediationSolutions: []
+                remediationSolutions: [],
+                omnichannel: null
             };
         }
 
