@@ -173,7 +173,7 @@ export default function Dashboard() {
         }
     };
 
-    const scoreValues = result ? [
+    const scoreValues = result?.scores ? [
         result.scores.clarity,
         result.scores.consistency,
         result.scores.differentiation,
@@ -246,27 +246,81 @@ export default function Dashboard() {
                 </div>
             </section>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
-                <div className="xl:col-span-2 apple-card overflow-hidden !bg-white/[0.02] border-white/5 relative flex flex-col items-center justify-center min-h-[650px] group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#00D1FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <DiagnosticOrbit scores={scoreValues} overallScore={aggregateScore} />
-                    <div className="absolute bottom-12 flex gap-6">
-                        <button onClick={handleDownloadPDF} disabled={!result} className="apple-button-outline !px-10 flex items-center gap-3 disabled:opacity-30 group/btn !bg-white/5 border-white/5 hover:border-white/10">
-                            {pdfUnlocked ? <><CheckCircle size={18} className="text-[#00E28A]" /><span>DOWNLOAD ANALYSIS</span></> : <><Lock size={18} className="text-white/30 group-hover/btn:text-white" /><span>ACQUIRE DEEP REPORT</span></>}
+            {/* v3.0 Neural Navigator Navigation */}
+            {result && (
+                <div className="flex justify-center mb-[-20px]">
+                    <div className="flex bg-white/5 p-1.5 rounded-3xl border border-white/10 shadow-pro-inner backdrop-blur-3xl relative z-20">
+                        <button 
+                            onClick={() => setActiveView('LOGIC')}
+                            className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-500 flex items-center gap-3 ${
+                                activeView === 'LOGIC' 
+                                ? 'bg-[#FF3D57] text-white shadow-neon-glow' 
+                                : 'text-white/30 hover:text-white/60'
+                            }`}
+                        >
+                            <BarChart3 size={14} /> Telemetry
                         </button>
-                        <button className="apple-button-outline !px-10 flex items-center gap-3 bg-white/5 border-white/5 hover:border-white/10">
-                            <Share size={18} /><span>COMMAND SHARE</span>
+                        <button 
+                            onClick={() => setActiveView('VISUAL')}
+                            className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-500 flex items-center gap-3 ${
+                                activeView === 'VISUAL' 
+                                ? 'bg-[#FF3D57] text-white shadow-neon-glow' 
+                                : 'text-white/30 hover:text-white/60'
+                            }`}
+                        >
+                            <Layers size={14} /> Neural Canvas
                         </button>
                     </div>
                 </div>
+            )}
 
-                <div className="space-y-8 h-full flex flex-col">
-                    <MetricCard title="Brand Clarity" value={result ? result.scores.clarity.toFixed(1) : '8.8'} trend="+4.2%" trendDirection="up" status="optimal" icon={Activity} />
-                    <MetricCard title="Tone Consistency" value={result ? result.scores.consistency.toFixed(1) : '7.2'} trend="+1.5%" trendDirection="up" status="stable" icon={Users} />
-                    <MetricCard title="Market Differentiation" value={result ? result.scores.differentiation.toFixed(1) : '9.4'} trend="+0.8%" trendDirection="up" status="optimal" icon={Shield} />
-                    <MetricCard title="Emotional Impact" value={result ? result.scores.emotionalImpact.toFixed(1) : '6.5'} trend="-2.1%" trendDirection="down" status="critical" icon={Zap} />
-                </div>
-            </div>
+            <AnimatePresence mode="wait">
+                {activeView === 'VISUAL' && result ? (
+                    <motion.div
+                        key="visual-view"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="px-6"
+                    >
+                        <NeuralCanvas 
+                            solutions={result.remediationSolutions || []} 
+                            scores={result.scores}
+                            aggregate={Number(result.aggregate) * 10}
+                        />
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="logic-view"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="space-y-16"
+                    >
+                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+                            <div className="xl:col-span-2 apple-card overflow-hidden !bg-white/[0.02] border-white/5 relative flex flex-col items-center justify-center min-h-[650px] group">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#00D1FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                                <DiagnosticOrbit scores={scoreValues} overallScore={aggregateScore} />
+                                <div className="absolute bottom-12 flex gap-6">
+                                    <button onClick={handleDownloadPDF} disabled={!result} className="apple-button-outline !px-10 flex items-center gap-3 disabled:opacity-30 group/btn !bg-white/5 border-white/5 hover:border-white/10">
+                                        {pdfUnlocked ? <><CheckCircle size={18} className="text-[#00E28A]" /><span>DOWNLOAD ANALYSIS</span></> : <><Lock size={18} className="text-white/30 group-hover/btn:text-white" /><span>ACQUIRE DEEP REPORT</span></>}
+                                    </button>
+                                    <button className="apple-button-outline !px-10 flex items-center gap-3 bg-white/5 border-white/5 hover:border-white/10">
+                                        <Share size={18} /><span>COMMAND SHARE</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="space-y-8 h-full flex flex-col">
+                                <MetricCard title="Brand Clarity" value={result ? result.scores.clarity.toFixed(1) : '8.8'} trend="+4.2%" trendDirection="up" status="optimal" icon={Activity} />
+                                <MetricCard title="Tone Consistency" value={result ? result.scores.consistency.toFixed(1) : '7.2'} trend="+1.5%" trendDirection="up" status="stable" icon={Users} />
+                                <MetricCard title="Market Differentiation" value={result ? result.scores.differentiation.toFixed(1) : '9.4'} trend="+0.8%" trendDirection="up" status="optimal" icon={Shield} />
+                                <MetricCard title="Emotional Impact" value={result ? result.scores.emotionalImpact.toFixed(1) : '6.5'} trend="-2.1%" trendDirection="down" status="critical" icon={Zap} />
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <AnimatePresence>
                 {ai && (
