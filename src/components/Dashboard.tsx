@@ -315,10 +315,10 @@ export default function Dashboard() {
                             </div>
 
                             <div className="space-y-8 h-full flex flex-col">
-                                <MetricCard title="Brand Clarity" value={result ? result.scores.clarity.toFixed(1) : '8.8'} trend="+4.2%" trendDirection="up" status="optimal" icon={Activity} />
-                                <MetricCard title="Tone Consistency" value={result ? result.scores.consistency.toFixed(1) : '7.2'} trend="+1.5%" trendDirection="up" status="stable" icon={Users} />
-                                <MetricCard title="Market Differentiation" value={result ? result.scores.differentiation.toFixed(1) : '9.4'} trend="+0.8%" trendDirection="up" status="optimal" icon={Shield} />
-                                <MetricCard title="Emotional Impact" value={result ? result.scores.emotionalImpact.toFixed(1) : '6.5'} trend="-2.1%" trendDirection="down" status="critical" icon={Zap} />
+                                <MetricCard title="Brand Clarity" value={result ? (result.scores?.clarity ?? 0).toFixed(1) : '8.8'} trend="+4.2%" trendDirection="up" status="optimal" icon={Activity} />
+                                <MetricCard title="Tone Consistency" value={result ? (result.scores?.consistency ?? 0).toFixed(1) : '7.2'} trend="+1.5%" trendDirection="up" status="stable" icon={Users} />
+                                <MetricCard title="Market Differentiation" value={result ? (result.scores?.differentiation ?? 0).toFixed(1) : '9.4'} trend="+0.8%" trendDirection="up" status="optimal" icon={Shield} />
+                                <MetricCard title="Emotional Impact" value={result ? (result.scores?.emotionalImpact ?? 0).toFixed(1) : '6.5'} trend="-2.1%" trendDirection="down" status="critical" icon={Zap} />
                             </div>
                         </div>
                     </motion.div>
@@ -415,12 +415,12 @@ export default function Dashboard() {
                                 <h5 className="surgical-label !text-white/20">Neural Pillars</h5>
                                 <div className="grid grid-cols-2 gap-6">
                                     {[
-                                        { l: 'CORE PROMISE', v: result.scores.clarity },
-                                        { l: 'TONE CONSISTENCY', v: result.scores.consistency },
-                                        { l: 'MESSAGING PILLARS', v: result.scores.differentiation },
-                                        { l: 'AUDIENCE RESONANCE', v: result.scores.emotionalImpact },
-                                        { l: 'TAGLINE STRENGTH', v: result.scores.marketResonance },
-                                        { l: 'CTA CLARITY', v: result.scores.ctaStrength },
+                                        { l: 'CORE PROMISE', v: result.scores?.clarity ?? 0 },
+                                        { l: 'TONE CONSISTENCY', v: result.scores?.consistency ?? 0 },
+                                        { l: 'MESSAGING PILLARS', v: result.scores?.differentiation ?? 0 },
+                                        { l: 'AUDIENCE RESONANCE', v: result.scores?.emotionalImpact ?? 0 },
+                                        { l: 'TAGLINE STRENGTH', v: result.scores?.marketResonance ?? 0 },
+                                        { l: 'CTA CLARITY', v: result.scores?.ctaStrength ?? 0 },
                                     ].map((n: { l: string, v: number }, i: number) => (
                                         <SpotlightCard key={i} className="bg-white/[0.04] border border-white/5 p-7 rounded-[24px] hover:border-white/10 transition-all backdrop-blur-none spotlight-red">
                                             <div className="surgical-label text-[9px] mb-2">{n.l}</div>
